@@ -5,6 +5,8 @@ function init(self)
 	local rand_type = math.random(tablelength(smiley_ids))
 	-- set new sprite image
 	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_ids[ rand_type ] ) } )
+	--  activate input
+	msg.post(".", "acquire_input_focus")
 end
 
 function final(self)
@@ -18,19 +20,12 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+	if message_id == hash("collision_response") then
+		go.delete()
+	end
 end
 
-function on_input(self, action_id, action)
-	-- Add input-handling code here
-	-- Remove this function if not needed
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Remove this function if not needed
-end
+-- HELPER --
 
 -- get the size of a table
 function tablelength(T)

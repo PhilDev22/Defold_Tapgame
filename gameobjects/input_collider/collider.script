@@ -1,0 +1,9 @@
+local ACTIVE_TIME = 0.05
+
+function update(self, dt)
+	-- count down active_timer
+	ACTIVE_TIME = ACTIVE_TIME - dt
+	if ACTIVE_TIME <= 0 then
+		go.delete()
+	end
+end

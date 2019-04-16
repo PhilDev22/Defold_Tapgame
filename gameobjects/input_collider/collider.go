@@ -1,6 +1,6 @@
 components {
-  id: "smiley"
-  component: "/gameobjects/smiley/smiley.script"
+  id: "collider"
+  component: "/gameobjects/input_collider/collider.script"
   position {
     x: 0.0
     y: 0.0
@@ -14,35 +14,15 @@ components {
   }
 }
 embedded_components {
-  id: "sprite"
-  type: "sprite"
-  data: "tile_set: \"/gameobjects/smiley/smileys.atlas\"\n"
-  "default_animation: \"emoji_u1f609\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "blend_mode: BLEND_MODE_ALPHA\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-}
-embedded_components {
-  id: "collisionobject"
+  id: "touch_collisionobject"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"Smiley\"\n"
-  "mask: \"Touch\"\n"
+  "group: \"Touch\"\n"
+  "mask: \"Smiley\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
@@ -60,7 +40,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 65.1665\n"
+  "  data: 69.35\n"
   "}\n"
   "linear_damping: 0.0\n"
   "angular_damping: 0.0\n"
