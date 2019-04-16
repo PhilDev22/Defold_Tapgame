@@ -1,4 +1,8 @@
 function init(self)
+	-- set background color
+	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
+	
+	--  activate input
 	msg.post(".", "acquire_input_focus")
 end
 

@@ -1,0 +1,32 @@
+-- reference to the constants module
+local constants = require("../../main/constants")
+
+local spawn_timer = 0.1
+local spawn_range_y = 0
+local spawn_range_x = 0
+
+function init(self)
+	-- init timer
+	self.timer = spawn_timer
+	-- set random seed
+	math.randomseed(os.time())
+	-- set spawn ranges
+	spawn_range_x = constants.SCREEN_WIDTH
+	spawn_range_y = constants.SCREEN_HEIGHT
+end
+
+function update(self, dt)
+	-- count down spawn timer
+	self.timer = self.timer - dt
+	if self.timer <= 0 then
+		self.timer = spawn_timer
+		local p = go.get_position()
+		-- set random y-position
+		p.y = (math.random() * spawn_range_y)
+		p.x = (math.random() * spawn_range_x)
+		-- get factory component
+		local component = "#smiley_factory"
+		-- spawn new smiley by factory
+		factory.create(component, p)
+	end
+end
