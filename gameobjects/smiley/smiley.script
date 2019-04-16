@@ -1,8 +1,10 @@
-go.property("s_id", "none")
+local smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b" }
 
 function init(self)
-	-- Add initialization code here
-	-- Remove this function if not needed
+	-- get random index of id table
+	local rand_type = math.random(tablelength(smiley_ids))
+	-- set new sprite image
+	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_ids[ rand_type ] ) } )
 end
 
 function final(self)
@@ -28,4 +30,11 @@ end
 function on_reload(self)
 	-- Add reload-handling code here
 	-- Remove this function if not needed
+end
+
+-- get the size of a table
+function tablelength(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
 end
