@@ -56,3 +56,6 @@ input_method = HiddenInputField
 [script]
 shared_state = 1
 
+[sprite]
+max_count = 256
+
