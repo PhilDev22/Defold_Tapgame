@@ -13,7 +13,7 @@ function init(self)
 	math.randomseed(os.time())
 	-- set spawn ranges
 	spawn_range_x = global_constants.SCREEN_WIDTH
-	spawn_range_y = global_constants.SCREEN_HEIGHT
+	spawn_range_y = global_constants.SCREEN_HEIGHT - 100
 end
 
 function update(self, dt)

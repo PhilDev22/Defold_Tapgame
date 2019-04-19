@@ -1,4 +1,5 @@
 local smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b" }
+local score = 100
 
 function init(self)
 	-- get random index of id table
@@ -20,6 +21,7 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("collision_response") then
+		msg.post("main#gui", "add_score", {amount = score})
 		go.delete()
 	end
 end

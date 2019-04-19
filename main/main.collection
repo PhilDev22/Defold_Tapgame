@@ -1,6 +1,6 @@
 name: "main"
 instances {
-  id: "factory"
+  id: "smiley_factory"
   prototype: "/gameobjects/smiley/factory.go"
   position {
     x: 0.0
@@ -20,7 +20,7 @@ instances {
   }
 }
 instances {
-  id: "factory1"
+  id: "imput_factory"
   prototype: "/gameobjects/input_collider/factory.go"
   position {
     x: 0.0
@@ -39,30 +39,12 @@ instances {
     z: 1.0
   }
 }
-scale_along_z: 0
-embedded_instances {
-  id: "go"
-  children: "factory"
-  children: "factory1"
-  data: "components {\n"
-  "  id: \"main\"\n"
-  "  component: \"/main/main.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  ""
+instances {
+  id: "main"
+  prototype: "/main/main.go"
   position {
-    x: 320.0
-    y: 568.0
+    x: 0.0
+    y: 0.0
     z: 0.0
   }
   rotation {
@@ -77,3 +59,4 @@ embedded_instances {
     z: 1.0
   }
 }
+scale_along_z: 0
