@@ -5,4 +5,5 @@
 local M = {}
 M.SCREEN_WIDTH = 640
 M.SCREEN_HEIGHT = 1136
+M.MAX_SMILEYS = 12
 return M

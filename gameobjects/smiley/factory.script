@@ -1,33 +1,36 @@
--- reference to the constants module
-local constants = require("../../main/constants")
+-- current number of smileys
+global_smiley_count = 0
 
-local SPAWN_TIME_MAX = 1
-local spawn_time = 1
+local SPAWN_TIME = 1.0
+local spawn_timer = 1.0
 local spawn_range_y = 0
 local spawn_range_x = 0
 
 function init(self)
 	-- init timer
-	spawn_timer = SPAWN_TIME_MAX
+	spawn_timer = SPAWN_TIME
 	-- set random seed
 	math.randomseed(os.time())
 	-- set spawn ranges
-	spawn_range_x = constants.SCREEN_WIDTH
-	spawn_range_y = constants.SCREEN_HEIGHT
+	spawn_range_x = global_constants.SCREEN_WIDTH
+	spawn_range_y = global_constants.SCREEN_HEIGHT
 end
 
 function update(self, dt)
-	-- count down spawn timer
-	spawn_time = spawn_time - dt
-	if spawn_time <= 0 then
-		spawn_time = SPAWN_TIME_MAX
-		local p = go.get_position()
-		-- set random y-position
-		p.y = (math.random() * spawn_range_y)
-		p.x = (math.random() * spawn_range_x)
-		-- get factory component
-		local component = "#smiley_factory"
-		-- spawn new smiley by factory
-		local instance_id = factory.create(component, p)
+	if global_smiley_count < global_constants.MAX_SMILEYS then
+		-- count down spawn timer
+		spawn_timer = spawn_timer - dt
+		if spawn_timer <= 0 then
+			spawn_timer = SPAWN_TIME
+			local p = go.get_position()
+			-- set random y-position
+			p.y = (math.random() * spawn_range_y)
+			p.x = (math.random() * spawn_range_x)
+			-- get factory component
+			local component = "#smiley_factory"
+			-- spawn new smiley by factory
+			local instance_id = factory.create(component, p)
+			global_smiley_count = global_smiley_count + 1
+		end
 	end
 end
