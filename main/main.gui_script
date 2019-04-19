@@ -17,4 +17,8 @@ function on_message(self, message_id, message, sender)
 		gui.set_text(self.score_node, tostring(self.score))
 		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 	end
+	if message_id == hash("set_time") then
+		ptint(message.time)
+		gui.set_text(txt_time, tostring(math.floor(message.time)))
+	end
 end
