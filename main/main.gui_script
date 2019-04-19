@@ -1,3 +1,5 @@
+-- Code sample from Defold side scroller tutorial
+
 function init(self)
 	self.score = 0
 	self.score_node = gui.get_node("txt_score")

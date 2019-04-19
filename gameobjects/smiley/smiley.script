@@ -1,11 +1,15 @@
 local smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b" }
-local score = 100
+
+go.property("score", 100)
+go.property("speed", 300)
 
 function init(self)
 	-- get random index of id table
 	local rand_type = math.random(tablelength(smiley_ids))
 	-- set new sprite image
 	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_ids[ rand_type ] ) } )
+	-- movement
+	_init_movement(self)
 	--  activate input
 	msg.post(".", "acquire_input_focus")
 end
@@ -15,13 +19,38 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
+	_move(self, dt)
+	_check_pos(self)
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("collision_response") then
-		msg.post("main#gui", "add_score", {amount = score})
+		msg.post("main#gui", "add_score", {amount = self.score})
+		go.delete()
+	end
+end
+
+function _init_movement(self)
+	self.v_speed = vmath.vector3()
+	self.direction = vmath.vector3()
+	
+	local pos = go.get_position()
+	self.direction.x = pos.x <= 0 and 1 or -1
+	self.v_speed = self.speed * self.direction
+end
+
+function _move(self, dt)
+	local pos = go.get_position()
+	pos = pos + (self.v_speed * dt)
+	go.set_position(pos)
+end
+
+function _check_pos(self)
+	if (self.direction.x == 1) and (go.get_position().x > global_constants.SCREEN_WIDTH) then
+		go.delete()
+	end
+
+	if (self.direction.x == -1) and (go.get_position().x < 0) then
 		go.delete()
 	end
 end
