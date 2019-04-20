@@ -1,5 +1,5 @@
 -- reference to the constants module
-global_constants = require("../main/constants")
+global_constants = require "main.constants"
 
 global_level_time = 20
 
@@ -15,6 +15,7 @@ end
 
 function update(self, dt)
 	self.level_timer = self.level_timer - dt
+	self.level_timer = math.max(self.level_timer, 0)
 	msg.post("/main#gui", "set_time", {time = self.level_timer})
 	if self.level_timer <= 0 then
 		self.level_timer = 0
