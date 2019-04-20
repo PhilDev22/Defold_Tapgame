@@ -1,13 +1,12 @@
-local smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b" }
-
-go.property("score", 100)
 go.property("speed", 300)
+go.property("smiley_id", 0)
 
 function init(self)
 	-- get random index of id table
-	local rand_type = math.random(tablelength(smiley_ids))
+	local rand_type = math.random(tablelength(global_smiley_ids))
 	-- set new sprite image
-	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_ids[ rand_type ] ) } )
+	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. global_smiley_ids[ rand_type ] ) } )
+	self.smiley_id = hash(global_smiley_ids[ rand_type ])
 	-- movement
 	_init_movement(self)
 	--  activate input
@@ -25,7 +24,7 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("collision_response") then
-		msg.post("main#gui", "add_score", {amount = self.score})
+		msg.post("main", "smiley_touched", {smiley_id = hash(self.smiley_id)})
 		go.delete()
 	end
 end
