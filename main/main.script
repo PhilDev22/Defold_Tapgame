@@ -15,7 +15,7 @@ end
 
 function update(self, dt)
 	self.level_timer = self.level_timer - dt
-	msg.post("../gui", "set_time", {time = self.level_timer})
+	msg.post("/main#gui", "set_time", {time = self.level_timer})
 	if self.level_timer <= 0 then
 		self.level_timer = 0
 	end
