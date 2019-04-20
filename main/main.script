@@ -15,7 +15,7 @@ function init(self)
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 	
 	self.level_timer = global_level_time
-	_init_level(self.level_smiley_count)
+	_init_level(self, self.level_smiley_count)
 	
 	--  activate input
 	msg.post(".", "acquire_input_focus")
@@ -27,6 +27,7 @@ function update(self, dt)
 	msg.post("/main#gui", "set_time", {time = self.level_timer})
 	if self.level_timer <= 0 then
 		self.level_timer = 0
+		_process_game_over(self)
 	end
 end
 
@@ -42,7 +43,9 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
-function _init_level(smiley_count)
+function _init_level(self, smiley_count)
+	print("Generating level..")
+	global_level_smileys = {}
 	for i = 0, smiley_count - 1 do
 		-- get random index of id table
 		local rand_type = math.random(tablelength(global_smiley_ids))
@@ -50,11 +53,15 @@ function _init_level(smiley_count)
 		global_level_smileys[i] = global_smiley_ids[ rand_type ]
 		print(global_level_smileys[i])
 	end
+	-- set first smiley index
 	next_smiley_id = 0
+	-- reset timer
+	self.level_timer = global_level_time
 end
 
-function _on_level_finished()
+function _on_level_finished(self)
 	print("Level finished!")
+	_init_level(self, self.level_smiley_count)
 end
 
 function _process_smiley_touch(self, smiley_id)
@@ -67,7 +74,12 @@ function _process_smiley_touch(self, smiley_id)
 		if next_smiley_id < self.level_smiley_count - 1 then
 			next_smiley_id = next_smiley_id + 1
 		else
-			_on_level_finished()
+			_on_level_finished(self)
 		end
 	end
+end
+
+function _process_game_over(self)
+	print("Failed!")
+	_init_level(self, self.level_smiley_count)
 end
