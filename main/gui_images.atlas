@@ -37,6 +37,9 @@ images {
 images {
   image: "/assets/gui/emoji_u2699.png"
 }
+images {
+  image: "/assets/gui/smiley_background.png"
+}
 margin: 0
 extrude_borders: 0
 inner_padding: 0
