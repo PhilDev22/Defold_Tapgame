@@ -41,7 +41,7 @@ end
 
 function _move(self, dt)
 	local pos = go.get_position()
-	pos = pos + (self.v_speed * dt)
+	pos = pos + self.v_speed * dt
 	go.set_position(pos)
 end
 
