@@ -1,7 +1,7 @@
 -- reference to the constants module
 global_constants = require "main.constants"
 global_level_time = 20
-global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b" }
+global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
 global_level_smileys = {}
 
 go.property("level", 0)

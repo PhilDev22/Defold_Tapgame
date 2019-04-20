@@ -1,0 +1,42 @@
+images {
+  image: "/assets/gui/emoji_u1f4aa.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f507.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f509.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f50a.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f55b.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f947.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f948.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f949.png"
+}
+images {
+  image: "/assets/gui/emoji_u23f0.png"
+}
+images {
+  image: "/assets/gui/emoji_u23f1.png"
+}
+images {
+  image: "/assets/gui/emoji_u23f2.png"
+}
+images {
+  image: "/assets/gui/emoji_u23f8.png"
+}
+images {
+  image: "/assets/gui/emoji_u2699.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0

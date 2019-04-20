@@ -1,11 +1,13 @@
 -- current number of smileys
 global_smiley_count = 0
 
-go.property("spawn_time", 0.5)
+go.property("spawn_time", 0.3)
 
 local spawn_timer = 1.0
 local spawn_range_y = 0
 local spawn_range_x = 0
+local spawn_offset_left = -64
+local spawn_offset_right = 64
 
 function init(self)
 	-- init timer
@@ -14,7 +16,7 @@ function init(self)
 	math.randomseed(os.time())
 	-- set spawn ranges
 	spawn_range_x = global_constants.SCREEN_WIDTH
-	spawn_range_y = global_constants.SCREEN_HEIGHT - 100
+	spawn_range_y = global_constants.SCREEN_HEIGHT - 300
 end
 
 function update(self, dt)
@@ -26,7 +28,7 @@ function update(self, dt)
 			local p = go.get_position()
 			-- set random y-position
 			p.y = (math.random() * spawn_range_y)
-			p.x = math.random(2) == 1 and 0 or global_constants.SCREEN_WIDTH
+			p.x = math.random(2) == 1 and spawn_offset_left or global_constants.SCREEN_WIDTH + spawn_offset_right
 			-- get factory component
 			local component = "#smiley_factory"
 			-- spawn new smiley by factory
