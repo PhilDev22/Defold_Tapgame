@@ -4,6 +4,9 @@ function init(self)
 	self.score = 0
 	self.score_node = gui.get_node("txt_score")
 	self.time_node = gui.get_node("txt_time")
+	self.smiley_node_0 = gui.get_node("box0")
+	self.smiley_node_1 = gui.get_node("box1")
+	self.smiley_node_2 = gui.get_node("box2")
 end
 
 local function scale_down(self, node)
@@ -17,8 +20,18 @@ function on_message(self, message_id, message, sender)
 		self.score = self.score + message.amount
 		gui.set_text(self.score_node, tostring(self.score))
 		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
-	end
-	if message_id == hash("set_time") then
+	
+	elseif message_id == hash("set_time") then
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
+	
+	elseif message_id == hash("set_smileys") then
+		gui.set_texture(self.smiley_node_0, "smileys")
+		gui.play_flipbook(self.smiley_node_0,"emoji_u1f" ..  message.smiley0)
+
+		gui.set_texture(self.smiley_node_1, "smileys")
+		gui.play_flipbook(self.smiley_node_1, "emoji_u1f" .. message.smiley1)
+
+		gui.set_texture(self.smiley_node_2, "smileys")
+		gui.play_flipbook(self.smiley_node_2, "emoji_u1f" .. message.smiley2)
 	end
 end

@@ -1,4 +1,4 @@
-go.property("speed", 300)
+go.property("speed", 350)
 go.property("smiley_id", 0)
 
 function init(self)

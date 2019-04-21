@@ -53,6 +53,12 @@ function _init_level(self, smiley_count)
 		global_level_smileys[i] = global_smiley_ids[ rand_type ]
 		print(global_level_smileys[i])
 	end
+	-- set smileys on gui
+	msg.post("/main#gui", "set_smileys", {
+		smiley0 = global_level_smileys[0],
+		smiley1 = global_level_smileys[1],
+		smiley2 = global_level_smileys[2],
+	})
 	-- set first smiley index
 	next_smiley_id = 0
 	-- reset timer
