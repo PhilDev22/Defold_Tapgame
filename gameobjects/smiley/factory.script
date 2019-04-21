@@ -22,7 +22,7 @@ function init(self)
 end
 
 function update(self, dt)
-	if global_smiley_count < global_constants.MAX_SMILEYS then
+	if (not global_stopped) and (global_smiley_count < global_constants.MAX_SMILEYS) then
 		-- count down spawn timer
 		spawn_timer = spawn_timer - dt
 		if spawn_timer <= 0 then

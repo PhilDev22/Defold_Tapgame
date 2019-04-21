@@ -18,8 +18,12 @@ function final(self)
 end
 
 function update(self, dt)
-	_move(self, dt)
-	_check_pos(self)
+	if not global_stopped then
+		_move(self, dt)
+		_check_pos(self)
+	else
+		go.delete()
+	end
 end
 
 function on_message(self, message_id, message, sender)

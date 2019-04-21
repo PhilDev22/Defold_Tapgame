@@ -1,7 +1,11 @@
 -- Code sample from Defold side scroller tutorial
 
+global_active_dialog = 0
+
 local smiley_scale_small = 0.6
 local smiley_scale_big = 0.8
+local smileys_success = {}
+local smileys_failure = {}
 
 function init(self)
 	self.score = 0
@@ -10,6 +14,14 @@ function init(self)
 	self.smiley_node_0 = gui.get_node("box0")
 	self.smiley_node_1 = gui.get_node("box1")
 	self.smiley_node_2 = gui.get_node("box2")
+	
+	self.node_dialog_success = gui.get_node("dialog_level_complete")
+	self.node_dialog_gameover = gui.get_node("dialog_gameover")
+	self.node_gui_ingame = gui.get_node("gui_ingame")
+
+	self.node_gameover_score = gui.get_node("txt_gameover_score")
+	
+	_hide_all_dialogs(self)
 end
 
 local function scale_down(self, node)
@@ -18,10 +30,9 @@ local function scale_down(self, node)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("add_score") then
+	if message_id == hash("set_score") then
 		local s = 1.2
-		self.score = self.score + message.amount
-		gui.set_text(self.score_node, tostring(self.score))
+		gui.set_text(self.score_node, tostring(message.amount))
 		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 	
 	elseif message_id == hash("set_time") then
@@ -49,5 +60,30 @@ function on_message(self, message_id, message, sender)
 		elseif message.nr == 2 then
 			gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
 		end
+
+	elseif message_id == hash("show_dialog_level_complete") then
+		gui.set_enabled(self.node_dialog_success, message.show)
+		if message.show == true then 
+			global_active_dialog = 1 
+		end
+		
+	elseif message_id == hash("show_dialog_gameover") then
+		gui.set_enabled(self.node_dialog_gameover, message.show)
+		if message.show == true then 
+			global_active_dialog = 2 
+			gui.set_text(self.node_gameover_score, tostring(global_score))
+		end
+		
+	elseif message_id == hash("hide_all_dialogs") then
+		_hide_all_dialogs(self)
+
+	elseif message_id == hash("show_ingame_gui") then
+		gui.set_enabled(self.node_gui_ingame, message.show)
 	end
+end
+
+function _hide_all_dialogs(self)
+	gui.set_enabled(self.node_dialog_gameover, false)
+	gui.set_enabled(self.node_dialog_success, false)
+	global_active_dialog = 0
 end

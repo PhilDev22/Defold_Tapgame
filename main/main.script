@@ -3,10 +3,12 @@ global_constants = require "main.constants"
 global_level_time = 20
 global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
 global_level_smileys = {}
+global_stopped = false
+global_score = 0
 
 go.property("level", 0)
 go.property("level_smiley_count", 3)
-go.property("score", 100)
+go.property("single_score", 100)
 
 local next_smiley_id = ""
 
@@ -22,18 +24,23 @@ function init(self)
 end
 
 function update(self, dt)
-	self.level_timer = self.level_timer - dt
-	self.level_timer = math.max(self.level_timer, 0)
-	msg.post("/main#gui", "set_time", {time = self.level_timer})
-	if self.level_timer <= 0 then
-		self.level_timer = 0
-		_process_game_over(self)
+	if not global_stopped then
+		self.level_timer = self.level_timer - dt
+		self.level_timer = math.max(self.level_timer, 0)
+		msg.post("/main#gui", "set_time", {time = self.level_timer})
+		if self.level_timer <= 0 then
+			self.level_timer = 0
+			_process_game_over(self)
+		end
 	end
 end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
-		-- print("Touch!")
+		
+		if global_stopped == true then
+			_restart(self)
+		end
 	end
 end
 
@@ -69,7 +76,9 @@ end
 
 function _on_level_finished(self)
 	print("Level finished!")
-	_init_level(self, self.level_smiley_count)
+	msg.post("/main#gui", "show_ingame_gui", {show = false})
+	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
+	global_stopped = true
 end
 
 function _process_smiley_touch(self, smiley_id)
@@ -77,8 +86,11 @@ function _process_smiley_touch(self, smiley_id)
 	-- check if smiley is in table of level smileys
 	if smiley_id == hash(global_level_smileys[ next_smiley_id ]) then
 		print("Touched right one")
-		-- add score to gui
-		msg.post("main#gui", "add_score", {amount = self.score})
+		-- add score
+		global_score = global_score + self.single_score
+		-- update gui
+		msg.post("main#gui", "set_score", {amount = global_score})
+		--activate next smiley
 		if next_smiley_id < self.level_smiley_count - 1 then
 			next_smiley_id = next_smiley_id + 1
 			msg.post("/main#gui", "activate_smiley", {nr = next_smiley_id})
@@ -90,5 +102,19 @@ end
 
 function _process_game_over(self)
 	print("Failed!")
+	msg.post("/main#gui", "show_ingame_gui", {show = false})
+	msg.post("/main#gui", "show_dialog_gameover", {show = true})
+	global_stopped = true
+end
+
+function _restart(self)
+	msg.post("/main#gui", "hide_all_dialogs")
+	msg.post("/main#gui", "show_ingame_gui", {show = true})
+	
+	global_score = 0
+	msg.post("main#gui", "set_score", {amount = global_score})
+	
 	_init_level(self, self.level_smiley_count)
+	
+	global_stopped = false
 end
