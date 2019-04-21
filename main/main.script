@@ -53,6 +53,8 @@ function _init_level(self, smiley_count)
 		global_level_smileys[i] = global_smiley_ids[ rand_type ]
 		print(global_level_smileys[i])
 	end
+	-- scale all gui smileys to small size
+	msg.post("/main#gui", "activate_smiley", {nr = -1})
 	-- set smileys on gui
 	msg.post("/main#gui", "set_smileys", {
 		smiley0 = global_level_smileys[0],
@@ -79,6 +81,7 @@ function _process_smiley_touch(self, smiley_id)
 		msg.post("main#gui", "add_score", {amount = self.score})
 		if next_smiley_id < self.level_smiley_count - 1 then
 			next_smiley_id = next_smiley_id + 1
+			msg.post("/main#gui", "activate_smiley", {nr = next_smiley_id})
 		else
 			_on_level_finished(self)
 		end
