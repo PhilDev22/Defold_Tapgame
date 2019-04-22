@@ -20,7 +20,7 @@ go.property("level", 0)
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
-local next_smiley_id = ""
+local next_smiley_id = 1
 
 function init(self)
 	-- set background color
@@ -69,32 +69,32 @@ function _init_level(self, smiley_count)
 	-- set all level smileys
 	print ("Generating level...")
 	global_level_smileys_all = {}
-	for i = 0, global_level_smileys_max - 1 do
+	for i = 1, global_level_smileys_max do
 		-- get random index of stage smileys
 		local rand_type = math.random(tablelength(global_stage_smileys))
 		-- add to level
-		global_level_smileys_all[i] = global_stage_smileys[ rand_type - 1]
+		global_level_smileys_all[i] = global_stage_smileys[ rand_type ]
 		print(global_level_smileys_all[i])
 	end
 	print ("Generating level smileys to pick...")
 	global_level_smileys = {}
-	for i = 0, smiley_count - 1 do
+	for i = 1, smiley_count do
 		-- get random index of id table
 		local rand_type = math.random(tablelength(global_level_smileys_all))
 		-- add to level
-		global_level_smileys[i] = global_level_smileys_all[ rand_type - 1]
+		global_level_smileys[i] = global_level_smileys_all[ rand_type ]
 		print(global_level_smileys[i])
 	end
 	print ("Generating level done.")
 	
 	-- set smileys on gui
 	msg.post("/main#gui", "set_smileys", {
-		smiley0 = global_level_smileys[0],
-		smiley1 = global_level_smileys[1],
-		smiley2 = global_level_smileys[2],
+		smiley0 = global_level_smileys[1],
+		smiley1 = global_level_smileys[2],
+		smiley2 = global_level_smileys[3],
 	})
 	-- set first smiley index
-	next_smiley_id = 0
+	next_smiley_id = 1
 	-- scale first smiley up
 	msg.post("/main#gui", "activate_smiley", {nr = 0})
 	-- set level text
@@ -122,7 +122,7 @@ function _process_smiley_touch(self, smiley_id)
 		-- update gui
 		msg.post("main#gui", "set_score", {amount = global_score})
 		--activate next smiley
-		if next_smiley_id < self.level_smiley_count_max - 1 then
+		if next_smiley_id < self.level_smiley_count_max  then
 			next_smiley_id = next_smiley_id + 1
 			msg.post("/main#gui", "activate_smiley", {nr = next_smiley_id})
 		else

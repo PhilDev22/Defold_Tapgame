@@ -81,14 +81,14 @@ function on_message(self, message_id, message, sender)
 		gui.set_layer(self.smiley_node_1, "gui_bottom_layer")
 		gui.set_layer(self.smiley_node_2, "gui_bottom_layer")
 		
-		if message.nr >= 0 then
+		if message.nr > 0 then
 			-- smiley scale of according smiley
 			local smiley = self.smiley_node_0
-			if message.nr == 0 then
+			if message.nr == 1 then
 				smiley = self.smiley_node_0
-			elseif message.nr == 1 then
-				smiley = self.smiley_node_1
 			elseif message.nr == 2 then
+				smiley = self.smiley_node_1
+			elseif message.nr == 3 then
 				smiley = self.smiley_node_2
 			end
 			-- scale up
