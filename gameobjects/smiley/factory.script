@@ -1,8 +1,6 @@
 -- current number of smileys
 global_smiley_count = 0
 
-go.property("spawn_time", 0.4)
-
 local spawn_timer = 1.0
 local spawn_range_y = 0
 local spawn_range_x = 0
@@ -13,6 +11,7 @@ local spawn_offset_bottom = 150
 
 function init(self)
 	-- init timer
+	self.spawn_time = global_level_spawn_time
 	spawn_timer = self.spawn_time
 	-- set random seed
 	math.randomseed(os.time())

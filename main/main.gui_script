@@ -26,6 +26,7 @@ function init(self)
 	self.node_dialog_gameover = gui.get_node("dialog_gameover")
 
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
+	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_complete_score = gui.get_node("txt_level_complete_score")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	
@@ -48,6 +49,8 @@ function on_message(self, message_id, message, sender)
 
 	elseif message_id == hash("set_level") then
 		gui.set_text(self.level_node, "Level " .. tostring(global_level + 1))
+		gui.set_text(self.node_complete_level, "Level " .. tostring(global_level + 1))
+		gui.set_text(self.node_gameover_level, "Level " .. tostring(global_level + 1))
 
 	elseif message_id == hash("update_lifes") then
 		gui.set_enabled(self.heart_node_0, false)

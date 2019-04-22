@@ -1,15 +1,23 @@
 -- reference to the constants module
 global_constants = require "main.constants"
-global_level_time = 20
-global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
-global_level_smileys = {}
 global_stopped = false
+global_completed = false
 global_score = 0
 global_level = 0
 global_lifes = global_constants.MAX_LIFES
 
+global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
+-- level settings
+global_stage_smileys = {}
+global_level_smileys_all = {}
+global_level_smileys = {}
+global_level_smileys_max = 6
+global_level_time = 25
+global_level_speed = 330
+global_level_spawn_time = 0.35
+
 go.property("level", 0)
-go.property("level_smiley_count", 3)
+go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
 local next_smiley_id = ""
@@ -20,7 +28,7 @@ function init(self)
 	
 	self.level_timer = global_level_time
 	
-	_init_level(self, self.level_smiley_count)
+	_init_level(self, self.level_smiley_count_max)
 	
 	--  activate input
 	msg.post(".", "acquire_input_focus")
@@ -54,15 +62,31 @@ function on_message(self, message_id, message, sender)
 end
 
 function _init_level(self, smiley_count)
-	print("Generating level..")
+	-- set stage smileys
+	print ("Loading stage...")
+	-- todo: add basic and unlocked smileys to stage
+	global_stage_smileys = global_smiley_ids
+	-- set all level smileys
+	print ("Generating level...")
+	global_level_smileys_all = {}
+	for i = 0, global_level_smileys_max - 1 do
+		-- get random index of stage smileys
+		local rand_type = math.random(tablelength(global_stage_smileys))
+		-- add to level
+		global_level_smileys_all[i] = global_stage_smileys[ rand_type - 1]
+		print(global_level_smileys_all[i])
+	end
+	print ("Generating level smileys to pick...")
 	global_level_smileys = {}
 	for i = 0, smiley_count - 1 do
 		-- get random index of id table
-		local rand_type = math.random(tablelength(global_smiley_ids))
+		local rand_type = math.random(tablelength(global_level_smileys_all))
 		-- add to level
-		global_level_smileys[i] = global_smiley_ids[ rand_type ]
+		global_level_smileys[i] = global_level_smileys_all[ rand_type - 1]
 		print(global_level_smileys[i])
 	end
+	print ("Generating level done.")
+	
 	-- set smileys on gui
 	msg.post("/main#gui", "set_smileys", {
 		smiley0 = global_level_smileys[0],
@@ -85,6 +109,7 @@ function _on_level_finished(self)
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
 	global_stopped = true
+	global_completed = true
 end
 
 function _process_smiley_touch(self, smiley_id)
@@ -97,7 +122,7 @@ function _process_smiley_touch(self, smiley_id)
 		-- update gui
 		msg.post("main#gui", "set_score", {amount = global_score})
 		--activate next smiley
-		if next_smiley_id < self.level_smiley_count - 1 then
+		if next_smiley_id < self.level_smiley_count_max - 1 then
 			next_smiley_id = next_smiley_id + 1
 			msg.post("/main#gui", "activate_smiley", {nr = next_smiley_id})
 		else
@@ -119,13 +144,17 @@ end
 function _restart(self)
 	msg.post("/main#gui", "hide_all_dialogs")
 	msg.post("/main#gui", "show_ingame_gui", {show = true})
+
+	if not global_completed then
+		global_score = 0
+		global_lifes = global_constants.MAX_LIFES
+		msg.post("main#gui", "set_score", {amount = global_score})
+		msg.post("main#gui", "update_lifes", {lifes = global_lifes})
+	else
+		global_completed = false
+	end
 	
-	global_score = 0
-	global_lifes = global_constants.MAX_LIFES
-	msg.post("main#gui", "set_score", {amount = global_score})
-	msg.post("main#gui", "update_lifes", {lifes = global_lifes})
-	
-	_init_level(self, self.level_smiley_count)
+	_init_level(self, self.level_smiley_count_max)
 	
 	global_stopped = false
 end
