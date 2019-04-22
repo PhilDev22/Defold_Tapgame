@@ -919,7 +919,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "box_smileys"
-  layer: ""
+  layer: "gui_bottom_layer"
   inherit_alpha: false
   slice9 {
     x: 0.0
@@ -974,7 +974,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "box_smileys"
-  layer: ""
+  layer: "gui_bottom_layer"
   inherit_alpha: false
   slice9 {
     x: 0.0
@@ -1029,7 +1029,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "box_smileys"
-  layer: ""
+  layer: "gui_bottom_layer"
   inherit_alpha: false
   slice9 {
     x: 0.0
@@ -1043,6 +1043,12 @@ nodes {
   alpha: 1.0
   template_node_child: false
   size_mode: SIZE_MODE_AUTO
+}
+layers {
+  name: "gui_bottom_layer"
+}
+layers {
+  name: "gui_top_layer"
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

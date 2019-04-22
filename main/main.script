@@ -60,8 +60,6 @@ function _init_level(self, smiley_count)
 		global_level_smileys[i] = global_smiley_ids[ rand_type ]
 		print(global_level_smileys[i])
 	end
-	-- scale all gui smileys to small size
-	msg.post("/main#gui", "activate_smiley", {nr = -1})
 	-- set smileys on gui
 	msg.post("/main#gui", "set_smileys", {
 		smiley0 = global_level_smileys[0],
@@ -70,6 +68,8 @@ function _init_level(self, smiley_count)
 	})
 	-- set first smiley index
 	next_smiley_id = 0
+	-- scale first smiley up
+	msg.post("/main#gui", "activate_smiley", {nr = 0})
 	-- reset timer
 	self.level_timer = global_level_time
 end

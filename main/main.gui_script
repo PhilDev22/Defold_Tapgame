@@ -9,6 +9,9 @@ local smileys_failure = {}
 
 function init(self)
 	self.score = 0
+	
+	self.node_gui_ingame = gui.get_node("gui_ingame")
+	
 	self.score_node = gui.get_node("txt_score")
 	self.time_node = gui.get_node("txt_time")
 	self.smiley_node_0 = gui.get_node("box0")
@@ -17,7 +20,6 @@ function init(self)
 	
 	self.node_dialog_success = gui.get_node("dialog_level_complete")
 	self.node_dialog_gameover = gui.get_node("dialog_gameover")
-	self.node_gui_ingame = gui.get_node("gui_ingame")
 
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
 	
@@ -50,17 +52,34 @@ function on_message(self, message_id, message, sender)
 		gui.play_flipbook(self.smiley_node_2, "emoji_u1f" .. message.smiley2)
 		
 	elseif message_id == hash("activate_smiley") then
+		-- reset all smiley sizes
 		gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
 		gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
 		gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
-		if message.nr == 0 then
-			gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
-		elseif message.nr == 1 then
-			gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
-		elseif message.nr == 2 then
-			gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+		-- set to background layer
+		gui.set_layer(self.smiley_node_0, "gui_bottom_layer")
+		gui.set_layer(self.smiley_node_1, "gui_bottom_layer")
+		gui.set_layer(self.smiley_node_2, "gui_bottom_layer")
+		
+		if message.nr >= 0 then
+			-- smiley scale of according smiley
+			local smiley = self.smiley_node_0
+			if message.nr == 0 then
+				smiley = self.smiley_node_0
+			elseif message.nr == 1 then
+				smiley = self.smiley_node_1
+			elseif message.nr == 2 then
+				smiley = self.smiley_node_2
+			end
+			-- scale up
+			gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+			-- set to foreground layer
+			gui.set_layer(smiley, "gui_top_layer")
 		end
 
+	elseif message_id == hash("show_ingame_gui") then
+		gui.set_enabled(self.node_gui_ingame, message.show)
+	
 	elseif message_id == hash("show_dialog_level_complete") then
 		gui.set_enabled(self.node_dialog_success, message.show)
 		if message.show == true then 
@@ -76,9 +95,6 @@ function on_message(self, message_id, message, sender)
 		
 	elseif message_id == hash("hide_all_dialogs") then
 		_hide_all_dialogs(self)
-
-	elseif message_id == hash("show_ingame_gui") then
-		gui.set_enabled(self.node_gui_ingame, message.show)
 	end
 end
 

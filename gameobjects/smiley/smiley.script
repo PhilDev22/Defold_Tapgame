@@ -9,8 +9,6 @@ function init(self)
 	self.smiley_id = hash(global_smiley_ids[ rand_type ])
 	-- movement
 	_init_movement(self)
-	--  activate input
-	msg.post(".", "acquire_input_focus")
 end
 
 function final(self)
