@@ -14,14 +14,20 @@ function init(self)
 	
 	self.score_node = gui.get_node("txt_score")
 	self.time_node = gui.get_node("txt_time")
+	self.level_node = gui.get_node("txt_level")
 	self.smiley_node_0 = gui.get_node("box0")
 	self.smiley_node_1 = gui.get_node("box1")
 	self.smiley_node_2 = gui.get_node("box2")
+	self.heart_node_0 = gui.get_node("box_life0")
+	self.heart_node_1 = gui.get_node("box_life1")
+	self.heart_node_2 = gui.get_node("box_life2")
 	
 	self.node_dialog_success = gui.get_node("dialog_level_complete")
 	self.node_dialog_gameover = gui.get_node("dialog_gameover")
 
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
+	self.node_complete_score = gui.get_node("txt_level_complete_score")
+	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	
 	_hide_all_dialogs(self)
 end
@@ -39,7 +45,18 @@ function on_message(self, message_id, message, sender)
 	
 	elseif message_id == hash("set_time") then
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
-	
+
+	elseif message_id == hash("set_level") then
+		gui.set_text(self.level_node, "Level " .. tostring(global_level + 1))
+
+	elseif message_id == hash("update_lifes") then
+		gui.set_enabled(self.heart_node_0, false)
+		gui.set_enabled(self.heart_node_1, false)
+		gui.set_enabled(self.heart_node_2, false)
+		if message.lifes >= 1 then gui.set_enabled(self.heart_node_0, true) end
+		if message.lifes >= 2 then gui.set_enabled(self.heart_node_1, true) end
+		if message.lifes >= 3 then gui.set_enabled(self.heart_node_2, true) end
+		
 	elseif message_id == hash("set_smileys") then
 		gui.set_texture(self.smiley_node_0, "smileys")
 		gui.play_flipbook(self.smiley_node_0,"emoji_u1f" ..  message.smiley0)
@@ -84,6 +101,7 @@ function on_message(self, message_id, message, sender)
 		gui.set_enabled(self.node_dialog_success, message.show)
 		if message.show == true then 
 			global_active_dialog = 1 
+			gui.set_text(self.node_complete_score, tostring(global_score))
 		end
 		
 	elseif message_id == hash("show_dialog_gameover") then

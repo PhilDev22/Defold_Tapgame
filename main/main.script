@@ -5,6 +5,8 @@ global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61
 global_level_smileys = {}
 global_stopped = false
 global_score = 0
+global_level = 0
+global_lifes = global_constants.MAX_LIFES
 
 go.property("level", 0)
 go.property("level_smiley_count", 3)
@@ -17,6 +19,7 @@ function init(self)
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 	
 	self.level_timer = global_level_time
+	
 	_init_level(self, self.level_smiley_count)
 	
 	--  activate input
@@ -70,12 +73,15 @@ function _init_level(self, smiley_count)
 	next_smiley_id = 0
 	-- scale first smiley up
 	msg.post("/main#gui", "activate_smiley", {nr = 0})
+	-- set level text
+	msg.post("/main#gui", "set_level", {level = global_level})
 	-- reset timer
 	self.level_timer = global_level_time
 end
 
 function _on_level_finished(self)
 	print("Level finished!")
+	global_level = global_level + 1
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
 	global_stopped = true
@@ -97,6 +103,9 @@ function _process_smiley_touch(self, smiley_id)
 		else
 			_on_level_finished(self)
 		end
+
+	else -- wrong smiley touched
+		_decrease_lifes(self)
 	end
 end
 
@@ -112,9 +121,18 @@ function _restart(self)
 	msg.post("/main#gui", "show_ingame_gui", {show = true})
 	
 	global_score = 0
+	global_lifes = global_constants.MAX_LIFES
 	msg.post("main#gui", "set_score", {amount = global_score})
+	msg.post("main#gui", "update_lifes", {lifes = global_lifes})
 	
 	_init_level(self, self.level_smiley_count)
 	
 	global_stopped = false
+end
+
+function _decrease_lifes(self)
+	global_lifes = global_lifes - 1
+	print("lifes: " ..  global_lifes)
+	msg.post("/main#gui", "update_lifes", {lifes = global_lifes})
+	if global_lifes <= 0 then _process_game_over(self) end
 end
