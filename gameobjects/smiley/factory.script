@@ -4,8 +4,8 @@ global_smiley_count = 0
 local spawn_timer = 1.0
 local spawn_range_y = 0
 local spawn_range_x = 0
-local spawn_offset_left = -64
-local spawn_offset_right = 64
+local spawn_offset_left = -128
+local spawn_offset_right = 128
 local spawn_offset_top = 300
 local spawn_offset_bottom = 150
 
