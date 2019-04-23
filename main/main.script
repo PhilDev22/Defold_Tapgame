@@ -3,7 +3,7 @@ global_constants = require "main.constants"
 global_stopped = false
 global_completed = false
 global_score = 0
-global_level = 0
+global_level = 1
 global_lifes = global_constants.MAX_LIFES
 
 global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
@@ -16,7 +16,6 @@ global_level_time = 25
 global_level_speed = 330
 global_level_spawn_time = 0.35
 
-go.property("level", 0)
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
@@ -148,6 +147,7 @@ function _restart(self)
 	if not global_completed then
 		global_score = 0
 		global_lifes = global_constants.MAX_LIFES
+		global_level = 1
 		msg.post("main#gui", "set_score", {amount = global_score})
 		msg.post("main#gui", "update_lifes", {lifes = global_lifes})
 	else

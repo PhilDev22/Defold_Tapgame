@@ -48,9 +48,9 @@ function on_message(self, message_id, message, sender)
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
 
 	elseif message_id == hash("set_level") then
-		gui.set_text(self.level_node, "Level " .. tostring(global_level + 1))
-		gui.set_text(self.node_complete_level, "Level " .. tostring(global_level + 1))
-		gui.set_text(self.node_gameover_level, "Level " .. tostring(global_level + 1))
+		gui.set_text(self.level_node, "Level " .. tostring(global_level))
+		gui.set_text(self.node_complete_level, "Level " .. tostring(global_level))
+		gui.set_text(self.node_gameover_level, "Level " .. tostring(global_level))
 
 	elseif message_id == hash("update_lifes") then
 		gui.set_enabled(self.heart_node_0, false)
