@@ -33,7 +33,7 @@ function update(self, dt)
 			-- get factory component
 			local component = "#smiley_factory"
 			-- spawn new smiley by factory
-			local instance_id = factory.create(component, p)
+			local instance_id = factory.create(component, p, nil, {}, vmath.vector3(1, 1, 1))
 			-- increase counter
 			global_smiley_count = global_smiley_count + 1
 		end

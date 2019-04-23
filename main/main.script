@@ -11,10 +11,12 @@ global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61
 global_stage_smileys = {}
 global_level_smileys_all = {}
 global_level_smileys = {}
-global_level_smileys_max = 6
-global_level_time = 25
-global_level_speed = 330
-global_level_spawn_time = 0.35
+global_level_smileys_max = 5
+global_level_time = 30
+global_level_speed_basic = 300
+global_level_speed = 0
+global_speed_up_factor = 20
+global_level_spawn_time = 0.3
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
@@ -61,6 +63,8 @@ function on_message(self, message_id, message, sender)
 end
 
 function _init_level(self, smiley_count)
+	global_level_speed = global_level_speed_basic + (global_level * global_speed_up_factor)
+	
 	-- set stage smileys
 	print ("Loading stage...")
 	-- todo: add basic and unlocked smileys to stage
@@ -95,7 +99,7 @@ function _init_level(self, smiley_count)
 	-- set first smiley index
 	next_smiley_id = 1
 	-- scale first smiley up
-	msg.post("/main#gui", "activate_smiley", {nr = 0})
+	msg.post("/main#gui", "activate_smiley", {nr = 1})
 	-- set level text
 	msg.post("/main#gui", "set_level", {level = global_level})
 	-- reset timer
@@ -163,5 +167,5 @@ function _decrease_lifes(self)
 	global_lifes = global_lifes - 1
 	print("lifes: " ..  global_lifes)
 	msg.post("/main#gui", "update_lifes", {lifes = global_lifes})
-	if global_lifes <= 0 then _process_game_over(self) end
+	if global_lifes < 0 then _process_game_over(self) end
 end
