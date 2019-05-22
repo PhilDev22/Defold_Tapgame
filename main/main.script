@@ -6,6 +6,9 @@ global_score = 0
 global_level = 1
 global_lifes = global_constants.MAX_LIFES
 
+g_modes = {horizontal = 1, vertical = 2, popup = 3}
+g_mode_active = 1
+
 global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
 -- level settings
 global_stage_smileys = {}
@@ -16,20 +19,24 @@ global_level_time = 30
 global_level_speed_basic = 300
 global_level_speed = 0
 global_speed_up_factor = 20
-global_level_spawn_time = 0.3
+global_level_spawn_time = 0.0
+global_level_spawn_time_vertical = 0.5
+global_level_spawn_time_horizontal = 0.3
+global_level_spawn_time_popup = 0.5
+g_popup_time = 2.0
 global_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
 global_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
-
-
 function init(self)
 	-- set background color
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 	
 	self.level_timer = global_level_time
+
+	_init_moving_mode(self, g_modes.popup)
 	
 	_init_level(self, self.level_smiley_count_max)
 	
@@ -64,13 +71,34 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
+function _init_moving_mode(self, mode)
+	-- set moving mode
+	g_mode_active = mode
+	print("Mode: " .. g_mode_active)
+
+	-- set spawning time according to active game mode
+	if g_mode_active == g_modes.horizontal then
+		global_level_spawn_time = global_level_spawn_time_horizontal
+	elseif g_mode_active == g_modes.vertical then
+		global_level_spawn_time = global_level_spawn_time_vertical
+	elseif g_mode_active == g_modes.popup then
+		global_level_spawn_time = global_level_spawn_time_popup
+	end
+	
+	-- send defined spawn_time to smiley factory
+	msg.post("/smiley_factory", "init_spawn_time", {spawn_time = global_level_spawn_time})
+end
+
 function _init_level(self, smiley_count)
 	global_level_speed = global_level_speed_basic + (global_level * global_speed_up_factor)
+
+	_init_moving_mode(self, math.random(3))
 	
 	-- set stage smileys
 	print ("Loading stage...")
 	-- todo: add basic and unlocked smileys to stage
 	global_stage_smileys = global_smiley_ids
+	
 	-- set all level smileys
 	print ("Generating level...")
 	global_level_smileys_all = {}
@@ -87,6 +115,7 @@ function _init_level(self, smiley_count)
 		global_level_smileys_all[i] = global_stage_smileys[ rand_type ]
 		print(global_level_smileys_all[i])
 	end
+	
 	print ("Generating level smileys to pick...")
 	global_level_smileys = {}
 	for i = 1, smiley_count do

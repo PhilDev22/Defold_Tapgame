@@ -4,11 +4,10 @@ global_smiley_count = 0
 local spawn_timer = 0.0
 local spawn_timer_current_smiley = 0.0
 
+local spawn_timer_initialized = false
 
 function init(self)
-	-- init spawn timer
-	self.spawn_time = global_level_spawn_time
-	spawn_timer = self.spawn_time
+	spawn_timer_initialized = false
 	-- init timer for spawning current smiley that has to be touched
 	self.spawn_time_current_smiley = global_spawn_time_max_current_smiley
 	spawn_timer_current_smiley = self.spawn_time_current_smiley
@@ -16,14 +15,23 @@ function init(self)
 	math.randomseed(os.time())
 end
 
+function _init_spawn_time(self, time)
+	self.spawn_time = time
+	spawn_timer = self.spawn_time
+	spawn_timer_initialized = true
+end
+
 function on_message(self, message_id, message, sender)
 	if message_id == hash("reset_timer") then
 		spawn_timer_current_smiley = self.spawn_time_current_smiley
+		
+	elseif message_id == hash("init_spawn_time") then
+		_init_spawn_time(self, message.spawn_time)
 	end
 end
 
 function update(self, dt)
-	if (not global_stopped) and (global_smiley_count < global_constants.MAX_SMILEYS) then
+	if (spawn_timer_initialized) and (not global_stopped) and (global_smiley_count < global_constants.MAX_SMILEYS) then
 		-- count down spawn timer
 		spawn_timer = spawn_timer - dt
 		-- count down spawn timer for current smiley that has to be found

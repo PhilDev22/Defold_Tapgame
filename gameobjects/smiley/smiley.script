@@ -3,13 +3,11 @@ go.property("trigger_current", 0) -- 0 = random, else set id of current active s
 
 local spawn_range_y = 0
 local spawn_range_x = 0
-local spawn_offset_left = -128
-local spawn_offset_right = 128
-local spawn_offset_top = 300
-local spawn_offset_bottom = 150
 
-local mode_active = 1
-local modes = {horizontal = 1, vertical = 2, popup = 3}
+local death_offset_top = 300
+local death_offset_bottom = 200
+local death_offset_x = 200
+
 local rotating = false
 
 function init(self)
@@ -25,14 +23,7 @@ function init(self)
 	-- set new sprite image
 	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_id ) } )
 	self.smiley_id = hash(smiley_id)	
-
-	-- set spawn ranges
-	spawn_range_x = global_constants.SCREEN_WIDTH
-	spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
-
-	-- set moving mode
-	mode_active = modes.horizontal
-	
+		
 	-- position
 	_init_position(self)
 	-- movement
@@ -60,18 +51,52 @@ function on_message(self, message_id, message, sender)
 end
 
 function _init_position(self)
-	if mode_active == modes.horizontal then
-		local pos = go.get_position()
+	local pos = go.get_position()
+	
+	if g_mode_active == g_modes.horizontal then
+		local spawn_offset_left = -128
+		local spawn_offset_right = 128
+		local spawn_offset_top = 300
+		local spawn_offset_bottom = 150
+		-- set spawn ranges
+		local spawn_range_x = global_constants.SCREEN_WIDTH
+		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		
 		-- set random y-position
 		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
 		-- spawn left or right randomly
 		pos.x = math.random(2) == 1 and spawn_offset_left or global_constants.SCREEN_WIDTH + spawn_offset_right
 		go.set_position(pos)
 		
-	elseif mode_active == modes.vertical then
-		-- TODO
-	elseif mode_active == modes.popup then
-		-- TODO
+	elseif g_mode_active == g_modes.vertical then
+		local spawn_offset_left = 64
+		local spawn_offset_right = 64
+		local spawn_offset_top = 300
+		local spawn_offset_bottom = -64
+		-- set spawn ranges
+		local spawn_range_x = global_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
+		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		
+		-- set random x-position
+		pos.x = spawn_offset_left + (math.random() * (spawn_range_x))
+		-- spawn at the top or bottom randomly
+		pos.y = math.random(2) == 1 and spawn_offset_bottom or global_constants.SCREEN_HEIGHT - spawn_offset_top
+		go.set_position(pos)
+		
+	elseif g_mode_active == g_modes.popup then
+		
+		local spawn_offset_left = 128
+		local spawn_offset_right = 128
+		local spawn_offset_top = 300
+		local spawn_offset_bottom = -200
+		-- set spawn ranges
+		local spawn_range_x = global_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
+		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		-- set random y-position
+		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
+		-- set random x-position
+		pos.x = spawn_offset_left + (math.random() * (spawn_range_x))
+		go.set_position(pos)
 	end
 end
 
@@ -82,29 +107,34 @@ function _init_movement(self)
 
 	local pos = go.get_position()
 
-	if mode_active == modes.horizontal then
+	if g_mode_active == g_modes.horizontal then
 		-- set moving direction
 		self.direction.x = pos.x <= 0 and 1 or -1
 		self.v_speed = self.speed * self.direction
 
-	elseif mode_active == modes.vertical then
-		-- TODO
+	elseif g_mode_active == g_modes.vertical then
+		self.direction.y = pos.y <= 0 and 1 or -1
+		self.v_speed = self.speed * self.direction
 		
-	elseif mode_active == modes.popup then
-		-- TODO
+	elseif g_mode_active == g_modes.popup then
+		self.popup_timer = 0.0
 	end
 end
 
 function _move(self, dt)
 
-	if mode_active == modes.horizontal then
+	if g_mode_active == g_modes.horizontal then
 		-- TODO
 		
-	elseif mode_active == modes.vertical then
+	elseif g_mode_active == g_modes.vertical then
 		-- TODO
 		
-	elseif mode_active == modes.popup then
-		-- TODO
+	elseif g_mode_active == g_modes.popup then
+		self.popup_timer = self.popup_timer + dt
+		if self.popup_timer >= g_popup_time then
+			self.popup_timer = 0.0
+			go.delete()
+		end
 	end
 	
 	local pos = go.get_position()
@@ -114,10 +144,18 @@ end
 
 function _check_pos(self)
 	-- deleting sprite when it moves out of screen
-	if (self.direction.x == 1) and (go.get_position().x > global_constants.SCREEN_WIDTH) then
+	if (self.direction.x == 1) and (go.get_position().x > global_constants.SCREEN_WIDTH + death_offset_x) then
 		go.delete()
 	end
-	if (self.direction.x == -1) and (go.get_position().x < 0) then
+	if (self.direction.x == -1) and (go.get_position().x < 0 - death_offset_x) then
+		go.delete()
+	end
+
+	if (self.direction.y == 1) and (go.get_position().y > global_constants.SCREEN_HEIGHT - death_offset_top) then
+		go.delete()
+	end
+
+	if (self.direction.y == -1) and (go.get_position().y < 0 - death_offset_bottom) then
 		go.delete()
 	end
 end
