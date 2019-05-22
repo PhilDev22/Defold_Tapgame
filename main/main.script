@@ -75,10 +75,14 @@ function _init_level(self, smiley_count)
 	print ("Generating level...")
 	global_level_smileys_all = {}
 	for i = 1, global_level_smileys_max do
-		-- get random index of stage smileys
-		local rand_type = math.random(tablelength(global_stage_smileys))
-		-- TODO check if smiley type already exists in global_level_smileys_all
-		
+		local rand_type = 0
+		repeat 
+			-- get random index of stage smileys
+			rand_type = math.random(tablelength(global_stage_smileys))
+			-- check if smiley type already chosen.
+			-- if this is the case, pick another rand_type
+		until ( not tablecontains(global_level_smileys_all, global_stage_smileys[ rand_type ] ))
+			
 		-- add to level
 		global_level_smileys_all[i] = global_stage_smileys[ rand_type ]
 		print(global_level_smileys_all[i])
