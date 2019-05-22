@@ -43,10 +43,11 @@ function update(self, dt)
 			-- spawn new smiley
 
 			local factory_props = {trigger_current = 0}
+			-- if time elapsed without the current active smiley being spawned,
+			-- then trigger spawning this smiley
 			if spawn_timer_current_smiley <= 0 then
-				-- if time elapsed without the current active smiley being spawned,
-				-- then trigger spawning this smiley
 				factory_props = {trigger_current = 1}
+				-- reset timer
 				spawn_timer_current_smiley = self.spawn_time_current_smiley
 				print("Max time elapsed wihtout smiley being spawned. Spawning current active smiley!")
 			end

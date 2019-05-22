@@ -16,15 +16,25 @@ global_level_smileys_all = {}
 global_level_smileys = {}
 global_level_smileys_max = 5
 global_level_time = 30
-global_level_speed_basic = 300
-global_level_speed = 0
-global_speed_up_factor = 20
+
 global_level_spawn_time = 0.0
 global_level_spawn_time_vertical = 0.5
 global_level_spawn_time_horizontal = 0.3
 global_level_spawn_time_popup = 0.5
-g_popup_time = 2.0
-global_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
+
+g_speed_horizontal_initial = 300
+g_speed_horizontal = 0
+g_horizontal_speed_up_factor = 15
+
+g_speed_vertical_initial = 300
+g_speed_vertical = 0
+g_vertical_speed_up_factor = 15
+
+g_popup_time = 2.2
+g_popup_time_decrease_factor = 0.05
+g_popup_time_min = 0.5
+
+global_spawn_time_max_current_smiley = 6.0 -- max time for the current smiley to not being spawned
 global_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
@@ -77,12 +87,19 @@ function _init_moving_mode(self, mode)
 	print("Mode: " .. g_mode_active)
 
 	-- set spawning time according to active game mode
+	-- set moving speed
 	if g_mode_active == g_modes.horizontal then
 		global_level_spawn_time = global_level_spawn_time_horizontal
+		g_speed_horizontal = g_speed_horizontal_initial + (global_level * g_horizontal_speed_up_factor)
+		
 	elseif g_mode_active == g_modes.vertical then
 		global_level_spawn_time = global_level_spawn_time_vertical
+		g_speed_vertical = g_speed_vertical_initial + (global_level * g_vertical_speed_up_factor)
+		
 	elseif g_mode_active == g_modes.popup then
 		global_level_spawn_time = global_level_spawn_time_popup
+		g_popup_time = g_popup_time - (global_level * g_popup_time_decrease_factor)
+		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
 	
 	-- send defined spawn_time to smiley factory
@@ -90,9 +107,8 @@ function _init_moving_mode(self, mode)
 end
 
 function _init_level(self, smiley_count)
-	global_level_speed = global_level_speed_basic + (global_level * global_speed_up_factor)
-
-	_init_moving_mode(self, math.random(3))
+	
+	_init_moving_mode(self, 3) -- math.random(3)
 	
 	-- set stage smileys
 	print ("Loading stage...")
