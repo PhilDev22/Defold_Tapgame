@@ -1,7 +1,8 @@
 -- current number of smileys
 global_smiley_count = 0
 
-local spawn_timer = 1.0
+local spawn_timer = 0.0
+local spawn_timer_current_smiley = 0.0
 local spawn_range_y = 0
 local spawn_range_x = 0
 local spawn_offset_left = -128
@@ -10,9 +11,12 @@ local spawn_offset_top = 300
 local spawn_offset_bottom = 150
 
 function init(self)
-	-- init timer
+	-- init spawn timer
 	self.spawn_time = global_level_spawn_time
 	spawn_timer = self.spawn_time
+	-- init timer for spawning current smiley that has to be touched
+	self.spawn_time_current_smiley = global_spawn_time_max_current_smiley
+	spawn_timer_current_smiley = self.spawn_time_current_smiley
 	-- set random seed
 	math.randomseed(os.time())
 	-- set spawn ranges
@@ -20,12 +24,33 @@ function init(self)
 	spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
 end
 
+function on_message(self, message_id, message, sender)
+	if message_id == hash("reset_timer") then
+		spawn_timer_current_smiley = self.spawn_time_current_smiley
+	end
+end
+
 function update(self, dt)
 	if (not global_stopped) and (global_smiley_count < global_constants.MAX_SMILEYS) then
 		-- count down spawn timer
 		spawn_timer = spawn_timer - dt
+		-- count down spawn timer for current smiley that has to be found
+		spawn_timer_current_smiley = spawn_timer_current_smiley - dt
+		
 		if spawn_timer <= 0 then
 			spawn_timer = self.spawn_time
+			
+			-- spawn new smiley
+
+			local factory_props = {trigger_current = 0}
+			if spawn_timer_current_smiley <= 0 then
+				-- if time elapsed without the current active smiley being spawned,
+				-- then trigger spawning this smiley
+				factory_props = {trigger_current = 1}
+				spawn_timer_current_smiley = self.spawn_time_current_smiley
+				print("Max time elapsed wihtout smiley being spawned. Spawning current active smiley!")
+			end
+			
 			local p = go.get_position()
 			-- set random y-position
 			p.y = (math.random() * spawn_range_y) + spawn_offset_bottom
@@ -33,7 +58,7 @@ function update(self, dt)
 			-- get factory component
 			local component = "#smiley_factory"
 			-- spawn new smiley by factory
-			local instance_id = factory.create(component, p, nil, {}, vmath.vector3(1, 1, 1))
+			local instance_id = factory.create(component, p, nil, factory_props, vmath.vector3(1, 1, 1))
 			-- increase counter
 			global_smiley_count = global_smiley_count + 1
 		end

@@ -17,11 +17,13 @@ global_level_speed_basic = 300
 global_level_speed = 0
 global_speed_up_factor = 20
 global_level_spawn_time = 0.3
+global_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
+global_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
-local next_smiley_id = 1
+
 
 function init(self)
 	-- set background color
@@ -75,6 +77,8 @@ function _init_level(self, smiley_count)
 	for i = 1, global_level_smileys_max do
 		-- get random index of stage smileys
 		local rand_type = math.random(tablelength(global_stage_smileys))
+		-- TODO check if smiley type already exists in global_level_smileys_all
+		
 		-- add to level
 		global_level_smileys_all[i] = global_stage_smileys[ rand_type ]
 		print(global_level_smileys_all[i])
@@ -83,7 +87,7 @@ function _init_level(self, smiley_count)
 	global_level_smileys = {}
 	for i = 1, smiley_count do
 		-- get random index of id table
-		local rand_type = math.random(tablelength(global_level_smileys_all))
+		local rand_type = math.random(tablelength(global_level_smileys_all))		
 		-- add to level
 		global_level_smileys[i] = global_level_smileys_all[ rand_type ]
 		print(global_level_smileys[i])
@@ -97,7 +101,7 @@ function _init_level(self, smiley_count)
 		smiley2 = global_level_smileys[3],
 	})
 	-- set first smiley index
-	next_smiley_id = 1
+	global_next_smiley_id = 1
 	-- scale first smiley up
 	msg.post("/main#gui", "activate_smiley", {nr = 1})
 	-- set level text
@@ -118,20 +122,21 @@ end
 function _process_smiley_touch(self, smiley_id)
 	print("touched id: "..smiley_id)
 	-- check if smiley is in table of level smileys
-	if smiley_id == hash(global_level_smileys[ next_smiley_id ]) then
+	if smiley_id == hash(global_level_smileys[ global_next_smiley_id ]) then
 		print("Touched right one")
 		-- add score
 		global_score = global_score + self.single_score
 		-- update gui
 		msg.post("main#gui", "set_score", {amount = global_score})
 		--activate next smiley
-		if next_smiley_id < self.level_smiley_count_max  then
-			next_smiley_id = next_smiley_id + 1
-			msg.post("/main#gui", "activate_smiley", {nr = next_smiley_id})
+		if global_next_smiley_id < self.level_smiley_count_max  then
+			global_next_smiley_id = global_next_smiley_id + 1
+			msg.post("/main#gui", "activate_smiley", {nr = global_next_smiley_id})
 		else
 			_on_level_finished(self)
 		end
-
+		-- reset smiley factory timer
+		msg.post("/smiley_factory", "reset_timer", {reset = true})
 	else -- wrong smiley touched
 		_decrease_lifes(self)
 	end

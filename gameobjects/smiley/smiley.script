@@ -1,11 +1,20 @@
 go.property("smiley_id", 0)
+go.property("trigger_current", 0) -- 0 = random, else set id of current active smiley
 
 function init(self)
-	-- get random index of id table
-	local rand_type = math.random(tablelength(global_smiley_ids))
+	local smiley_id = ""
+	if self.trigger_current == 0 then
+		-- get random index of id table
+		local index = math.random(tablelength(global_smiley_ids))
+		smiley_id = global_smiley_ids[ index ]
+	else
+		smiley_id = global_level_smileys[ global_next_smiley_id ]
+		print("Spawning current smiley needed")
+	end
 	-- set new sprite image
-	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. global_smiley_ids[ rand_type ] ) } )
-	self.smiley_id = hash(global_smiley_ids[ rand_type ])
+	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_id ) } )
+	self.smiley_id = hash(smiley_id)	
+
 	-- movement
 	_init_movement(self)
 end
