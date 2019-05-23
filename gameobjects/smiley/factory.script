@@ -6,7 +6,7 @@ local spawn_timer_current_smiley = 0.0
 
 local spawn_timer_initialized = false
 
-local rotating = false
+local rotating = 0
 
 function init(self)
 	spawn_timer_initialized = false

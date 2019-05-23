@@ -15,20 +15,23 @@ global_stage_smileys = {}
 global_level_smileys_all = {}
 global_level_smileys = {}
 global_level_smileys_max = 5
-global_level_time = 20
+global_level_time = 30
 
 global_level_spawn_time = 0.0
 global_level_spawn_time_vertical = 0.5
-global_level_spawn_time_horizontal = 0.3
-global_level_spawn_time_popup = 0.8
+global_level_spawn_time_horizontal = 0.5
+global_level_spawn_time_popup = 0.7
+global_level_spawn_time_decrease_step = 0.2
 
 g_speed_horizontal_initial = 250
+g_speed_horizontal_max = 700
 g_speed_horizontal = 0
 g_horizontal_speed_up_factor = 12
 
-g_speed_vertical_initial = 250
+g_speed_vertical_initial = 220
+g_speed_vertical_max = 670
 g_speed_vertical = 0
-g_vertical_speed_up_factor = 12
+g_vertical_speed_up_factor = 10
 
 g_popup_time = 2.4
 g_popup_time_decrease_factor = 0.025
@@ -38,7 +41,7 @@ g_popup_spawn_increase_factor = 0.001
 g_rotating_speed_decrease = 100
 g_rotating_spawntime_increase = 0.4
 
-global_spawn_time_max_current_smiley = 6.0 -- max time for the current smiley to not being spawned
+global_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
 global_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
@@ -47,10 +50,14 @@ go.property("single_score", 100)
 function init(self)
 	-- set background color
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
-	
-	self.level_timer = global_level_time
 
-	_init_moving_mode(self, g_modes.horizontal, 0, 0)
+	math.randomseed(os.time())
+	math.random(); math.random(); math.random(); math.random(); math.random();
+	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
+	
+	global_level = 1
+		
+	self.level_timer = global_level_time
 	
 	_init_level(self, self.level_smiley_count_max)
 	
@@ -91,17 +98,23 @@ function _init_moving_mode(self, mode, rotate, bounce)
 	print("Mode: " .. g_mode_active)
 	print("Rotate: " .. rotate)
 
+	-- Methods for increasing difficulty:
+	-- shwoing more smileys simultaneously: decrease global_level_spawn_time 
+	-- decrease time  of showing each smiley: decrease g_speed_horizontal, g_speed_vertical, g_popup_time
+	
 	-- set spawning time according to active game mode
 	-- set moving speed
 	if g_mode_active == g_modes.horizontal then
 		global_level_spawn_time = global_level_spawn_time_horizontal
 		g_speed_horizontal = g_speed_horizontal_initial + (global_level * g_horizontal_speed_up_factor)
+		if g_speed_horizontal > g_speed_horizontal_max then g_speed_horizontal = g_speed_horizontal_max end
 		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.vertical then
 		global_level_spawn_time = global_level_spawn_time_vertical
 		g_speed_vertical = g_speed_vertical_initial + (global_level * g_vertical_speed_up_factor)
-		if rotate == 1 then g_speed_vertical = g_speed_horizontal - g_rotating_speed_decrease end
+		if g_speed_vertical > g_speed_vertical_max then g_speed_vertical = g_speed_vertical_max end
+		if rotate == 1 then g_speed_vertical = g_speed_vertical - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.popup then
 		global_level_spawn_time = global_level_spawn_time_popup - (global_level * g_popup_spawn_increase_factor) 
@@ -109,9 +122,28 @@ function _init_moving_mode(self, mode, rotate, bounce)
 		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
 
+	-- if rotating, then slow down speed a bit
 	if rotate == 1 then
 		global_level_spawn_time = global_level_spawn_time + g_rotating_spawntime_increase
 	end
+
+	if global_level > 70 then
+		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	end
+	if global_level > 50 then
+		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	end
+	if global_level > 30 then
+		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	end
+
+	if global_level_spawn_time < 0.3 then global_level_spawn_time = 0.3 end
+
+	print("global_level_spawn_time: " .. global_level_spawn_time)
+	print("g_speed_horizontal: " .. g_speed_horizontal)
+	print("g_speed_vertical: " .. g_speed_vertical)
+	print("g_popup_time: " .. g_popup_time)
+		
 	-- send defined spawn_time and rotate-flag to smiley factory
 	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = global_level_spawn_time, rotating = rotate})
 end
@@ -119,7 +151,7 @@ end
 function _init_level(self, smiley_count)
 
 	local rotate = 0
-	if global_level > 10 and math.random(2) == 1 then
+	if global_level > 10 and (math.random(2) == 1) then
 		rotate = 1
 	end
 	_init_moving_mode(self, math.random(3), rotate, 0)
