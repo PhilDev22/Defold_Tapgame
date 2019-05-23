@@ -6,6 +6,8 @@ local spawn_timer_current_smiley = 0.0
 
 local spawn_timer_initialized = false
 
+local rotating = false
+
 function init(self)
 	spawn_timer_initialized = false
 	-- init timer for spawning current smiley that has to be touched
@@ -25,8 +27,9 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("reset_timer") then
 		spawn_timer_current_smiley = self.spawn_time_current_smiley
 		
-	elseif message_id == hash("init_spawn_time") then
+	elseif message_id == hash("init_spawn_values") then
 		_init_spawn_time(self, message.spawn_time)
+		rotating = message.rotating
 	end
 end
 
@@ -42,11 +45,11 @@ function update(self, dt)
 			
 			-- spawn new smiley
 
-			local factory_props = {trigger_current = 0}
+			local factory_props = {trigger_current = 0, rotating = rotating}
 			-- if time elapsed without the current active smiley being spawned,
 			-- then trigger spawning this smiley
 			if spawn_timer_current_smiley <= 0 then
-				factory_props = {trigger_current = 1}
+				factory_props = {trigger_current = 1, rotating = rotating}
 				-- reset timer
 				spawn_timer_current_smiley = self.spawn_time_current_smiley
 				print("Max time elapsed wihtout smiley being spawned. Spawning current active smiley!")

@@ -15,24 +15,28 @@ global_stage_smileys = {}
 global_level_smileys_all = {}
 global_level_smileys = {}
 global_level_smileys_max = 5
-global_level_time = 30
+global_level_time = 20
 
 global_level_spawn_time = 0.0
 global_level_spawn_time_vertical = 0.5
 global_level_spawn_time_horizontal = 0.3
-global_level_spawn_time_popup = 0.5
+global_level_spawn_time_popup = 0.8
 
-g_speed_horizontal_initial = 300
+g_speed_horizontal_initial = 250
 g_speed_horizontal = 0
-g_horizontal_speed_up_factor = 15
+g_horizontal_speed_up_factor = 12
 
-g_speed_vertical_initial = 300
+g_speed_vertical_initial = 250
 g_speed_vertical = 0
-g_vertical_speed_up_factor = 15
+g_vertical_speed_up_factor = 12
 
-g_popup_time = 2.2
-g_popup_time_decrease_factor = 0.05
-g_popup_time_min = 0.5
+g_popup_time = 2.4
+g_popup_time_decrease_factor = 0.025
+g_popup_time_min = 1.0
+g_popup_spawn_increase_factor = 0.001
+
+g_rotating_speed_decrease = 100
+g_rotating_spawntime_increase = 0.4
 
 global_spawn_time_max_current_smiley = 6.0 -- max time for the current smiley to not being spawned
 global_next_smiley_id = 1
@@ -46,7 +50,7 @@ function init(self)
 	
 	self.level_timer = global_level_time
 
-	_init_moving_mode(self, g_modes.popup)
+	_init_moving_mode(self, g_modes.horizontal, 0, 0)
 	
 	_init_level(self, self.level_smiley_count_max)
 	
@@ -81,34 +85,44 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
-function _init_moving_mode(self, mode)
+function _init_moving_mode(self, mode, rotate, bounce)
 	-- set moving mode
 	g_mode_active = mode
 	print("Mode: " .. g_mode_active)
+	print("Rotate: " .. rotate)
 
 	-- set spawning time according to active game mode
 	-- set moving speed
 	if g_mode_active == g_modes.horizontal then
 		global_level_spawn_time = global_level_spawn_time_horizontal
 		g_speed_horizontal = g_speed_horizontal_initial + (global_level * g_horizontal_speed_up_factor)
+		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.vertical then
 		global_level_spawn_time = global_level_spawn_time_vertical
 		g_speed_vertical = g_speed_vertical_initial + (global_level * g_vertical_speed_up_factor)
+		if rotate == 1 then g_speed_vertical = g_speed_horizontal - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.popup then
-		global_level_spawn_time = global_level_spawn_time_popup
+		global_level_spawn_time = global_level_spawn_time_popup - (global_level * g_popup_spawn_increase_factor) 
 		g_popup_time = g_popup_time - (global_level * g_popup_time_decrease_factor)
 		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
-	
-	-- send defined spawn_time to smiley factory
-	msg.post("/smiley_factory", "init_spawn_time", {spawn_time = global_level_spawn_time})
+
+	if rotate == 1 then
+		global_level_spawn_time = global_level_spawn_time + g_rotating_spawntime_increase
+	end
+	-- send defined spawn_time and rotate-flag to smiley factory
+	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = global_level_spawn_time, rotating = rotate})
 end
 
 function _init_level(self, smiley_count)
-	
-	_init_moving_mode(self, 3) -- math.random(3)
+
+	local rotate = 0
+	if global_level > 10 and math.random(2) == 1 then
+		rotate = 1
+	end
+	_init_moving_mode(self, math.random(3), rotate, 0)
 	
 	-- set stage smileys
 	print ("Loading stage...")

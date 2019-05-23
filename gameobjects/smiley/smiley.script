@@ -1,6 +1,7 @@
 go.property("smiley_id", 0)
 go.property("trigger_current", 0) -- 0 = random, else set id of current active smiley
 go.property("angular_velocity", 2)
+go.property("rotating", 0)
 
 local spawn_range_y = 0
 local spawn_range_x = 0
@@ -8,9 +9,6 @@ local spawn_range_x = 0
 local death_offset_top = 300
 local death_offset_bottom = 200
 local death_offset_x = 200
-
-local rotating = false
-
 
 function init(self)
 	local smiley_id = ""
@@ -24,7 +22,7 @@ function init(self)
 	-- set new sprite image by id
 	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_id ) } )
 	self.smiley_id = hash(smiley_id)	
-		
+	
 	-- position
 	_init_position(self)
 	-- movement
@@ -55,6 +53,7 @@ function _init_position(self)
 	local pos = go.get_position()
 	
 	if g_mode_active == g_modes.horizontal then
+		
 		local spawn_offset_left = -128
 		local spawn_offset_right = 128
 		local spawn_offset_top = 300
@@ -70,6 +69,7 @@ function _init_position(self)
 		go.set_position(pos)
 		
 	elseif g_mode_active == g_modes.vertical then
+		
 		local spawn_offset_left = 64
 		local spawn_offset_right = 64
 		local spawn_offset_top = 300
@@ -106,6 +106,12 @@ function _init_movement(self)
 	self.direction = vmath.vector3()
 	self.speed = 0
 
+	if self.rotating == 1 then
+		local rand_direction = math.random(2)
+		self.rotate = rand_direction == 1 and 1 or -1
+		-- direction of rotation (0 = no rotation, 1 = left, -1 = right)
+	end
+	
 	local pos = go.get_position()
 
 	if g_mode_active == g_modes.horizontal then
@@ -122,6 +128,7 @@ function _init_movement(self)
 	elseif g_mode_active == g_modes.popup then
 		self.popup_timer = 0.0
 	end
+
 end
 
 function _move(self, dt)
@@ -146,9 +153,8 @@ function _move(self, dt)
 	pos = pos + self.v_speed * dt
 	go.set_position(pos)
 
-	if rotating then
+	if self.rotating == 1 then
 		local rotation = go.get_rotation()
-		self.rotate = -1 -- direction of rotation (0 = no rotation, 1 = left, -1 = right)
 		rotation = rotation * vmath.quat_rotation_z(self.angular_velocity * self.rotate * dt)
 		go.set_rotation(rotation)
 	end
