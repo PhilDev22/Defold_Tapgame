@@ -13,8 +13,8 @@ function init(self)
 	local smiley_id = ""
 	if self.trigger_current == 0 then
 		-- get random index of id table
-		local index = math.random(tablelength(g_smiley_ids))
-		smiley_id = g_smiley_ids[ index ]
+		local index = math.random(tablelength(g_level_smileys_all))
+		smiley_id = g_level_smileys_all[ index ]
 	else
 		smiley_id = g_level_smileys[ g_next_smiley_id ]
 	end

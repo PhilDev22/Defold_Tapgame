@@ -7,12 +7,13 @@ g_level = 1
 g_lifes = g_constants.MAX_LIFES
 g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
-g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
+g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
 -- level settings
 g_stage_smileys = {}
 g_level_smileys_all = {}
 g_level_smileys = {}
-g_level_smileys_max = 5
+g_level_smileys_base = 6
+g_level_smileys_max = g_level_smileys_base
 g_level_time = 30
 
 g_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
@@ -20,6 +21,8 @@ g_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
+
+local smileys_increase_step = 2
 
 local g_level_spawn_time = 0.0
 local g_level_spawn_time_vertical = 0.5
@@ -30,12 +33,12 @@ local g_level_spawn_time_decrease_step = 0.2
 g_speed_horizontal = 0
 local g_speed_horizontal_initial = 250
 local g_speed_horizontal_max = 700
-local g_horizontal_speed_up_factor = 15
+local g_horizontal_speed_up_factor = 20
 
 g_speed_vertical = 0
 local g_speed_vertical_initial = 220
 local g_speed_vertical_max = 670
-local g_vertical_speed_up_factor = 13
+local g_vertical_speed_up_factor = 18
 
 g_popup_time = 2.4
 local g_popup_time_decrease_factor = 0.03
@@ -54,7 +57,7 @@ function init(self)
 	math.random(); math.random(); math.random(); math.random(); math.random();
 	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
 	
-	g_level = 81
+	g_level = 21
 		
 	self.level_timer = g_level_time
 	
@@ -91,15 +94,22 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
-function _init_moving_mode(self, mode, rotate, bounce)
-	-- set moving mode
-	g_mode_active = mode
-	print("Mode: " .. g_mode_active)
-	print("Rotate: " .. rotate)
-
+function _init_moving_mode(self)
 	-- Methods for increasing difficulty:
-	-- shwoing more smileys simultaneously: decrease g_level_spawn_time 
-	-- decrease time  of showing each smiley: decrease g_speed_horizontal, g_speed_vertical, g_popup_time
+	-- 	shwoing more smileys simultaneously: decrease g_level_spawn_time 
+	-- 	decrease time  of showing each smiley: decrease g_speed_horizontal, g_speed_vertical, g_popup_time
+	-- 	spawn more different smileys at one level (reduces propability of spawning the needed smiley): increase g_level_smileys_max
+	
+	-- set moving mode
+	g_mode_active = math.random(3)
+	print("Mode: " .. g_mode_active)
+	
+	-- set rotation
+	local rotate = 0
+	if g_level > lvl_begin_rotation and (math.random(2) == 1) then
+		rotate = 1
+	end
+	print("Rotate: " .. rotate)
 	
 	-- set spawning time and moving speed according to active game mode and level
 	-- If smileys are rotating, then slow down speed a bit
@@ -139,6 +149,10 @@ function _init_moving_mode(self, mode, rotate, bounce)
 
 	if g_level_spawn_time < 0.3 then g_level_spawn_time = 0.3 end
 
+	-- increase amount of different smileys every 10 level
+	g_level_smileys_max = g_level_smileys_base + (math.floor(g_level / 10) * smileys_increase_step)
+	print("g_level_smileys_max: " ..g_level_smileys_max) 
+
 	--debug
 	print("g_level_spawn_time: " .. g_level_spawn_time)
 	print("g_speed_horizontal: " .. g_speed_horizontal)
@@ -150,12 +164,9 @@ function _init_moving_mode(self, mode, rotate, bounce)
 end
 
 function _init_level(self, smiley_count)
-
-	local rotate = 0
-	if g_level > lvl_begin_rotation and (math.random(2) == 1) then
-		rotate = 1
-	end
-	_init_moving_mode(self, math.random(3), rotate, 0)
+	print("Level: " .. g_level)
+	
+	_init_moving_mode(self)
 	
 	-- set stage smileys
 	print ("Loading stage...")
@@ -176,7 +187,7 @@ function _init_level(self, smiley_count)
 			
 		-- add to level
 		g_level_smileys_all[i] = g_stage_smileys[ rand_type ]
-		-- print(g_level_smileys_all[i]) --debug
+		print(g_level_smileys_all[i]) --debug
 	end
 	
 	print ("Generating level smileys to pick...")
