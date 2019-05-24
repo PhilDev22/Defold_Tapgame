@@ -22,13 +22,15 @@ g_next_smiley_id = 1
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
-local smileys_increase_step = 2
+local smileys_increase_step = 1
 
+local g_level_spawn_time_base = 0.0
+local level_spawn_time_min = 0.2
 local g_level_spawn_time = 0.0
 local g_level_spawn_time_vertical = 0.5
 local g_level_spawn_time_horizontal = 0.5
 local g_level_spawn_time_popup = 0.7
-local g_level_spawn_time_decrease_step = 0.2
+local g_level_spawn_time_decrease_step = 0.06
 
 g_speed_horizontal = 0
 local g_speed_horizontal_initial = 250
@@ -57,7 +59,7 @@ function init(self)
 	math.random(); math.random(); math.random(); math.random(); math.random();
 	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
 	
-	g_level = 21
+	g_level = 1
 		
 	self.level_timer = g_level_time
 	
@@ -114,43 +116,36 @@ function _init_moving_mode(self)
 	-- set spawning time and moving speed according to active game mode and level
 	-- If smileys are rotating, then slow down speed a bit
 	if g_mode_active == g_modes.horizontal then
-		g_level_spawn_time = g_level_spawn_time_horizontal
+		g_level_spawn_time_base = g_level_spawn_time_horizontal
 		g_speed_horizontal = g_speed_horizontal_initial + (g_level * g_horizontal_speed_up_factor)
 		if g_speed_horizontal > g_speed_horizontal_max then g_speed_horizontal = g_speed_horizontal_max end
 		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.vertical then
-		g_level_spawn_time = g_level_spawn_time_vertical
+		g_level_spawn_time_base = g_level_spawn_time_vertical
 		g_speed_vertical = g_speed_vertical_initial + (g_level * g_vertical_speed_up_factor)
 		if g_speed_vertical > g_speed_vertical_max then g_speed_vertical = g_speed_vertical_max end
 		if rotate == 1 then g_speed_vertical = g_speed_vertical - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.popup then
-		g_level_spawn_time = g_level_spawn_time_popup - (g_level * g_popup_spawn_increase_factor) 
+		g_level_spawn_time_base = g_level_spawn_time_popup - (g_level * g_popup_spawn_increase_factor) 
 		g_popup_time = g_popup_time - (g_level * g_popup_time_decrease_factor)
 		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
 
 	-- If smileys are rotating, then slow down spawning a bit
 	if rotate == 1 then
-		g_level_spawn_time = g_level_spawn_time + g_rotating_spawntime_increase
+		g_level_spawn_time_base = g_level_spawn_time_base + g_rotating_spawntime_increase
 	end
 
-	-- faster spawning at higher levels
-	if g_level > 70 then
-		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
-	end
-	if g_level > 50 then
-		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
-	end
-	if g_level > 30 then
-		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
-	end
+	-- faster spawning every 5 level
+	g_level_spawn_time = g_level_spawn_time_base - (math.floor(g_level / 5) * g_level_spawn_time_decrease_step)
+	
 
-	if g_level_spawn_time < 0.3 then g_level_spawn_time = 0.3 end
+	if g_level_spawn_time < level_spawn_time_min then g_level_spawn_time = level_spawn_time_min end
 
-	-- increase amount of different smileys every 10 level
-	g_level_smileys_max = g_level_smileys_base + (math.floor(g_level / 10) * smileys_increase_step)
+	-- increase amount of different smileys every 5 level
+	g_level_smileys_max = g_level_smileys_base + (math.floor(g_level / 5) * smileys_increase_step)
 	print("g_level_smileys_max: " ..g_level_smileys_max) 
 
 	--debug
