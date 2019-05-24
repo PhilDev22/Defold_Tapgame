@@ -1,6 +1,6 @@
 -- Code sample from Defold side scroller tutorial
 
-global_active_dialog = 0
+g_active_dialog = 0
 
 local smiley_scale_small = 0.6
 local smiley_scale_big = 0.8
@@ -48,9 +48,9 @@ function on_message(self, message_id, message, sender)
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
 
 	elseif message_id == hash("set_level") then
-		gui.set_text(self.level_node, "Level " .. tostring(global_level))
-		gui.set_text(self.node_complete_level, "Level " .. tostring(global_level))
-		gui.set_text(self.node_gameover_level, "Level " .. tostring(global_level))
+		gui.set_text(self.level_node, "Level " .. tostring(g_level))
+		gui.set_text(self.node_complete_level, "Level " .. tostring(g_level))
+		gui.set_text(self.node_gameover_level, "Level " .. tostring(g_level))
 
 	elseif message_id == hash("update_lifes") then
 		gui.set_enabled(self.heart_node_0, false)
@@ -103,15 +103,15 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("show_dialog_level_complete") then
 		gui.set_enabled(self.node_dialog_success, message.show)
 		if message.show == true then 
-			global_active_dialog = 1 
-			gui.set_text(self.node_complete_score, tostring(global_score))
+			g_active_dialog = 1 
+			gui.set_text(self.node_complete_score, tostring(g_score))
 		end
 		
 	elseif message_id == hash("show_dialog_gameover") then
 		gui.set_enabled(self.node_dialog_gameover, message.show)
 		if message.show == true then 
-			global_active_dialog = 2 
-			gui.set_text(self.node_gameover_score, tostring(global_score))
+			g_active_dialog = 2 
+			gui.set_text(self.node_gameover_score, tostring(g_score))
 		end
 		
 	elseif message_id == hash("hide_all_dialogs") then
@@ -122,5 +122,5 @@ end
 function _hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, false)
 	gui.set_enabled(self.node_dialog_success, false)
-	global_active_dialog = 0
+	g_active_dialog = 0
 end

@@ -1,51 +1,50 @@
 -- reference to the constants module
-global_constants = require "main.constants"
-global_stopped = false
-global_completed = false
-global_score = 0
-global_level = 1
-global_lifes = global_constants.MAX_LIFES
-
+g_constants = require "main.constants"
+g_stopped = false
+g_completed = false
+g_score = 0
+g_level = 1
+g_lifes = g_constants.MAX_LIFES
 g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
-
-global_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
+g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f"}
 -- level settings
-global_stage_smileys = {}
-global_level_smileys_all = {}
-global_level_smileys = {}
-global_level_smileys_max = 5
-global_level_time = 30
+g_stage_smileys = {}
+g_level_smileys_all = {}
+g_level_smileys = {}
+g_level_smileys_max = 5
+g_level_time = 30
 
-global_level_spawn_time = 0.0
-global_level_spawn_time_vertical = 0.5
-global_level_spawn_time_horizontal = 0.5
-global_level_spawn_time_popup = 0.7
-global_level_spawn_time_decrease_step = 0.2
-
-g_speed_horizontal_initial = 250
-g_speed_horizontal_max = 700
-g_speed_horizontal = 0
-g_horizontal_speed_up_factor = 12
-
-g_speed_vertical_initial = 220
-g_speed_vertical_max = 670
-g_speed_vertical = 0
-g_vertical_speed_up_factor = 10
-
-g_popup_time = 2.4
-g_popup_time_decrease_factor = 0.025
-g_popup_time_min = 1.0
-g_popup_spawn_increase_factor = 0.001
-
-g_rotating_speed_decrease = 100
-g_rotating_spawntime_increase = 0.4
-
-global_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
-global_next_smiley_id = 1
+g_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
+g_next_smiley_id = 1
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
+
+local g_level_spawn_time = 0.0
+local g_level_spawn_time_vertical = 0.5
+local g_level_spawn_time_horizontal = 0.5
+local g_level_spawn_time_popup = 0.7
+local g_level_spawn_time_decrease_step = 0.2
+
+g_speed_horizontal = 0
+local g_speed_horizontal_initial = 250
+local g_speed_horizontal_max = 700
+local g_horizontal_speed_up_factor = 15
+
+g_speed_vertical = 0
+local g_speed_vertical_initial = 220
+local g_speed_vertical_max = 670
+local g_vertical_speed_up_factor = 13
+
+g_popup_time = 2.4
+local g_popup_time_decrease_factor = 0.03
+local g_popup_time_min = 1.0
+local g_popup_spawn_increase_factor = 0.002
+
+local lvl_begin_rotation = 5
+local g_rotating_speed_decrease = 100
+local g_rotating_spawntime_increase = 0.25
 
 function init(self)
 	-- set background color
@@ -55,9 +54,9 @@ function init(self)
 	math.random(); math.random(); math.random(); math.random(); math.random();
 	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
 	
-	global_level = 1
+	g_level = 81
 		
-	self.level_timer = global_level_time
+	self.level_timer = g_level_time
 	
 	_init_level(self, self.level_smiley_count_max)
 	
@@ -66,7 +65,7 @@ function init(self)
 end
 
 function update(self, dt)
-	if not global_stopped then
+	if not g_stopped then
 		self.level_timer = self.level_timer - dt
 		self.level_timer = math.max(self.level_timer, 0)
 		msg.post("/main#gui", "set_time", {time = self.level_timer})
@@ -80,7 +79,7 @@ end
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
 		
-		if global_stopped == true then
+		if g_stopped == true then
 			_restart(self)
 		end
 	end
@@ -99,59 +98,61 @@ function _init_moving_mode(self, mode, rotate, bounce)
 	print("Rotate: " .. rotate)
 
 	-- Methods for increasing difficulty:
-	-- shwoing more smileys simultaneously: decrease global_level_spawn_time 
+	-- shwoing more smileys simultaneously: decrease g_level_spawn_time 
 	-- decrease time  of showing each smiley: decrease g_speed_horizontal, g_speed_vertical, g_popup_time
 	
-	-- set spawning time according to active game mode
-	-- set moving speed
+	-- set spawning time and moving speed according to active game mode and level
+	-- If smileys are rotating, then slow down speed a bit
 	if g_mode_active == g_modes.horizontal then
-		global_level_spawn_time = global_level_spawn_time_horizontal
-		g_speed_horizontal = g_speed_horizontal_initial + (global_level * g_horizontal_speed_up_factor)
+		g_level_spawn_time = g_level_spawn_time_horizontal
+		g_speed_horizontal = g_speed_horizontal_initial + (g_level * g_horizontal_speed_up_factor)
 		if g_speed_horizontal > g_speed_horizontal_max then g_speed_horizontal = g_speed_horizontal_max end
 		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.vertical then
-		global_level_spawn_time = global_level_spawn_time_vertical
-		g_speed_vertical = g_speed_vertical_initial + (global_level * g_vertical_speed_up_factor)
+		g_level_spawn_time = g_level_spawn_time_vertical
+		g_speed_vertical = g_speed_vertical_initial + (g_level * g_vertical_speed_up_factor)
 		if g_speed_vertical > g_speed_vertical_max then g_speed_vertical = g_speed_vertical_max end
 		if rotate == 1 then g_speed_vertical = g_speed_vertical - g_rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.popup then
-		global_level_spawn_time = global_level_spawn_time_popup - (global_level * g_popup_spawn_increase_factor) 
-		g_popup_time = g_popup_time - (global_level * g_popup_time_decrease_factor)
+		g_level_spawn_time = g_level_spawn_time_popup - (g_level * g_popup_spawn_increase_factor) 
+		g_popup_time = g_popup_time - (g_level * g_popup_time_decrease_factor)
 		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
 
-	-- if rotating, then slow down speed a bit
+	-- If smileys are rotating, then slow down spawning a bit
 	if rotate == 1 then
-		global_level_spawn_time = global_level_spawn_time + g_rotating_spawntime_increase
+		g_level_spawn_time = g_level_spawn_time + g_rotating_spawntime_increase
 	end
 
-	if global_level > 70 then
-		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	-- faster spawning at higher levels
+	if g_level > 70 then
+		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
 	end
-	if global_level > 50 then
-		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	if g_level > 50 then
+		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
 	end
-	if global_level > 30 then
-		global_level_spawn_time = global_level_spawn_time - global_level_spawn_time_decrease_step
+	if g_level > 30 then
+		g_level_spawn_time = g_level_spawn_time - g_level_spawn_time_decrease_step
 	end
 
-	if global_level_spawn_time < 0.3 then global_level_spawn_time = 0.3 end
+	if g_level_spawn_time < 0.3 then g_level_spawn_time = 0.3 end
 
-	print("global_level_spawn_time: " .. global_level_spawn_time)
+	--debug
+	print("g_level_spawn_time: " .. g_level_spawn_time)
 	print("g_speed_horizontal: " .. g_speed_horizontal)
 	print("g_speed_vertical: " .. g_speed_vertical)
 	print("g_popup_time: " .. g_popup_time)
 		
 	-- send defined spawn_time and rotate-flag to smiley factory
-	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = global_level_spawn_time, rotating = rotate})
+	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = g_level_spawn_time, rotating = rotate})
 end
 
 function _init_level(self, smiley_count)
 
 	local rotate = 0
-	if global_level > 10 and (math.random(2) == 1) then
+	if g_level > lvl_begin_rotation and (math.random(2) == 1) then
 		rotate = 1
 	end
 	_init_moving_mode(self, math.random(3), rotate, 0)
@@ -159,74 +160,77 @@ function _init_level(self, smiley_count)
 	-- set stage smileys
 	print ("Loading stage...")
 	-- todo: add basic and unlocked smileys to stage
-	global_stage_smileys = global_smiley_ids
+	g_stage_smileys = g_smiley_ids
 	
 	-- set all level smileys
-	print ("Generating level...")
-	global_level_smileys_all = {}
-	for i = 1, global_level_smileys_max do
+	print ("Generating level smileys...")
+	g_level_smileys_all = {}
+	for i = 1, g_level_smileys_max do
 		local rand_type = 0
 		repeat 
 			-- get random index of stage smileys
-			rand_type = math.random(tablelength(global_stage_smileys))
+			rand_type = math.random(tablelength(g_stage_smileys))
 			-- check if smiley type already chosen.
 			-- if this is the case, pick another rand_type
-		until ( not tablecontains(global_level_smileys_all, global_stage_smileys[ rand_type ] ))
+		until ( not tablecontains(g_level_smileys_all, g_stage_smileys[ rand_type ] ))
 			
 		-- add to level
-		global_level_smileys_all[i] = global_stage_smileys[ rand_type ]
-		print(global_level_smileys_all[i])
+		g_level_smileys_all[i] = g_stage_smileys[ rand_type ]
+		-- print(g_level_smileys_all[i]) --debug
 	end
 	
 	print ("Generating level smileys to pick...")
-	global_level_smileys = {}
+	g_level_smileys = {}
 	for i = 1, smiley_count do
 		-- get random index of id table
-		local rand_type = math.random(tablelength(global_level_smileys_all))		
+		local rand_type = math.random(tablelength(g_level_smileys_all))		
 		-- add to level
-		global_level_smileys[i] = global_level_smileys_all[ rand_type ]
-		print(global_level_smileys[i])
+		g_level_smileys[i] = g_level_smileys_all[ rand_type ]
+		-- print(g_level_smileys[i]) --debug
 	end
 	print ("Generating level done.")
 	
 	-- set smileys on gui
 	msg.post("/main#gui", "set_smileys", {
-		smiley0 = global_level_smileys[1],
-		smiley1 = global_level_smileys[2],
-		smiley2 = global_level_smileys[3],
+		smiley0 = g_level_smileys[1],
+		smiley1 = g_level_smileys[2],
+		smiley2 = g_level_smileys[3],
 	})
 	-- set first smiley index
-	global_next_smiley_id = 1
+	g_next_smiley_id = 1
 	-- scale first smiley up
 	msg.post("/main#gui", "activate_smiley", {nr = 1})
 	-- set level text
-	msg.post("/main#gui", "set_level", {level = global_level})
+	msg.post("/main#gui", "set_level", {level = g_level})
 	-- reset timer
-	self.level_timer = global_level_time
+	self.level_timer = g_level_time
 end
 
 function _on_level_finished(self)
 	print("Level finished!")
-	global_level = global_level + 1
+	-- add score
+	local level_score = 100 * g_level
+	add_score(level_score)
+	-- increase level
+	g_level = g_level + 1
+	-- show gui
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
-	global_stopped = true
-	global_completed = true
+	g_stopped = true
+	g_completed = true
 end
 
 function _process_smiley_touch(self, smiley_id)
 	print("touched id: "..smiley_id)
 	-- check if smiley is in table of level smileys
-	if smiley_id == hash(global_level_smileys[ global_next_smiley_id ]) then
+	if smiley_id == hash(g_level_smileys[ g_next_smiley_id ]) then
 		print("Touched right one")
 		-- add score
-		global_score = global_score + self.single_score
-		-- update gui
-		msg.post("main#gui", "set_score", {amount = global_score})
+		add_score(self.single_score)
 		--activate next smiley
-		if global_next_smiley_id < self.level_smiley_count_max  then
-			global_next_smiley_id = global_next_smiley_id + 1
-			msg.post("/main#gui", "activate_smiley", {nr = global_next_smiley_id})
+		if g_next_smiley_id < self.level_smiley_count_max  then
+			g_next_smiley_id = g_next_smiley_id + 1
+			msg.post("/main#gui", "activate_smiley", {nr = g_next_smiley_id})
 		else
 			_on_level_finished(self)
 		end
@@ -241,31 +245,38 @@ function _process_game_over(self)
 	print("Failed!")
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_gameover", {show = true})
-	global_stopped = true
+	g_stopped = true
 end
 
 function _restart(self)
 	msg.post("/main#gui", "hide_all_dialogs")
 	msg.post("/main#gui", "show_ingame_gui", {show = true})
 
-	if not global_completed then
-		global_score = 0
-		global_lifes = global_constants.MAX_LIFES
-		global_level = 1
-		msg.post("main#gui", "set_score", {amount = global_score})
-		msg.post("main#gui", "update_lifes", {lifes = global_lifes})
+	if not g_completed then
+		g_score = 0
+		g_lifes = g_constants.MAX_LIFES
+		g_level = 1
+		msg.post("main#gui", "set_score", {amount = g_score})
+		msg.post("main#gui", "update_lifes", {lifes = g_lifes})
 	else
-		global_completed = false
+		g_completed = false
 	end
 	
 	_init_level(self, self.level_smiley_count_max)
 	
-	global_stopped = false
+	g_stopped = false
 end
 
 function _decrease_lifes(self)
-	global_lifes = global_lifes - 1
-	print("lifes: " ..  global_lifes)
-	msg.post("/main#gui", "update_lifes", {lifes = global_lifes})
-	if global_lifes < 0 then _process_game_over(self) end
+	g_lifes = g_lifes - 1
+	print("lifes: " ..  g_lifes)
+	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
+	if g_lifes < 0 then _process_game_over(self) end
+end
+
+-- adds score and updates gui
+function add_score(amount)
+	g_score = g_score + amount
+	-- update gui
+	msg.post("main#gui", "set_score", {amount = g_score})
 end

@@ -5,7 +5,6 @@ go.property("rotating", 0)
 
 local spawn_range_y = 0
 local spawn_range_x = 0
-
 local death_offset_top = 300
 local death_offset_bottom = 200
 local death_offset_x = 200
@@ -14,10 +13,10 @@ function init(self)
 	local smiley_id = ""
 	if self.trigger_current == 0 then
 		-- get random index of id table
-		local index = math.random(tablelength(global_smiley_ids))
-		smiley_id = global_smiley_ids[ index ]
+		local index = math.random(tablelength(g_smiley_ids))
+		smiley_id = g_smiley_ids[ index ]
 	else
-		smiley_id = global_level_smileys[ global_next_smiley_id ]
+		smiley_id = g_level_smileys[ g_next_smiley_id ]
 	end
 	-- set new sprite image by id
 	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_id ) } )
@@ -30,11 +29,11 @@ function init(self)
 end
 
 function final(self)
-	global_smiley_count = global_smiley_count - 1
+	g_smiley_count = g_smiley_count - 1
 end
 
 function update(self, dt)
-	if not global_stopped then
+	if not g_stopped then
 		_move(self, dt)
 		_check_pos(self)
 	else
@@ -59,13 +58,13 @@ function _init_position(self)
 		local spawn_offset_top = 300
 		local spawn_offset_bottom = 150
 		-- set spawn ranges
-		local spawn_range_x = global_constants.SCREEN_WIDTH
-		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		local spawn_range_x = g_constants.SCREEN_WIDTH
+		local spawn_range_y = g_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
 		
 		-- set random y-position
 		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
 		-- spawn left or right randomly
-		pos.x = math.random(2) == 1 and spawn_offset_left or global_constants.SCREEN_WIDTH + spawn_offset_right
+		pos.x = math.random(2) == 1 and spawn_offset_left or g_constants.SCREEN_WIDTH + spawn_offset_right
 		go.set_position(pos)
 		
 	elseif g_mode_active == g_modes.vertical then
@@ -75,13 +74,13 @@ function _init_position(self)
 		local spawn_offset_top = 300
 		local spawn_offset_bottom = -64
 		-- set spawn ranges
-		local spawn_range_x = global_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
-		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		local spawn_range_x = g_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
+		local spawn_range_y = g_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
 		
 		-- set random x-position
 		pos.x = spawn_offset_left + (math.random() * (spawn_range_x))
 		-- spawn at the top or bottom randomly
-		pos.y = math.random(2) == 1 and spawn_offset_bottom or global_constants.SCREEN_HEIGHT - spawn_offset_top
+		pos.y = math.random(2) == 1 and spawn_offset_bottom or g_constants.SCREEN_HEIGHT - spawn_offset_top
 		go.set_position(pos)
 		
 	elseif g_mode_active == g_modes.popup then
@@ -91,8 +90,8 @@ function _init_position(self)
 		local spawn_offset_top = 300
 		local spawn_offset_bottom = 200
 		-- set spawn ranges
-		local spawn_range_x = global_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
-		local spawn_range_y = global_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
+		local spawn_range_x = g_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
+		local spawn_range_y = g_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
 		-- set random y-position
 		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
 		-- set random x-position
@@ -162,14 +161,14 @@ end
 
 function _check_pos(self)
 	-- deleting sprite when it moves out of screen
-	if (self.direction.x == 1) and (go.get_position().x > global_constants.SCREEN_WIDTH + death_offset_x) then
+	if (self.direction.x == 1) and (go.get_position().x > g_constants.SCREEN_WIDTH + death_offset_x) then
 		go.delete()
 	end
 	if (self.direction.x == -1) and (go.get_position().x < 0 - death_offset_x) then
 		go.delete()
 	end
 
-	if (self.direction.y == 1) and (go.get_position().y > global_constants.SCREEN_HEIGHT - death_offset_top) then
+	if (self.direction.y == 1) and (go.get_position().y > g_constants.SCREEN_HEIGHT - death_offset_top) then
 		go.delete()
 	end
 
