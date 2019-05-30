@@ -2,10 +2,13 @@
 
 g_active_dialog = 0
 
-local smiley_scale_small = 0.6
-local smiley_scale_big = 0.8
+local smiley_scale_small = 0.5
+local smiley_scale_big = 0.85
 local smileys_success = {}
 local smileys_failure = {}
+local showing_wrong_smiley_feedback = false
+local show_wrong_smiley_feedback_time = 1.0
+local show_wrong_smiley_feedback_timer = 0.0
 
 function init(self)
 	self.score = 0
@@ -29,6 +32,13 @@ function init(self)
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_complete_score = gui.get_node("txt_level_complete_score")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
+	self.node_complete = gui.get_node("txt_level_complete")
+	self.node_gameover = gui.get_node("txt_gameover")
+
+	self.node_wrong_smiley = gui.get_node("box_touched_wrong")
+
+	gui.set_enabled(self.node_wrong_smiley, false)
+	showing_wrong_smiley_feedback = false
 	
 	_hide_all_dialogs(self)
 end
@@ -93,6 +103,8 @@ function on_message(self, message_id, message, sender)
 			end
 			-- scale up
 			gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+			local s = 1.2
+			gui.animate(smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 			-- set to foreground layer
 			gui.set_layer(smiley, "gui_top_layer")
 		end
@@ -105,6 +117,8 @@ function on_message(self, message_id, message, sender)
 		if message.show == true then 
 			g_active_dialog = 1 
 			gui.set_text(self.node_complete_score, tostring(g_score))
+			local s = 1.2
+			gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 		end
 		
 	elseif message_id == hash("show_dialog_gameover") then
@@ -112,10 +126,17 @@ function on_message(self, message_id, message, sender)
 		if message.show == true then 
 			g_active_dialog = 2 
 			gui.set_text(self.node_gameover_score, tostring(g_score))
+			gui.set_text(self.node_gameover, "Game Over!")
 		end
 		
 	elseif message_id == hash("hide_all_dialogs") then
 		_hide_all_dialogs(self)
+		
+	elseif message_id == hash("feedback_wrong_smiley") then
+		gui.set_enabled(self.node_wrong_smiley, true)
+		local s = 1.4
+		gui.animate(self.node_wrong_smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+		showing_wrong_smiley_feedback = true
 	end
 end
 
@@ -123,4 +144,15 @@ function _hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, false)
 	gui.set_enabled(self.node_dialog_success, false)
 	g_active_dialog = 0
+end
+
+function update(self, dt)
+	if showing_wrong_smiley_feedback then 
+		show_wrong_smiley_feedback_timer = show_wrong_smiley_feedback_timer + dt 
+		if show_wrong_smiley_feedback_timer >= show_wrong_smiley_feedback_time then
+			show_wrong_smiley_feedback_timer = 0.0
+			gui.set_enabled(self.node_wrong_smiley, false)
+			showing_wrong_smiley_feedback = false
+		end
+	end
 end

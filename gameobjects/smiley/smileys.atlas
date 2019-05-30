@@ -1,4 +1,7 @@
 images {
+  image: "/assets/smileys/emoji_u1f0cf.png"
+}
+images {
   image: "/assets/smileys/emoji_u1f30d.png"
 }
 images {

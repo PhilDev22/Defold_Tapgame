@@ -243,6 +243,7 @@ function _process_smiley_touch(self, smiley_id)
 		-- reset smiley factory timer
 		msg.post("/smiley_factory", "reset_timer", {reset = true})
 	else -- wrong smiley touched
+		msg.post("/main#gui", "feedback_wrong_smiley", {})
 		_decrease_lifes(self)
 	end
 end
