@@ -21,6 +21,8 @@ g_additional_time = 5
 g_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
 g_next_smiley_id = 1
 
+g_game_over = false
+
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
 
@@ -90,7 +92,11 @@ end
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
 		
-		if g_stopped == true then
+		if g_game_over == true then 
+			msg.post("/main#gui", "show_dialog_main_menu", {show = true})
+			g_game_over = false
+			
+		elseif g_stopped == true then
 			_restart(self)
 		end
 	end
@@ -262,6 +268,7 @@ function _process_game_over(self)
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_gameover", {show = true})
 	g_stopped = true
+	g_game_over = true
 end
 
 function _restart(self)
@@ -276,6 +283,8 @@ function _restart(self)
 	else
 		g_completed = false
 	end
+
+	self.level_timer = g_level_time
 	
 	_init_level(self, self.level_smiley_count_max)
 	
