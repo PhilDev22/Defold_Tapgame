@@ -17,7 +17,7 @@ function init(self)
 	self.node_dialog_gameover = gui.get_node("dialog_gameover")
 	self.node_dialog_main_menu = gui.get_node("dialog_main_menu")
 	-- gui ingame
-	self.score_node = gui.get_node("txt_score")
+	--self.score_node = gui.get_node("txt_score")
 	self.time_node = gui.get_node("txt_time")
 	self.level_node = gui.get_node("txt_level")
 	self.smiley_node_0 = gui.get_node("box0")
@@ -32,7 +32,7 @@ function init(self)
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_gameover = gui.get_node("txt_gameover")
 	-- dialog level complete
-	self.node_complete_score = gui.get_node("txt_level_complete_score")
+	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	self.node_complete = gui.get_node("txt_level_complete")
 	-- dialog main menu
@@ -42,6 +42,9 @@ function init(self)
 	gui.set_enabled(self.node_wrong_smiley, false)
 	showing_wrong_smiley_feedback = false
 
+	-- temporarily
+	gui.set_enabled(self.node_gameover_score, false)
+	
 	-- show the main menu first
 	_show_main_menu(self)
 end
@@ -63,8 +66,8 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("set_score") then
 		local s = 1.2
-		gui.set_text(self.score_node, tostring(message.amount))
-		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+		--gui.set_text(self.score_node, tostring(message.amount))
+		--gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 	
 	elseif message_id == hash("set_time") then
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
@@ -136,7 +139,7 @@ function on_message(self, message_id, message, sender)
 		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_dialog_success, message.show)
 		if message.show == true then 
-			gui.set_text(self.node_complete_score, tostring(g_score))
+			--gui.set_text(self.node_complete_seconds, tostring(g_score))
 			local s = 1.2
 			gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 		end

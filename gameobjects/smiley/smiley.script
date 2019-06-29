@@ -43,9 +43,11 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("collision_response") then
-		particlefx.play("#touched_smiley")
 		msg.post("main", "smiley_touched", {smiley_id = hash(self.smiley_id)})
 		go.delete()
+
+	elseif message_id == hash("smiley_touch_success") then
+		particlefx.play("#touched_smiley")
 	end
 end
 

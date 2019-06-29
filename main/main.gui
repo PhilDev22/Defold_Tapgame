@@ -490,7 +490,7 @@ nodes {
 nodes {
   position {
     x: 0.0
-    y: -119.0
+    y: -242.0
     z: 0.0
     w: 1.0
   }
@@ -520,9 +520,9 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "0000"
+  text: "+5!"
   font: "score_big"
-  id: "txt_level_complete_score"
+  id: "txt_level_complete_seconds"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -616,6 +616,61 @@ nodes {
 nodes {
   position {
     x: 0.0
+    y: -161.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 0.62
+    y: 0.62
+    z: 0.62
+    w: 1.0
+  }
+  size {
+    x: 128.0
+    y: 128.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_BOX
+  blend_mode: BLEND_MODE_ALPHA
+  texture: "gui_images/emoji_u23f1"
+  id: "img_time"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_CENTER
+  adjust_mode: ADJUST_MODE_FIT
+  parent: "dialog_level_complete"
+  layer: ""
+  inherit_alpha: false
+  slice9 {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+  }
+  clipping_mode: CLIPPING_MODE_NONE
+  clipping_visible: true
+  clipping_inverted: false
+  alpha: 1.0
+  template_node_child: false
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 0.0
     y: 0.0
     z: 0.0
     w: 1.0
@@ -669,70 +724,7 @@ nodes {
 }
 nodes {
   position {
-    x: 32.0
-    y: 1089.0
-    z: 0.0
-    w: 1.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-    w: 1.0
-  }
-  size {
-    x: 200.0
-    y: 100.0
-    z: 0.0
-    w: 1.0
-  }
-  color {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-    w: 1.0
-  }
-  type: TYPE_TEXT
-  blend_mode: BLEND_MODE_ALPHA
-  text: "0"
-  font: "score_big"
-  id: "txt_score"
-  xanchor: XANCHOR_LEFT
-  yanchor: YANCHOR_NONE
-  pivot: PIVOT_W
-  outline {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-    w: 1.0
-  }
-  shadow {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-    w: 1.0
-  }
-  adjust_mode: ADJUST_MODE_FIT
-  line_break: false
-  parent: "gui_ingame"
-  layer: ""
-  inherit_alpha: false
-  alpha: 1.0
-  outline_alpha: 1.0
-  shadow_alpha: 1.0
-  template_node_child: false
-  text_leading: 1.0
-  text_tracking: 0.0
-}
-nodes {
-  position {
-    x: 400.0
+    x: 198.0
     y: 1087.0
     z: 0.0
     w: 1.0
@@ -795,7 +787,7 @@ nodes {
 }
 nodes {
   position {
-    x: 274.0
+    x: 59.0
     y: 1083.0
     z: 0.0
     w: 1.0
@@ -851,7 +843,7 @@ nodes {
 nodes {
   position {
     x: 319.0
-    y: 970.0
+    y: 993.0
     z: 0.0
     w: 1.0
   }

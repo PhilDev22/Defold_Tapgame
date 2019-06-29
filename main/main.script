@@ -4,6 +4,7 @@ g_stopped = false
 g_completed = false
 g_score = 0
 g_level = 1
+g_start_level = 1
 g_lifes = g_constants.MAX_LIFES
 g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
@@ -14,7 +15,8 @@ g_level_smileys_all = {}
 g_level_smileys = {}
 g_level_smileys_base = 6
 g_level_smileys_max = g_level_smileys_base
-g_level_time = 20
+g_level_time = 60
+g_additional_time = 5
 
 g_spawn_time_max_current_smiley = 5.0 -- max time for the current smiley to not being spawned
 g_next_smiley_id = 1
@@ -55,11 +57,12 @@ function init(self)
 	-- set background color
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 
+	-- don't start until main menu was touched
+	g_stopped = true
+	
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random(); math.random(); math.random();
 	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
-
-	g_level = 1
 		
 	self.level_timer = g_level_time
 	
@@ -68,8 +71,6 @@ function init(self)
 	--  activate input
 	msg.post(".", "acquire_input_focus")
 
-	-- don't start until main menu was touched
-	g_stopped = true
 	-- show main menu
 	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
 end
@@ -97,7 +98,8 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("smiley_touched") then
-		_process_smiley_touch(self, message.smiley_id)
+		print(sender)
+		_process_smiley_touch(self, message.smiley_id, sender)
 	end
 end
 
@@ -213,8 +215,6 @@ function _init_level(self, smiley_count)
 	msg.post("/main#gui", "activate_smiley", {nr = 1})
 	-- set level text
 	msg.post("/main#gui", "set_level", {level = g_level})
-	-- reset timer
-	self.level_timer = g_level_time
 end
 
 function _on_level_finished(self)
@@ -224,6 +224,8 @@ function _on_level_finished(self)
 	add_score(level_score)
 	-- increase level
 	g_level = g_level + 1
+	-- add seconds to timer
+	self.level_timer = self.level_timer + g_additional_time
 	-- show gui
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
@@ -231,11 +233,13 @@ function _on_level_finished(self)
 	g_completed = true
 end
 
-function _process_smiley_touch(self, smiley_id)
+function _process_smiley_touch(self, smiley_id, sender)
 	print("touched id: "..smiley_id)
 	-- check if smiley is in table of level smileys
 	if smiley_id == hash(g_level_smileys[ g_next_smiley_id ]) then
 		print("Touched right one")
+		-- emit particles
+		msg.post(sender, "smiley_touch_success", {success = true})
 		-- add score
 		add_score(self.single_score)
 		--activate next smiley
@@ -266,7 +270,7 @@ function _restart(self)
 	if not g_completed then
 		g_score = 0
 		g_lifes = g_constants.MAX_LIFES
-		g_level = 1
+		g_level = g_start_level
 		msg.post("main#gui", "set_score", {amount = g_score})
 		msg.post("main#gui", "update_lifes", {lifes = g_lifes})
 	else
