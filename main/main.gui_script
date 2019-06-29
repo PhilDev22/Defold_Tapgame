@@ -1,9 +1,7 @@
 -- Code sample from Defold side scroller tutorial
 
-g_active_dialog = 0
-
 local smiley_scale_small = 0.5
-local smiley_scale_big = 0.85
+local smiley_scale_big = 1.0
 local smileys_success = {}
 local smileys_failure = {}
 local showing_wrong_smiley_feedback = false
@@ -12,9 +10,13 @@ local show_wrong_smiley_feedback_timer = 0.0
 
 function init(self)
 	self.score = 0
-	
+
+	-- GUI NODES --
 	self.node_gui_ingame = gui.get_node("gui_ingame")
-	
+	self.node_dialog_success = gui.get_node("dialog_level_complete")
+	self.node_dialog_gameover = gui.get_node("dialog_gameover")
+	self.node_dialog_main_menu = gui.get_node("dialog_main_menu")
+	-- gui ingame
 	self.score_node = gui.get_node("txt_score")
 	self.time_node = gui.get_node("txt_time")
 	self.level_node = gui.get_node("txt_level")
@@ -24,29 +26,39 @@ function init(self)
 	self.heart_node_0 = gui.get_node("box_life0")
 	self.heart_node_1 = gui.get_node("box_life1")
 	self.heart_node_2 = gui.get_node("box_life2")
-	
-	self.node_dialog_success = gui.get_node("dialog_level_complete")
-	self.node_dialog_gameover = gui.get_node("dialog_gameover")
-
+	self.node_wrong_smiley = gui.get_node("box_touched_wrong")
+	-- dialog gameover
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
+	self.node_gameover = gui.get_node("txt_gameover")
+	-- dialog level complete
 	self.node_complete_score = gui.get_node("txt_level_complete_score")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	self.node_complete = gui.get_node("txt_level_complete")
-	self.node_gameover = gui.get_node("txt_gameover")
+	-- dialog main menu
+	self.node_menu_btn_start = gui.get_node("btn_start")
 
-	self.node_wrong_smiley = gui.get_node("box_touched_wrong")
-
+	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
 	showing_wrong_smiley_feedback = false
-	
-	_hide_all_dialogs(self)
+
+	-- show the main menu first
+	_show_main_menu(self)
 end
+
+-- animation helper (have to be at the beginning)
 
 local function scale_down(self, node)
 	local s = 1.0
 	gui.animate(node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.05)
 end
+
+local function scale_down_active_gui_smiley(self, node)
+	local s = smiley_scale_big
+	gui.animate(node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.05)
+end
+
+-- gui code 
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("set_score") then
@@ -87,9 +99,9 @@ function on_message(self, message_id, message, sender)
 		gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
 		gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
 		-- set to background layer
-		gui.set_layer(self.smiley_node_0, "gui_bottom_layer")
-		gui.set_layer(self.smiley_node_1, "gui_bottom_layer")
-		gui.set_layer(self.smiley_node_2, "gui_bottom_layer")
+		gui.set_layer(self.smiley_node_0, "ingame_gui_bottom_layer")
+		gui.set_layer(self.smiley_node_1, "ingame_gui_bottom_layer")
+		gui.set_layer(self.smiley_node_2, "ingame_gui_bottom_layer")
 		
 		if message.nr > 0 then
 			-- smiley scale of according smiley
@@ -102,35 +114,40 @@ function on_message(self, message_id, message, sender)
 				smiley = self.smiley_node_2
 			end
 			-- scale up
-			gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+			--gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
 			local s = 1.2
-			gui.animate(smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+			gui.animate(smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.15, scale_down_active_gui_smiley)
 			-- set to foreground layer
-			gui.set_layer(smiley, "gui_top_layer")
+			gui.set_layer(smiley, "ingame_gui_top_layer")
 		end
 
+	elseif message_id == hash("show_dialog_main_menu") then
+		_hide_all_dialogs(self)
+		gui.set_enabled(self.node_dialog_main_menu, message.show)
+		-- start bouncing animation
+		local s = 1.1
+		gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+		
 	elseif message_id == hash("show_ingame_gui") then
+		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_gui_ingame, message.show)
 	
 	elseif message_id == hash("show_dialog_level_complete") then
+		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_dialog_success, message.show)
 		if message.show == true then 
-			g_active_dialog = 1 
 			gui.set_text(self.node_complete_score, tostring(g_score))
 			local s = 1.2
 			gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 		end
 		
 	elseif message_id == hash("show_dialog_gameover") then
+		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_dialog_gameover, message.show)
 		if message.show == true then 
-			g_active_dialog = 2 
 			gui.set_text(self.node_gameover_score, tostring(g_score))
 			gui.set_text(self.node_gameover, "Game Over!")
 		end
-		
-	elseif message_id == hash("hide_all_dialogs") then
-		_hide_all_dialogs(self)
 		
 	elseif message_id == hash("feedback_wrong_smiley") then
 		gui.set_enabled(self.node_wrong_smiley, true)
@@ -143,7 +160,28 @@ end
 function _hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, false)
 	gui.set_enabled(self.node_dialog_success, false)
-	g_active_dialog = 0
+	gui.set_enabled(self.node_dialog_main_menu, false)
+	gui.set_enabled(self.node_gui_ingame, false)
+end
+
+function _show_main_menu(self)
+	_hide_all_dialogs(self)
+	gui.set_enabled(self.node_dialog_main_menu, true)
+end
+
+function _show_gui_ingame(self)
+	_hide_all_dialogs(self)
+	gui.set_enabled(self.node_gui_ingame, true)
+end
+
+function _show_dialog_success(self)
+	_hide_all_dialogs(self)
+	gui.set_enabled(self.node_dialog_success, true)
+end
+
+function _show_dialog_gameover(self)
+	_hide_all_dialogs(self)
+	gui.set_enabled(self.node_dialog_gameover, true)
 end
 
 function update(self, dt)
@@ -156,3 +194,4 @@ function update(self, dt)
 		end
 	end
 end
+

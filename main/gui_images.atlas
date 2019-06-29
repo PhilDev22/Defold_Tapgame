@@ -61,6 +61,15 @@ images {
 images {
   image: "/assets/gui/smiley_background.png"
 }
+images {
+  image: "/assets/gui/menu_background.png"
+}
+images {
+  image: "/assets/gui/menu_button_start.png"
+}
+images {
+  image: "/assets/gui/menu_header.png"
+}
 margin: 0
 extrude_borders: 0
 inner_padding: 0

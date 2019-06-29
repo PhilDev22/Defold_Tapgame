@@ -58,7 +58,7 @@ function init(self)
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random(); math.random(); math.random();
 	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
-	
+
 	g_level = 1
 		
 	self.level_timer = g_level_time
@@ -67,6 +67,11 @@ function init(self)
 	
 	--  activate input
 	msg.post(".", "acquire_input_focus")
+
+	-- don't start until main menu was touched
+	g_stopped = true
+	-- show main menu
+	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
 end
 
 function update(self, dt)
@@ -256,7 +261,6 @@ function _process_game_over(self)
 end
 
 function _restart(self)
-	msg.post("/main#gui", "hide_all_dialogs")
 	msg.post("/main#gui", "show_ingame_gui", {show = true})
 
 	if not g_completed then
