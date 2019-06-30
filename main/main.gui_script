@@ -31,13 +31,15 @@ function init(self)
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_gameover = gui.get_node("txt_gameover")
+	self.node_gameover_stars = gui.get_node("txt_stars")
 	-- dialog level complete
 	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	self.node_complete = gui.get_node("txt_level_complete")
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
-
+	self.node_menu_stars = gui.get_node("txt_stars_total")
+	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
 	showing_wrong_smiley_feedback = false
@@ -156,7 +158,8 @@ function on_message(self, message_id, message, sender)
 		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_dialog_gameover, message.show)
 		if message.show == true then 
-			gui.set_text(self.node_gameover_score, tostring(g_score))
+			gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
+			gui.set_text(self.node_menu_stars, tostring(g_stars))
 			gui.set_text(self.node_gameover, "Game Over!")
 		end
 		

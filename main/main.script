@@ -8,7 +8,7 @@ g_start_level = 1
 g_lifes = g_constants.MAX_LIFES
 g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
-g_item_prob = 3
+g_item_prob = 5
 g_time_item_value = 3 -- seconds
 g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
 -- item emoticons
@@ -18,6 +18,8 @@ g_emoji_heart_id = 1
 g_emoji_time_id = 2
 g_emoji_joker_id = 3
 --g_emoji_star_id = 4
+g_stars = 0
+g_stars_of_game = 0
 
 -- level settings
 g_stage_smileys = {}
@@ -324,7 +326,9 @@ function _process_game_over(self)
 	g_stopped = true
 	g_game_over = true
 
-	self.level_timer = g_level_time
+	_add_stars()
+	
+	self.level_timer = g_level_time	
 end
 
 function _restart(self)
@@ -334,6 +338,7 @@ function _restart(self)
 		g_score = 0
 		g_lifes = g_constants.MAX_LIFES
 		g_level = g_start_level
+		g_stars_of_game = 0
 		msg.post("main#gui", "set_score", {amount = g_score})
 		msg.post("main#gui", "update_lifes", {lifes = g_lifes})
 	else
@@ -347,13 +352,13 @@ end
 
 function _increase_lifes(self, amount)
 	g_lifes = g_lifes + amount
-	print("lifes: " ..  g_lifes)
 	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
 	if g_lifes < 1 then 
 		_process_game_over(self) 
 	elseif g_lifes > g_constants.MAX_LIFES then
 		g_lifes = g_constants.MAX_LIFES
 	end
+	print("lifes: " ..  g_lifes)
 end
 
 -- adds score and updates gui
@@ -361,6 +366,17 @@ function add_score(amount)
 	g_score = g_score + amount
 	-- update gui
 	msg.post("main#gui", "set_score", {amount = g_score})
+end
+
+function _add_stars()
+	local amount = 0
+	-- add stars for each level (1 star for level 1; 2 stars for level 2, ...)
+	for var = 1, g_level - 1, 1 do
+		amount = amount + var
+	end
+	print("Got Stars: " .. amount)
+	g_stars_of_game = g_stars_of_game + amount
+	g_stars = g_stars + g_stars_of_game
 end
 
 -- helper
