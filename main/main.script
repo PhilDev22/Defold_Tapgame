@@ -9,7 +9,7 @@ g_lifes = g_constants.MAX_LIFES
 g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
 g_item_prob = 5
-g_time_item_value = 3 -- seconds
+g_time_item_value = 5 -- seconds
 g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
 -- item emoticons
 g_item_ids = {"u2764", "u23f2", "u1f0cf"} --  star:"u2b50"
@@ -30,7 +30,7 @@ g_level_smileys_max = g_level_smileys_base
 g_level_time = 60
 g_additional_time = 5
 
-g_spawn_time_max_current_smiley = 4.0 -- max time for the current smiley to not being spawned
+g_spawn_time_max_current_smiley = 3.5 -- max time for the current smiley to not being spawned
 g_next_smiley_id = 1
 
 g_game_over = false
@@ -51,21 +51,22 @@ local g_level_spawn_time_decrease_step = 0.06
 g_speed_horizontal = 0
 local g_speed_horizontal_initial = 250
 local g_speed_horizontal_max = 700
-local g_horizontal_speed_up_factor = 20
+local g_horizontal_speed_up_factor = 17
 
 g_speed_vertical = 0
 local g_speed_vertical_initial = 220
 local g_speed_vertical_max = 670
-local g_vertical_speed_up_factor = 18
+local g_vertical_speed_up_factor = 15
 
-g_popup_time = 2.4
+g_popup_time = 0
+g_popup_time_base = 2.4
 local g_popup_time_decrease_factor = 0.03
 local g_popup_time_min = 1.0
 local g_popup_spawn_increase_factor = 0.002
 
 local lvl_begin_rotation = 5
 local g_rotating_speed_decrease = 100
-local g_rotating_spawntime_increase = 0.25
+local g_rotating_spawntime_increase = 0.1
 
 function init(self)
 	-- set background color
@@ -166,7 +167,7 @@ function _init_moving_mode(self)
 		
 	elseif g_mode_active == g_modes.popup then
 		g_level_spawn_time_base = g_level_spawn_time_popup - (g_level * g_popup_spawn_increase_factor) 
-		g_popup_time = g_popup_time - (g_level * g_popup_time_decrease_factor)
+		g_popup_time = g_popup_time_base - (g_level * g_popup_time_decrease_factor)
 		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
 	end
 
