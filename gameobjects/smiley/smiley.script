@@ -136,14 +136,22 @@ function _init_movement(self)
 		-- set moving direction
 		self.direction.x = pos.x <= 0 and 1 or -1
 		self.v_speed = self.speed * self.direction
+		-- animate
+		local s = 1.1
+		go.animate(".", "position.y", go.PLAYBACK_LOOP_PINGPONG, pos.y + 10, go.EASING_INOUTSINE, 0.7)
 
 	elseif g_mode_active == g_modes.vertical then
 		self.speed = g_speed_vertical
 		self.direction.y = pos.y <= 0 and 1 or -1
 		self.v_speed = self.speed * self.direction
+		-- animate
+		local s = 1.1
+		go.animate(".", "position.x", go.PLAYBACK_LOOP_PINGPONG, pos.x + 10, go.EASING_INOUTSINE, 0.7)
 		
 	elseif g_mode_active == g_modes.popup then
 		self.popup_timer = 0.0
+		go.set_scale(0.01)
+		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.0), go.EASING_OUTBACK, 0.3)
 	end
 
 end
