@@ -269,6 +269,8 @@ function _process_game_over(self)
 	msg.post("/main#gui", "show_dialog_gameover", {show = true})
 	g_stopped = true
 	g_game_over = true
+
+	self.level_timer = g_level_time
 end
 
 function _restart(self)
@@ -283,8 +285,6 @@ function _restart(self)
 	else
 		g_completed = false
 	end
-
-	self.level_timer = g_level_time
 	
 	_init_level(self, self.level_smiley_count_max)
 	
