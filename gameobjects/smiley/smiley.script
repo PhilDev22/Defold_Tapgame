@@ -1,5 +1,6 @@
 go.property("smiley_id", 0)
 go.property("trigger_current", 0) -- 0 = random, else set id of current active smiley
+go.property("trigger_item", 0) -- 0 = no item, else set id of item
 go.property("angular_velocity", 2)
 go.property("rotating", 0)
 
@@ -11,15 +12,26 @@ local death_offset_x = 200
 
 function init(self)
 	local smiley_id = ""
+	local prefix  = "emoji_u1f"
+	-- if not a certain smiley is triggered, then spawn a random one
 	if self.trigger_current == 0 then
-		-- get random index of id table
-		local index = math.random(tablelength(g_level_smileys_all))
-		smiley_id = g_level_smileys_all[ index ]
+		--spawn random smiley
+		if self.trigger_item == 0 then 
+			-- get random index of id table
+			local index = math.random(tablelength(g_level_smileys_all))
+			smiley_id = g_level_smileys_all[ index ]
+		else
+			-- spawn random item
+			local index = math.random(tablelength(g_item_ids))
+			smiley_id = g_item_ids[ index ]
+			prefix = "item_"
+		end
 	else
+		-- spawn certain smiley by id
 		smiley_id = g_level_smileys[ g_next_smiley_id ]
 	end
 	-- set new sprite image by id
-	msg.post("#sprite", "play_animation", {id = hash("emoji_u1f" .. smiley_id ) } )
+	msg.post("#sprite", "play_animation", {id = hash(prefix .. smiley_id ) } )
 	self.smiley_id = hash(smiley_id)	
 	
 	-- position

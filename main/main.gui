@@ -1156,7 +1156,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "smileys/emoji_u2764"
+  texture: "gui_images/emoji_u2764"
   id: "box_life0"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1211,7 +1211,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "smileys/emoji_u2764"
+  texture: "gui_images/emoji_u2764"
   id: "box_life1"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1266,7 +1266,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "smileys/emoji_u2764"
+  texture: "gui_images/emoji_u2764"
   id: "box_life2"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE

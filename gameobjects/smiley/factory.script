@@ -43,11 +43,15 @@ function update(self, dt)
 			
 			-- spawn new smiley
 
-			local factory_props = {trigger_current = 0, rotating = rotating}
+			-- spawn item with probability defined in g_item_prob
+			local item = math.random(100)
+			if item > 100 - g_item_prob then item = 1 else item = 0 end
+			-- set spawn properties for factory
+			local factory_props = {trigger_current = 0, trigger_item = item, rotating = rotating}
 			-- if time elapsed without the current active smiley being spawned,
 			-- then trigger spawning this smiley
 			if spawn_timer_current_smiley <= 0 then
-				factory_props = {trigger_current = 1, rotating = rotating}
+				factory_props = {trigger_current = 1, trigger_item = item, rotating = rotating}
 				-- reset timer
 				spawn_timer_current_smiley = self.spawn_time_current_smiley
 				-- print("Max time elapsed wihtout smiley being spawned. Spawning current active smiley!")

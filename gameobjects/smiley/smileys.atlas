@@ -1,7 +1,4 @@
 images {
-  image: "/assets/smileys/emoji_u1f0cf.png"
-}
-images {
   image: "/assets/smileys/emoji_u1f30d.png"
 }
 images {
@@ -27,9 +24,6 @@ images {
 }
 images {
   image: "/assets/smileys/emoji_u1f435.png"
-}
-images {
-  image: "/assets/smileys/emoji_u1f480.png"
 }
 images {
   image: "/assets/smileys/emoji_u1f499.png"
@@ -323,7 +317,19 @@ images {
   image: "/assets/smileys/emoji_u263a.png"
 }
 images {
-  image: "/assets/smileys/emoji_u2764.png"
+  image: "/assets/smileys/item_u1f0cf.png"
+}
+images {
+  image: "/assets/smileys/item_u1f480.png"
+}
+images {
+  image: "/assets/smileys/item_u23f2.png"
+}
+images {
+  image: "/assets/smileys/item_u2764.png"
+}
+images {
+  image: "/assets/smileys/item_u2b50.png"
 }
 margin: 0
 extrude_borders: 0
