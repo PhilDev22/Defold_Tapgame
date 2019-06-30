@@ -44,6 +44,9 @@ function init(self)
 
 	-- temporarily
 	gui.set_enabled(self.node_gameover_score, false)
+
+	-- set time on gui
+	gui.set_text(self.time_node, tostring(math.ceil(g_level_time)))
 	
 	-- show the main menu first
 	_show_main_menu(self)
@@ -71,7 +74,11 @@ function on_message(self, message_id, message, sender)
 	
 	elseif message_id == hash("set_time") then
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
-
+		if message.scale == 1 then
+			local s = 1.2
+			gui.animate(self.time_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+		end
+		
 	elseif message_id == hash("set_level") then
 		gui.set_text(self.level_node, "Level " .. tostring(g_level))
 		gui.set_text(self.node_complete_level, "Level " .. tostring(g_level))

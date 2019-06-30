@@ -755,7 +755,7 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "30"
+  text: "60"
   font: "score_big"
   id: "txt_time"
   xanchor: XANCHOR_NONE

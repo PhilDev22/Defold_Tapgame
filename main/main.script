@@ -79,6 +79,7 @@ function init(self)
 	-- set timer to initial value
 	self.level_timer = g_level_time
 	self.level_smiley_count_max = 3
+	self.second = 0.0
 	_init_level(self, self.level_smiley_count_max)
 
 	g_item_table_ids = get_table_ids( g_item_ids )
@@ -94,8 +95,14 @@ function update(self, dt)
 	if not g_stopped then
 		self.level_timer = self.level_timer - dt
 		self.level_timer = math.max(self.level_timer, 0)
-		-- show current time at gui
-		msg.post("/main#gui", "set_time", {time = self.level_timer})
+		self.second = self.second + dt 
+		if self.second >= 1.0 then
+			self.second = 0.0
+			-- show current time at gui
+			local scale_up = 0
+			if self.level_timer <= 10 then scale_up = 1 end
+			msg.post("/main#gui", "set_time", {time = self.level_timer, scale = scale_up})
+		end
 		-- if time runs out trigger game over
 		if self.level_timer <= 0 then
 			self.level_timer = 0
@@ -250,6 +257,7 @@ function _on_level_finished(self)
 	-- show gui
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
+	msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 0})
 	g_stopped = true
 	g_completed = true
 end
@@ -302,6 +310,7 @@ function _touch_item(self, smiley_id, sender)
 		print("Time item touched")
 		-- add seconds to timer
 		self.level_timer = self.level_timer + g_time_item_value
+		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 1})
 		
 	--elseif item_index == g_emoji_star_id then
 	--	print("Star item touched")
