@@ -25,6 +25,9 @@ function init(self)
 			local index = math.random(tablelength(g_item_ids))
 			smiley_id = g_item_ids[ index ]
 			prefix = "item_"
+			-- animate item (pulsate)
+			local s = 1.1
+			go.animate("#sprite", "scale", go.PLAYBACK_LOOP_PINGPONG, vmath.vector3(s, s, s), go.EASING_INOUTSINE, 0.5)
 		end
 	else
 		-- spawn certain smiley by id

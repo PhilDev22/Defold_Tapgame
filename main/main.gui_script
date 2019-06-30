@@ -134,7 +134,8 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("show_dialog_main_menu") then
 		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_dialog_main_menu, message.show)
-		-- start bouncing animation
+		-- start scaling animation
+		gui.set_scale(self.node_menu_btn_start, vmath.vector4(1.0, 1.0, 1.0, 0))
 		local s = 1.1
 		gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 		
