@@ -58,7 +58,7 @@ function init(self)
 	gui.set_text(self.time_node, tostring(math.ceil(g_level_time)))
 	
 	-- show the main menu first
-	_show_main_menu(self)
+	-- _show_main_menu(self)
 end
 
 -- animation helper (have to be at the beginning)
@@ -78,15 +78,18 @@ end
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
 		-- if in game over state and screen was touched, show main menu
+		if g_main_menu == true then 
+			if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
+				msg.post("/main", "restart", {})
+			end
+		end
 		if g_game_over == true then 
 			msg.post(".", "show_dialog_main_menu", {show = true})
 			g_game_over = false
 
-			-- if in main menu and screen was touched, start game
-		elseif g_stopped == true then
-			if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
-				msg.post("/main", "restart", {})
-			end
+		-- if level complete and screen was touched, start new level
+		elseif g_main_menu == false and g_stopped == true then
+			msg.post("/main", "restart", {})
 		end
 	end
 end
@@ -157,13 +160,7 @@ function on_message(self, message_id, message, sender)
 		end
 
 	elseif message_id == hash("show_dialog_main_menu") then
-		_hide_all_dialogs(self)
-		gui.set_enabled(self.node_dialog_main_menu, message.show)
-		-- start scaling animation
-		gui.set_scale(self.node_menu_btn_start, vmath.vector4(1.0, 1.0, 1.0, 0))
-		local s = 1.1
-		gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
-		
+		_show_main_menu(self)
 	elseif message_id == hash("show_ingame_gui") then
 		_hide_all_dialogs(self)
 		gui.set_enabled(self.node_gui_ingame, message.show)
@@ -203,11 +200,18 @@ function _hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_success, false)
 	gui.set_enabled(self.node_dialog_main_menu, false)
 	gui.set_enabled(self.node_gui_ingame, false)
+	g_main_menu = false
 end
 
 function _show_main_menu(self)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_main_menu, true)
+	-- start scaling animation
+	gui.set_scale(self.node_menu_btn_start, vmath.vector4(1.0, 1.0, 1.0, 0))
+	local s = 1.1
+	gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+	-- set global flag
+	g_main_menu = true
 end
 
 function _show_gui_ingame(self)

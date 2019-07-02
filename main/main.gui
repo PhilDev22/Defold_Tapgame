@@ -694,7 +694,7 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "+5!"
+  text: "+5"
   font: "score_big"
   id: "txt_level_complete_seconds"
   xanchor: XANCHOR_NONE

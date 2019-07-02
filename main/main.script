@@ -34,6 +34,7 @@ g_spawn_time_max_current_smiley = 3.5 -- max time for the current smiley to not 
 g_next_smiley_id = 1
 
 g_game_over = false
+g_main_menu = true
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
