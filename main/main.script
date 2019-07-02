@@ -27,7 +27,7 @@ g_level_smileys_all = {}
 g_level_smileys = {}
 g_level_smileys_base = 6
 g_level_smileys_max = g_level_smileys_base
-g_level_time = 10
+g_level_time = 60
 g_additional_time = 5
 
 g_spawn_time_max_current_smiley = 3.5 -- max time for the current smiley to not being spawned
