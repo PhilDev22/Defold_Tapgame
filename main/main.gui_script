@@ -80,16 +80,16 @@ function on_input(self, action_id, action)
 		-- if in game over state and screen was touched, show main menu
 		if g_main_menu == true then 
 			if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
-				msg.post("/main", "restart", {})
+				msg.post("main", "restart", {})
 			end
-		end
-		if g_game_over == true then 
+			
+		elseif g_game_over == true then 
 			msg.post(".", "show_dialog_main_menu", {show = true})
-			g_game_over = false
+			msg.post("main", "reset", {})
 
 		-- if level complete and screen was touched, start new level
-		elseif g_main_menu == false and g_stopped == true then
-			msg.post("/main", "restart", {})
+		elseif g_completed == true then
+			msg.post("main", "next_level", {})
 		end
 	end
 end

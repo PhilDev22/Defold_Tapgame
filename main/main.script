@@ -124,6 +124,10 @@ function on_message(self, message_id, message, sender)
 		_process_smiley_touch(self, message.smiley_id, sender)
 	elseif message_id == hash("restart") then
 		_restart(self)
+	elseif message_id == hash("reset") then
+		_reset(self)
+	elseif message_id == hash("next_level") then
+		_start_next_level(self)
 	end
 end
 
@@ -241,21 +245,16 @@ function _init_level(self, smiley_count)
 	msg.post("/main#gui", "set_level", {level = g_level})
 end
 
-function _on_level_finished(self)
-	print("Level finished!")
-	-- add score
-	local level_score = 100 * g_level
-	add_score(level_score)
-	-- increase level
-	g_level = g_level + 1
-	-- add seconds to timer
-	self.level_timer = self.level_timer + g_additional_time
-	-- show gui
-	msg.post("/main#gui", "show_ingame_gui", {show = false})
-	msg.post("/main#gui", "show_dialog_level_complete", {show = true})
-	msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 0})
-	g_stopped = true
-	g_completed = true
+function _handle_next_smiley(self, max_smileys)
+	--activate next smiley
+	if g_next_smiley_id < max_smileys  then
+		g_next_smiley_id = g_next_smiley_id + 1
+		msg.post("/main#gui", "activate_smiley", {nr = g_next_smiley_id})
+	else
+		_on_level_complete(self)
+	end
+	-- reset smiley factory timer
+	msg.post("/smiley_factory", "reset_timer", {reset = true})
 end
 
 function _process_smiley_touch(self, smiley_id, sender)
@@ -273,18 +272,6 @@ function _process_smiley_touch(self, smiley_id, sender)
 		msg.post("/main#gui", "feedback_wrong_smiley", {})
 		_increase_lifes(self, -1)
 	end
-end
-
-function _handle_next_smiley(self, max_smileys)
-	--activate next smiley
-	if g_next_smiley_id < max_smileys  then
-		g_next_smiley_id = g_next_smiley_id + 1
-		msg.post("/main#gui", "activate_smiley", {nr = g_next_smiley_id})
-	else
-		_on_level_finished(self)
-	end
-	-- reset smiley factory timer
-	msg.post("/smiley_factory", "reset_timer", {reset = true})
 end
 
 function _touch_item(self, smiley_id, sender)
@@ -315,34 +302,80 @@ function _touch_item(self, smiley_id, sender)
 end
 
 function _process_game_over(self)
+	
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
 	msg.post("/main#gui", "show_dialog_gameover", {show = true})
 	g_stopped = true
 	g_game_over = true
 
 	_add_stars()
+
+	print_values(self) --debug
+end
+
+function _reset(self)
+	g_score = 0
+	g_lifes = g_constants.MAX_LIFES
+	g_level = g_start_level
+	g_stars_of_game = 0
+	self.level_timer = g_level_time	
+
+	g_game_over = false
+	g_completed = false
 end
 
 function _restart(self)
-	msg.post("/main#gui", "show_ingame_gui", {show = true})
+	_reset(self)
+	
+	msg.post("main#gui", "show_ingame_gui", {show = true})
+	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
+	msg.post("main#gui", "set_score", {amount = g_score})
+	msg.post("main#gui", "update_lifes", {lifes = g_lifes})
+	msg.post("main#gui", "activate_smiley", {nr = 1})
+	
+	_init_level(self, self.level_smiley_count_max)
 
-	if not g_completed then -- when game over
-		g_score = 0
-		g_lifes = g_constants.MAX_LIFES
-		g_level = g_start_level
-		g_stars_of_game = 0
-		self.level_timer = g_level_time	
-		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 1})
-		msg.post("main#gui", "set_score", {amount = g_score})
-		msg.post("main#gui", "update_lifes", {lifes = g_lifes})
-		msg.post("/main#gui", "activate_smiley", {nr = 1})
-	else
-		g_completed = false
+	g_stopped = false
+end
+
+function _start_next_level(self)
+	-- could happen that lifes < 1 when wrong and right 
+	-- smiley were touched simultaneously
+	if g_lifes < 1 then
+		_increase_lifes(self, 1)
 	end
+
+	msg.post("/main#gui", "show_ingame_gui", {show = true})
 	
 	_init_level(self, self.level_smiley_count_max)
 	
+	g_completed = false
 	g_stopped = false
+end
+
+function _on_level_complete(self)
+	if g_lifes > 0 then
+		print("Level finished!")
+		-- add score
+		local level_score = 100 * g_level
+		add_score(level_score)
+		-- increase level
+		g_level = g_level + 1
+		-- add seconds to timer
+		self.level_timer = self.level_timer + g_additional_time
+		-- update gui time
+		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 0})
+		-- hide ingame gui
+		msg.post("/main#gui", "show_ingame_gui", {show = false})
+		-- show "level complete"
+		msg.post("/main#gui", "show_dialog_level_complete", {show = true})
+		-- set game state flags
+		g_stopped = true
+		g_completed = true
+	end
+	--else level complete, but lifes = 0 (right and wrong smiley were touched simultaneously) -> game over
+		
+	print_values(self) --debug
 end
 
 function _increase_lifes(self, amount)
@@ -381,4 +414,17 @@ function get_table_ids(table)
 		index[ hash(v) ]=k
 	end
 	return index
+end
+
+function print_values(self)
+	print(" ----------------------" )
+	print("Level: " .. g_level)
+	print("Lifes: " .. g_lifes)
+	print("Time remaining: " .. self.level_timer)
+	print("Stars of game: " .. g_stars_of_game)
+	print("Gameover: " .. tostring(g_game_over))
+	print("Completed: " .. tostring(g_completed))
+	print("Stopped: " .. tostring(g_stopped))
+	print("Main Menu: " .. tostring(g_main_menu))
+	print(" ----------------------" )
 end
