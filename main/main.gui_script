@@ -39,6 +39,7 @@ function init(self)
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_gameover = gui.get_node("txt_gameover")
 	self.node_gameover_stars = gui.get_node("txt_stars")
+	self.node_gameover_continue_btn = gui.get_node("box_continue")
 	-- dialog level complete
 	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
@@ -84,8 +85,12 @@ function on_input(self, action_id, action)
 			end
 			
 		elseif g_game_over == true then 
-			msg.post(".", "show_dialog_main_menu", {show = true})
-			msg.post("main", "reset", {})
+			if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
+				msg.post("main", "continue_level", {})
+			else
+				msg.post(".", "show_dialog_main_menu", {show = true})
+				msg.post("main", "reset", {})
+			end
 
 		-- if level complete and screen was touched, start new level
 		elseif g_completed == true then

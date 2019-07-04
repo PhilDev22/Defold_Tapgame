@@ -20,6 +20,7 @@ g_emoji_joker_id = 3
 --g_emoji_star_id = 4
 g_stars = 0
 g_stars_of_game = 0
+g_continue_stars = 300
 
 -- level settings
 g_stage_smileys = {}
@@ -128,6 +129,10 @@ function on_message(self, message_id, message, sender)
 		_reset(self)
 	elseif message_id == hash("next_level") then
 		_start_next_level(self)
+	elseif message_id == hash("continue_level") then
+		if g_stars >= g_continue_stars then
+			_restart_from_current_level(self)
+		end
 	end
 end
 
@@ -336,6 +341,14 @@ function _restart(self)
 	_init_level(self, self.level_smiley_count_max)
 
 	g_stopped = false
+end
+
+function _restart_from_current_level(self)
+	g_stars = g_stars - g_continue_stars
+	local lvl = g_level
+	_reset(self)
+	g_level = lvl
+	_start_next_level(self)
 end
 
 function _start_next_level(self)
