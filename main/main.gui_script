@@ -8,6 +8,7 @@ local showing_wrong_smiley_feedback = false
 local show_wrong_smiley_feedback_time = 1.0
 local show_wrong_smiley_feedback_timer = 0.0
 local stars_inc_speed = 60
+local menu_btns_initial_scale = 0.67
 
 function init(self)
 	self.score = 0
@@ -39,7 +40,11 @@ function init(self)
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
 	self.node_gameover = gui.get_node("txt_gameover")
 	self.node_gameover_stars = gui.get_node("txt_stars")
-	self.node_gameover_continue_btn = gui.get_node("box_continue")
+	self.node_gameover_stars_total = gui.get_node("txt_total_stars")
+	self.node_gameover_continue_btn = gui.get_node("img_continue")
+	self.node_gameover_continue_cost = gui.get_node("txt_continue_cost")
+	self.node_gameover_continue_stars = gui.get_node("img_continue_stars")
+	self.node_gameover_menu_btn = gui.get_node("box_menu")
 	-- dialog level complete
 	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
@@ -87,7 +92,7 @@ function on_input(self, action_id, action)
 		elseif g_game_over == true then 
 			if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
 				msg.post("main", "continue_level", {})
-			else
+			elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
 				msg.post(".", "show_dialog_main_menu", {show = true})
 				msg.post("main", "reset", {})
 			end
@@ -166,31 +171,15 @@ function on_message(self, message_id, message, sender)
 
 	elseif message_id == hash("show_dialog_main_menu") then
 		_show_main_menu(self)
+		
 	elseif message_id == hash("show_ingame_gui") then
-		_hide_all_dialogs(self)
-		gui.set_enabled(self.node_gui_ingame, message.show)
+		_show_gui_ingame(self)
 	
 	elseif message_id == hash("show_dialog_level_complete") then
-		_hide_all_dialogs(self)
-		gui.set_enabled(self.node_dialog_success, message.show)
-		if message.show == true then 
-			--gui.set_text(self.node_complete_seconds, tostring(g_score))
-			local s = 1.2
-			gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
-		end
+		_show_dialog_success(self)
 		
 	elseif message_id == hash("show_dialog_gameover") then
-		_hide_all_dialogs(self)
-		gui.set_enabled(self.node_dialog_gameover, message.show)
-		if message.show == true then 
-			--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
-			self.target_stars = g_stars_of_game
-			self.current_stars = 0
-			self.displayed_stars = 0
-			self.do_update_gameover_stars = true
-			gui.set_text(self.node_menu_stars, tostring(g_stars))
-			gui.set_text(self.node_gameover, "Game Over!")
-		end
+		_show_dialog_gameover(self)
 		
 	elseif message_id == hash("feedback_wrong_smiley") then
 		gui.set_enabled(self.node_wrong_smiley, true)
@@ -227,11 +216,48 @@ end
 function _show_dialog_success(self)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_success, true)
+
+	--gui.set_text(self.node_complete_seconds, tostring(g_score))
+	local s = 1.2
+	gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 end
 
 function _show_dialog_gameover(self)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, true)
+
+	--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
+	self.target_stars = g_stars_of_game
+	self.current_stars = 0
+	self.displayed_stars = 0
+	self.do_update_gameover_stars = true
+	
+	gui.set_text(self.node_menu_stars, tostring(g_stars))
+	gui.set_text(self.node_gameover, "Game Over!")
+	gui.set_text(self.node_gameover_stars_total, tostring(g_stars))
+	
+	gui.cancel_animation(self.node_gameover_continue_btn, "scale")
+	gui.cancel_animation(self.node_gameover_menu_btn, "scale")
+	gui.set_scale(self.node_gameover_continue_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
+	gui.set_scale(self.node_gameover_menu_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
+	gui.set_enabled(self.node_gameover_continue_cost, true)
+	gui.set_enabled(self.node_gameover_continue_stars, true)
+	local s = 0.75
+	if not g_restarted and g_stars >= g_continue_stars then  				
+		gui.animate(self.node_gameover_continue_btn, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+		gui.set_color(self.node_gameover_continue_btn, vmath.vector3(1, 1, 1))
+		gui.set_color(self.node_gameover_continue_stars, vmath.vector3(1, 1, 1))
+		gui.set_color(self.node_gameover_continue_cost, vmath.vector3(1, 1, 0.4))
+	else
+		gui.animate(self.node_gameover_menu_btn, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+		gui.set_color(self.node_gameover_continue_btn, vmath.vector3(0.4, 0.4, 0.4))
+		gui.set_color(self.node_gameover_continue_cost, vmath.vector3(0.4, 0.4, 0.4))
+		gui.set_color(self.node_gameover_continue_stars, vmath.vector3(0.4, 0.4, 0.4))
+		if g_restarted then
+			gui.set_enabled(self.node_gameover_continue_cost, false)
+			gui.set_enabled(self.node_gameover_continue_stars, false)
+		end	
+	end
 end
 
 function _update_gameover_stars(self, dt)

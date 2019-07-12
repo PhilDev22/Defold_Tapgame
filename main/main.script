@@ -21,6 +21,8 @@ g_emoji_joker_id = 3
 g_stars = 0
 g_stars_of_game = 0
 g_continue_stars = 300
+g_restarted = false
+g_restarted_level = 1
 
 -- level settings
 g_stage_smileys = {}
@@ -130,7 +132,7 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("next_level") then
 		_start_next_level(self)
 	elseif message_id == hash("continue_level") then
-		if g_stars >= g_continue_stars then
+		if not g_restarted and g_stars >= g_continue_stars then
 			_restart_from_current_level(self)
 		end
 	end
@@ -322,9 +324,10 @@ function _reset(self)
 	g_score = 0
 	g_lifes = g_constants.MAX_LIFES
 	g_level = g_start_level
+	g_restarted_level = 1
 	g_stars_of_game = 0
 	self.level_timer = g_level_time	
-
+	g_restarted = false
 	g_game_over = false
 	g_completed = false
 end
@@ -348,6 +351,8 @@ function _restart_from_current_level(self)
 	local lvl = g_level
 	_reset(self)
 	g_level = lvl
+	g_restarted_level = lvl
+	g_restarted = true
 	_start_next_level(self)
 end
 
@@ -412,7 +417,7 @@ end
 function _add_stars()
 	local amount = 0
 	-- add stars for each level (1 star for level 1; 2 stars for level 2, ...)
-	for var = 1, g_level - 1, 1 do
+	for var = g_restarted_level, g_level - 1, 1 do
 		amount = amount + var
 	end
 	print("Got Stars: " .. amount)

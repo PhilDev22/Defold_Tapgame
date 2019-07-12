@@ -73,6 +73,30 @@ images {
 images {
   image: "/assets/gui/emoji_u2764.png"
 }
+images {
+  image: "/assets/gui/emoji_u1f3a5.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f3a6.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f3ac.png"
+}
+images {
+  image: "/assets/gui/emoji_u21a9.png"
+}
+images {
+  image: "/assets/gui/emoji_u21aa.png"
+}
+images {
+  image: "/assets/gui/emoji_u231b.png"
+}
+images {
+  image: "/assets/gui/emoji_u23e9.png"
+}
+images {
+  image: "/assets/gui/emoji_u23ea.png"
+}
 margin: 0
 extrude_borders: 0
 inner_padding: 0
