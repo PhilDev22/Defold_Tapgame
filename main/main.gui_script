@@ -113,7 +113,7 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("set_time") then
 		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
 		if message.scale == 1 then
-			local s = 1.2
+			local s = 1.6
 			gui.animate(self.time_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 		end
 		
