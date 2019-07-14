@@ -31,6 +31,7 @@ g_level_smileys = {}
 g_level_smileys_base = 6
 g_level_smileys_max = g_level_smileys_base
 g_level_time = 60
+g_level_time_restart = 30
 g_additional_time = 5
 
 g_spawn_time_max_current_smiley = 3.5 -- max time for the current smiley to not being spawned
@@ -38,6 +39,9 @@ g_next_smiley_id = 1
 
 g_game_over = false
 g_main_menu = true
+
+-- statistics
+g_games_played = 0
 
 go.property("level_smiley_count_max", 3)
 go.property("single_score", 100)
@@ -76,6 +80,9 @@ function init(self)
 	-- set background color
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 
+	-- load savegame
+	_load_savegame()
+	
 	-- don't start until main menu was touched
 	g_stopped = true
 	
@@ -250,6 +257,8 @@ function _init_level(self, smiley_count)
 	msg.post("/main#gui", "activate_smiley", {nr = 1})
 	-- set level text
 	msg.post("/main#gui", "set_level", {level = g_level})
+	-- set lifes
+	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
 end
 
 function _handle_next_smiley(self, max_smileys)
@@ -317,6 +326,12 @@ function _process_game_over(self)
 
 	_add_stars()
 
+	if g_level > 1 then 
+		g_games_played = g_games_played + 1
+	end
+	
+	_save_game()
+	
 	print_values(self) --debug
 end
 
@@ -337,9 +352,6 @@ function _restart(self)
 	
 	msg.post("main#gui", "show_ingame_gui", {show = true})
 	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
-	msg.post("main#gui", "set_score", {amount = g_score})
-	msg.post("main#gui", "update_lifes", {lifes = g_lifes})
-	msg.post("main#gui", "activate_smiley", {nr = 1})
 	
 	_init_level(self, self.level_smiley_count_max)
 
@@ -348,8 +360,10 @@ end
 
 function _restart_from_current_level(self)
 	g_stars = g_stars - g_continue_stars
+	_save_game()
 	local lvl = g_level
 	_reset(self)
+	self.level_timer = g_level_time_restart	
 	g_level = lvl
 	g_restarted_level = lvl
 	g_restarted = true
@@ -363,7 +377,8 @@ function _start_next_level(self)
 		_increase_lifes(self, 1)
 	end
 
-	msg.post("/main#gui", "show_ingame_gui", {show = true})
+	msg.post("main#gui", "show_ingame_gui", {show = true})
+	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
 	
 	_init_level(self, self.level_smiley_count_max)
 	
@@ -423,6 +438,28 @@ function _add_stars()
 	print("Got Stars: " .. amount)
 	g_stars_of_game = g_stars_of_game + amount
 	g_stars = g_stars + g_stars_of_game
+end
+
+function _save_game()
+	local save_table = {stars = g_stars, games_played = g_games_palyed}
+	local file_path = sys.get_save_file("Tapmoji", "save")
+	if not sys.save(file_path, save_table) then
+		-- Alert user that the data could not be saved
+		print("Couldn't save progress!")
+	else
+		print("Saved game")
+	end
+end
+
+function _load_savegame() 
+	local file_path = sys.get_save_file("Tapmoji", "save")
+	g_stars = sys.load(file_path).stars or 0
+	g_games_played = sys.load(file_path).games_played or 0
+
+	print("-- Loaded savegame: ")
+	print("Stars: " .. g_stars)
+	print("Games played: " .. g_games_played)
+	print("--")
 end
 
 -- helper

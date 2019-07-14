@@ -63,3 +63,6 @@ shared_state = 1
 [sprite]
 max_count = 256
 
+[tracking]
+app_id = Tapmoji
+
