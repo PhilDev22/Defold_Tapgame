@@ -62,6 +62,9 @@ function init(self)
 
 	-- set time on gui
 	gui.set_text(self.time_node, tostring(math.ceil(g_level_time)))
+
+	-- set stars in menu
+	gui.set_text(self.node_menu_stars, tostring(g_stars))
 	
 	-- show the main menu first
 	-- _show_main_menu(self)
@@ -105,7 +108,9 @@ function on_input(self, action_id, action)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("set_score") then
+	if message_id == hash("init_menu") then
+		
+	elseif message_id == hash("set_score") then
 		local s = 1.2
 		--gui.set_text(self.score_node, tostring(message.amount))
 		--gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
@@ -204,6 +209,8 @@ function _show_main_menu(self)
 	gui.set_scale(self.node_menu_btn_start, vmath.vector4(1.0, 1.0, 1.0, 0))
 	local s = 1.1
 	gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+	-- update amount of stars
+	gui.set_text(self.node_menu_stars, tostring(g_stars))
 	-- set global flag
 	g_main_menu = true
 end
