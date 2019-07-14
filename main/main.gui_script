@@ -147,6 +147,10 @@ function on_message(self, message_id, message, sender)
 		gui.play_flipbook(self.smiley_node_2, "emoji_u1f" .. message.smiley2)
 		
 	elseif message_id == hash("activate_smiley") then
+		-- cancel all animations
+		gui.cancel_animation(self.smiley_node_0, "scale")
+		gui.cancel_animation(self.smiley_node_1, "scale")
+		gui.cancel_animation(self.smiley_node_2, "scale")
 		-- reset all smiley sizes
 		gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
 		gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
@@ -234,11 +238,14 @@ function _show_dialog_gameover(self)
 	gui.set_enabled(self.node_dialog_gameover, true)
 
 	--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
-	self.target_stars = g_stars_of_game
-	self.current_stars = 0
-	self.displayed_stars = 0
-	self.do_update_gameover_stars = true
-	
+	if g_stars_of_game > 0 then
+		self.target_stars = g_stars_of_game
+		self.current_stars = 0
+		self.displayed_stars = 0
+		self.do_update_gameover_stars = true
+	else 
+		gui.set_text(self.node_gameover_stars, tostring(g_stars_of_game))
+	end
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
 	gui.set_text(self.node_gameover, "Game Over!")
 	gui.set_text(self.node_gameover_stars_total, tostring(g_stars))
