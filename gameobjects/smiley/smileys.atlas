@@ -26,6 +26,15 @@ images {
   image: "/assets/smileys/emoji_u1f435.png"
 }
 images {
+  image: "/assets/smileys/emoji_u1f44c.png"
+}
+images {
+  image: "/assets/smileys/emoji_u1f44d.png"
+}
+images {
+  image: "/assets/smileys/emoji_u1f44f.png"
+}
+images {
   image: "/assets/smileys/emoji_u1f499.png"
 }
 images {
@@ -42,6 +51,12 @@ images {
 }
 images {
   image: "/assets/smileys/emoji_u1f4a3.png"
+}
+images {
+  image: "/assets/smileys/emoji_u1f4a9.png"
+}
+images {
+  image: "/assets/smileys/emoji_u1f4aa.png"
 }
 images {
   image: "/assets/smileys/emoji_u1f600.png"

@@ -1,6 +1,7 @@
 [project]
 title = Tapmoji
 version = 0.9
+dependencies = https://github.com/Lerg/extension-admob/archive/master.zip
 
 [bootstrap]
 main_collection = /main/main.collectionc
@@ -56,6 +57,7 @@ app_icon_144x144 = /assets/app_icons/icon_144.png
 app_icon_192x192 = /assets/app_icons/icon_192.png
 input_method = HiddenInputField
 immersive_mode = 1
+minimum_sdk_version = 14
 
 [script]
 shared_state = 1

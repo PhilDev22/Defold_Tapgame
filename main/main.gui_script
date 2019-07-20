@@ -52,6 +52,7 @@ function init(self)
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
 	self.node_menu_stars = gui.get_node("txt_stars_total")
+	self.node_box_success = gui.get_node("box_success_emoji")
 	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
@@ -228,6 +229,12 @@ function _show_dialog_success(self)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_success, true)
 
+	-- set random success smiley
+	local index = math.random(tablelength(g_smileys_success_ids))
+	local success_smiley =  g_smileys_success_ids[ index ] --"u1f973"
+	gui.set_texture(self.node_box_success, "smileys")
+	gui.play_flipbook(self.node_box_success,"emoji_" .. success_smiley)
+	
 	--gui.set_text(self.node_complete_seconds, tostring(g_score))
 	local s = 1.2
 	gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
