@@ -1,0 +1,18 @@
+images {
+  image: "/assets/backgrounds/background_ingame_1.png"
+}
+images {
+  image: "/assets/backgrounds/background_ingame_2.png"
+}
+images {
+  image: "/assets/backgrounds/background_ingame_3.png"
+}
+images {
+  image: "/assets/backgrounds/background_ingame_4.png"
+}
+images {
+  image: "/assets/backgrounds/background_ingame_5.png"
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0

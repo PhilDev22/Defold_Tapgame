@@ -83,6 +83,7 @@ function _init_position(self)
 		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
 		-- spawn left or right randomly
 		pos.x = math.random(2) == 1 and spawn_offset_left or g_constants.SCREEN_WIDTH + spawn_offset_right
+		pos.z = 1
 		go.set_position(pos)
 		
 	elseif g_mode_active == g_modes.vertical then

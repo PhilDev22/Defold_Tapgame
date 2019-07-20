@@ -23,6 +23,7 @@ g_stars_of_game = 0
 g_continue_stars = 300
 g_restarted = false
 g_restarted_level = 1
+g_background_count = 5
 
 -- level settings
 g_stage_smileys = {}
@@ -209,6 +210,8 @@ end
 
 function _init_level(self, smiley_count)
 	print("Level: " .. g_level)
+
+	_set_background()
 	
 	_init_moving_mode(self)
 	
@@ -438,6 +441,13 @@ function _add_stars()
 	print("Got Stars: " .. amount)
 	g_stars_of_game = g_stars_of_game + amount
 	g_stars = g_stars + g_stars_of_game
+end
+
+-- sets a random background
+function _set_background()
+	local background_prefix = "background_ingame_"
+	local background_nr = math.random(g_background_count)
+	msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
 end
 
 function _save_game()
