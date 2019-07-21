@@ -1,7 +1,7 @@
 [project]
 title = Tapmoji
 version = 0.9
-dependencies = https://github.com/Lerg/extension-admob/archive/master.zip
+dependencies = 
 
 [bootstrap]
 main_collection = /main/main.collectionc

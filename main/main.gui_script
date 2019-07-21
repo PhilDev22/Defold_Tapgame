@@ -45,14 +45,15 @@ function init(self)
 	self.node_gameover_continue_cost = gui.get_node("txt_continue_cost")
 	self.node_gameover_continue_stars = gui.get_node("img_continue_stars")
 	self.node_gameover_menu_btn = gui.get_node("box_menu")
+	self.node_box_gameover_emoji = gui.get_node("box_gameover_emoji")
 	-- dialog level complete
 	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
 	self.node_complete = gui.get_node("txt_level_complete")
+	self.node_box_success = gui.get_node("box_success_emoji")
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
 	self.node_menu_stars = gui.get_node("txt_stars_total")
-	self.node_box_success = gui.get_node("box_success_emoji")
 	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
@@ -244,6 +245,12 @@ function _show_dialog_gameover(self)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, true)
 
+	-- set random "fail" smiley
+	local index = math.random(tablelength(g_smileys_gameover_ids))
+	local gameover_smiley =  g_smileys_gameover_ids[ index ] --"u1f4a9"
+	gui.set_texture(self.node_box_gameover_emoji, "smileys")
+	gui.play_flipbook(self.node_box_gameover_emoji,"emoji_" .. gameover_smiley)
+	
 	--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
 	if g_stars_of_game > 0 then
 		self.target_stars = g_stars_of_game
