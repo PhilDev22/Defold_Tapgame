@@ -63,6 +63,7 @@ function init(self)
 	self.node_menu_stars = gui.get_node("txt_stars_total")
 	self.node_sound_enabled = gui.get_node("img_sound_active")
 	self.node_sound_disabled = gui.get_node("img_sound_muted")
+	self.node_txt_highscore = gui.get_node("txt_highscore")
 	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
@@ -251,6 +252,7 @@ function _show_main_menu(self)
 	gui.animate(self.node_menu_btn_start, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 	-- update amount of stars
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
+	gui.set_text(self.node_txt_highscore, "Level " .. tostring(g_highscore_level))
 	-- set global flag
 	g_main_menu = true
 end
@@ -315,6 +317,8 @@ function _show_dialog_gameover(self)
 	gui.set_scale(self.node_gameover_continue_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
 	gui.set_scale(self.node_gameover_menu_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
 	gui.set_enabled(self.node_gameover_continue_cost, true)
+	gui.set_text(self.node_gameover_continue_cost, tostring(g_continue_stars))
+	
 	gui.set_enabled(self.node_gameover_continue_stars, true)
 	local s = 0.75
 	if not g_restarted and g_stars >= g_continue_stars then  				

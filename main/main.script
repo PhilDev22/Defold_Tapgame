@@ -6,6 +6,7 @@ g_sound_active = true
 g_stopped = false
 g_completed = false
 g_pause = false
+g_highscore_level = 1
 g_score = 0
 g_level = 1
 g_start_level = 1
@@ -26,7 +27,7 @@ g_smileys_success_ids = {"u1f60f", "u1f4aa", "u1f44c", "u1f44d", "u1f44f", "u1f6
 g_smileys_gameover_ids = {"u1f4a9", "u1f61e", "u1f61f", "u1f62b", "u1f62d", "u1f62e", "u1f92f", "u1f610", "u1f613", "u1f629", "u1f635", "u1f648", "u2639"}
 g_stars = 0
 g_stars_of_game = 0
-g_continue_stars = 300
+g_continue_stars = 500
 g_restarted = false
 g_restarted_level = 1
 g_background_count = 5
@@ -107,7 +108,7 @@ function init(self)
 	self.level_timer = g_level_time
 	self.level_smiley_count_max = 3
 	self.second = 0.0
-	_init_level(self, self.level_smiley_count_max)
+	--_init_level(self, self.level_smiley_count_max)
 
 	g_item_table_ids = get_table_ids( g_item_ids )
 	
@@ -319,8 +320,6 @@ function _touch_item(self, smiley_id, sender)
 		_increase_lifes(self, 1)
 		
 	elseif item_index == g_emoji_joker_id then
-		-- emit particles
-		msg.post(sender, "smiley_touch_success", {success = true})
 		-- set next smiley to touch
 		_handle_next_smiley(self, self.level_smiley_count_max)
 		
@@ -336,7 +335,12 @@ function _touch_item(self, smiley_id, sender)
 		touched = false
 	end
 
-	if touched then _play_sound_touched_item() end
+	if touched then 
+		-- emit particles
+		msg.post(sender, "smiley_touch_success", {success = true})
+		-- play sound
+		_play_sound_touched_item()
+	end
 	
 	return touched
 end
@@ -352,6 +356,10 @@ function _process_game_over(self)
 
 	if g_level > 1 then 
 		g_games_played = g_games_played + 1
+	end
+
+	if g_level > g_highscore_level then
+		g_highscore_level = g_level
 	end
 	
 	save_game()
@@ -489,7 +497,13 @@ end
 function save_game()
 	local sound = 0
 	if g_sound_active then sound = 1 end
-	local save_table = {stars=g_stars, games_played=g_games_played, reset_counter=g_reset_counter, sound_active=sound}
+	
+	local save_table = {stars=g_stars, 
+	games_played=g_games_played, 
+	reset_counter=g_reset_counter, 
+	sound_active=sound,
+	highscore_level = g_highscore_level}
+	
 	local file_path = sys.get_save_file("Tapmoji", "save")
 	if not sys.save(file_path, save_table) then
 		-- Alert user that the data could not be saved
@@ -504,6 +518,7 @@ function _load_savegame()
 	g_stars = sys.load(file_path).stars or 0
 	g_games_played = sys.load(file_path).games_played or 0
 	g_reset_counter = sys.load(file_path).reset_counter or 0
+	g_highscore_level = sys.load(file_path).highscore_level or 0
 	sound_active = sys.load(file_path).sound_active or 0
 	
 	g_sound_active = false
@@ -513,6 +528,7 @@ function _load_savegame()
 	print("Stars: " .. g_stars)
 	print("Games played: " .. g_games_played)
 	print("Reset Counter: " .. g_reset_counter)
+	print("Highscore level: " ..g_highscore_level)
 	print("Sound active: " .. tostring(g_sound_active))
 	print("--")
 end
