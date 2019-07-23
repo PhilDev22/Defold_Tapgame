@@ -6,12 +6,14 @@ end
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
 		-- pprint(action)
-		
-		local p = go.get_position()
-		p.x = action.x
-		p.y = action.y
-		
-		local component = "#input_factory"
-		factory.create(component, p)
+
+		if not g_pause then
+			local p = go.get_position()
+			p.x = action.x
+			p.y = action.y
+			
+			local component = "#input_factory"
+			factory.create(component, p)
+		end
 	end
 end

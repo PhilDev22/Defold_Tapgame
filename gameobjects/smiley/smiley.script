@@ -11,6 +11,8 @@ local death_offset_bottom = 200
 local death_offset_x = 200
 
 function init(self)
+	self.visible = true 
+	
 	local smiley_id = ""
 	local prefix  = "emoji_u1f"
 	-- if not a certain smiley is triggered, then spawn a random one
@@ -47,10 +49,29 @@ function final(self)
 	g_smiley_count = g_smiley_count - 1
 end
 
+local function _handle_pause_state(self)
+	if self.visible then
+		--msg.post("#sprite", "disable")
+		go.set("#sprite", "tint", vmath.vector4(1,1,1,0))
+		self.visible = false
+	end
+end
+
 function update(self, dt)
 	if not g_stopped then
-		_move(self, dt)
-		_check_pos(self)
+		if not g_pause then
+			if not self.visible then
+				--msg.post("#sprite", "enable")
+				print("not visible")
+				go.set("#sprite", "tint", vmath.vector4(1,1,1,1))
+				self.visible = true
+			end
+			
+			_move(self, dt)
+			_check_pos(self)
+		else
+			_handle_pause_state(self)
+		end
 	else
 		go.delete()
 	end
@@ -83,7 +104,7 @@ function _init_position(self)
 		pos.y = (math.random() * spawn_range_y) + spawn_offset_bottom
 		-- spawn left or right randomly
 		pos.x = math.random(2) == 1 and spawn_offset_left or g_constants.SCREEN_WIDTH + spawn_offset_right
-		pos.z = 1
+		pos.z = 0.1
 		go.set_position(pos)
 		
 	elseif g_mode_active == g_modes.vertical then

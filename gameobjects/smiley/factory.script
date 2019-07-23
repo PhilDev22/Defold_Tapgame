@@ -32,7 +32,7 @@ function on_message(self, message_id, message, sender)
 end
 
 function update(self, dt)
-	if (spawn_timer_initialized) and (not g_stopped) and (g_smiley_count < g_constants.MAX_SMILEYS) then
+	if (spawn_timer_initialized) and (not g_pause) and (not g_stopped) and (g_smiley_count < g_constants.MAX_SMILEYS) then
 		-- count down spawn timer
 		spawn_timer = spawn_timer - dt
 		-- count down spawn timer for current smiley that has to be found

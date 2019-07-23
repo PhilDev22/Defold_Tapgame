@@ -2,8 +2,10 @@
 g_constants = require "main.constants"
 g_screen_scale = 1.0
 g_show_ads = true
+g_sound_active = true
 g_stopped = false
 g_completed = false
+g_pause = false
 g_score = 0
 g_level = 1
 g_start_level = 1
@@ -117,7 +119,7 @@ function init(self)
 end
 
 function update(self, dt)
-	if not g_stopped then
+	if not g_stopped and not g_pause then
 		self.level_timer = self.level_timer - dt
 		self.level_timer = math.max(self.level_timer, 0)
 		self.second = self.second + dt 
@@ -153,6 +155,8 @@ function on_message(self, message_id, message, sender)
 		if not g_restarted and g_stars >= g_continue_stars then
 			_restart_from_current_level(self)
 		end
+	elseif message_id == hash("pause") then
+		_handle_pause()
 	end
 end
 
@@ -288,18 +292,22 @@ end
 
 function _process_smiley_touch(self, smiley_id, sender)
 	print("touched id: "..smiley_id)
+	
 	-- check if smiley is in table of level smileys
 	if smiley_id == hash(g_level_smileys[ g_next_smiley_id ]) then
 		print("Touched right one")
+		_play_sound_touched_smiley()
 		-- emit particles
 		msg.post(sender, "smiley_touch_success", {success = true})
 		-- set next smiley to touch
-		_handle_next_smiley(self, self.level_smiley_count_max)
+		_handle_next_smiley(self, self.level_smiley_count_max)	
 	-- else check if item was touched
 	elseif not _touch_item(self, smiley_id, sender) then
-	-- wrong smiley touched
+		-- wrong smiley touched
 		msg.post("/main#gui", "feedback_wrong_smiley", {})
 		_increase_lifes(self, -1)
+		_play_sound_touched_smiley()
+		_play_sound_fail()
 	end
 end
 
@@ -327,6 +335,9 @@ function _touch_item(self, smiley_id, sender)
 	elseif item_index == nil then
 		touched = false
 	end
+
+	if touched then _play_sound_touched_item() end
+	
 	return touched
 end
 
@@ -343,7 +354,7 @@ function _process_game_over(self)
 		g_games_played = g_games_played + 1
 	end
 	
-	_save_game()
+	save_game()
 	
 	print_values(self) --debug
 end
@@ -373,7 +384,7 @@ end
 
 function _restart_from_current_level(self)
 	g_stars = g_stars - g_continue_stars
-	_save_game()
+	save_game()
 	local lvl = g_level
 	_reset(self)
 	self.level_timer = g_level_time_restart	
@@ -418,10 +429,16 @@ function _on_level_complete(self)
 		-- set game state flags
 		g_stopped = true
 		g_completed = true
+
+		_play_sound_complete()
 	end
 	--else level complete, but lifes = 0 (right and wrong smiley were touched simultaneously) -> game over
 		
 	print_values(self) --debug
+end
+
+function _handle_pause()
+	
 end
 
 -- adds hearts to current game, and updates gui
@@ -469,8 +486,10 @@ function _set_background()
 	msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
 end
 
-function _save_game()
-	local save_table = {stars=g_stars, games_played=g_games_played, reset_counter=g_reset_counter}
+function save_game()
+	local sound = 0
+	if g_sound_active then sound = 1 end
+	local save_table = {stars=g_stars, games_played=g_games_played, reset_counter=g_reset_counter, sound_active=sound}
 	local file_path = sys.get_save_file("Tapmoji", "save")
 	if not sys.save(file_path, save_table) then
 		-- Alert user that the data could not be saved
@@ -485,11 +504,16 @@ function _load_savegame()
 	g_stars = sys.load(file_path).stars or 0
 	g_games_played = sys.load(file_path).games_played or 0
 	g_reset_counter = sys.load(file_path).reset_counter or 0
+	sound_active = sys.load(file_path).sound_active or 0
 	
+	g_sound_active = false
+	if sound_active == 1 then g_sound_active = true end
+		
 	print("-- Loaded savegame: ")
 	print("Stars: " .. g_stars)
 	print("Games played: " .. g_games_played)
 	print("Reset Counter: " .. g_reset_counter)
+	print("Sound active: " .. tostring(g_sound_active))
 	print("--")
 end
 
@@ -501,8 +525,68 @@ function increase_reset_counter()
 		g_reset_counter = 0
 		g_show_ad_gameover = true
 	end
-	_save_game()
+	save_game()
 end
+
+-- sounds
+
+function play_music(play)
+	local sound_path = "#music"
+	sound.stop(sound_path)
+	if play and g_sound_active then
+		sound.play(sound_path)
+	end
+end
+
+function _play_sound_touched_smiley()
+	if g_sound_active then
+		local sound_nr = math.random(4)
+		sound.play("#sound_pop" .. tostring(sound_nr))
+	end
+end
+
+function _play_sound_touched_item()
+	if g_sound_active then
+		sound.play("#sound_pop1")
+		sound.play("#sound_item2", {delay = 0.15})
+	end
+end
+
+function _play_sound_complete()
+	if g_sound_active then
+		sound.play("#sound_complete", {delay = 0.2})
+	end
+end
+
+function _play_sound_gameover()
+	if g_sound_active then
+		sound.play("#sound_complete")
+	end
+end
+
+function _play_sound_fail()
+	if g_sound_active then
+		sound.play("#sound_fail")
+	end
+end
+
+function play_sound_count_stars(play)
+	local sound_path = "#sound_stars"
+	if play then
+		if g_sound_active then
+			sound.play(sound_path)
+		end
+	else
+		sound.stop(sound_path)
+	end
+end
+
+function _play_sound_button()
+	if g_sound_active then
+		sound.play("#sound_click1")
+	end
+end
+
 
 -- helper
 function get_table_ids(table)
