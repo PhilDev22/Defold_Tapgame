@@ -93,6 +93,8 @@ function init(self)
 
 	--g_screen_scale = tonumber(sys.get_config("display.height")) / g_constants.SCREEN_HEIGHT
 	--print(g_screen_scale)
+
+	window.set_listener(window_listener)
 	
 	-- load savegame
 	_load_savegame()
@@ -117,6 +119,15 @@ function init(self)
 
 	-- show main menu
 	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
+end
+
+function window_listener(self, constant, data)
+	if constant == window.WINDOW_EVENT_FOCUS_LOST then
+		if not g_stopped and not g_pause then
+			print("Window lost focus. Pausing game.")
+			msg.post("main#gui", "toggle_pause")
+		end
+	end
 end
 
 function update(self, dt)
