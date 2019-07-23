@@ -1,4 +1,6 @@
--- Code sample from Defold side scroller tutorial
+is_banner_ad_shown = false
+has_local_notification_permission = false
+product_name = "Enhance_SKU_One"
 
 local smiley_scale_small = 0.5
 local smiley_scale_big = 1.0
@@ -11,6 +13,8 @@ local stars_inc_speed = 60
 local menu_btns_initial_scale = 0.67
 
 function init(self)
+	msg.post(".", "acquire_input_focus")
+	
 	self.score = 0
 
 	-- for counting-up animation of stars at gameover screen
@@ -70,6 +74,9 @@ function init(self)
 	
 	-- show the main menu first
 	-- _show_main_menu(self)
+
+	-- show GDPR dialog (for ads)
+	--on_gdpr_show_dialogs_clicked()
 end
 
 -- animation helper (have to be at the beginning)
@@ -97,9 +104,17 @@ function on_input(self, action_id, action)
 		elseif g_game_over == true then 
 			if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
 				msg.post("main", "continue_level", {})
+				--on_show_rewarded_clicked()
+				
 			elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
+				--show main menu
 				msg.post(".", "show_dialog_main_menu", {show = true})
 				msg.post("main", "reset", {})
+				--show ad 
+				if g_show_ad_gameover then 
+					on_show_interstitial_clicked()
+					g_show_ad_gameover = false
+				end
 			end
 
 		-- if level complete and screen was touched, start new level
@@ -330,3 +345,61 @@ function update(self, dt)
 	_update_gameover_stars(self, dt)
 end
 
+
+-- Ads --
+
+-- Interstitial Ad
+
+function on_show_interstitial_clicked()
+	if g_show_ads then
+		on_gdpr_show_dialogs_clicked()
+		-- Check whether an interstitial ad is available
+		if not enhance.isInterstitialReady() then
+			write_log("Interstitial ad is not ready")
+		else
+			-- The ad is ready
+			enhance.showInterstitialAd()
+			write_log("Showing interstitial ad")
+		end
+	end
+end
+
+-- gdpr dialog
+function on_gdpr_opt_in_clicked()
+	-- Explicit opt-in
+
+	enhance.serviceTermsOptIn()
+	write_log("Called explicit opt-in")
+end
+
+function on_gdpr_opt_out_clicked()
+	-- Explicit opt-out
+
+	enhance.serviceTermsOptOut();
+	write_log("Called explicit opt-out")
+end
+
+function on_gdpr_show_dialogs_clicked()
+	-- Show data consent dialogs of all SDKs that provide them
+	write_log("Checking: requiresDataConsentOptIn ?")
+	enhance.requiresDataConsentOptIn(on_service_opt_in_requirement)	
+end
+
+function on_service_opt_in_requirement(self, isUserOptInRequired)
+	if isUserOptInRequired == 1 then
+		write_log("showServiceOptInDialogs")
+		enhance.showServiceOptInDialogs(on_dialogs_complete)
+	end
+end
+
+function on_dialogs_complete()
+	write_log("Finished displaying opt-in dialogs")
+end
+
+-- Non-enhance logic
+-- Write logs to the screen
+function write_log(text)
+	local text_node = gui.get_node("text_log")
+	--gui.set_text(text_node, text)
+	print(text)
+end

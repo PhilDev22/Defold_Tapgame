@@ -1,5 +1,7 @@
 -- reference to the constants module
 g_constants = require "main.constants"
+g_screen_scale = 1.0
+g_show_ads = true
 g_stopped = false
 g_completed = false
 g_score = 0
@@ -12,12 +14,12 @@ g_item_prob = 5
 g_time_item_value = 5 -- seconds
 g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
 -- item emoticons
-g_item_ids = {"u2764", "u23f2", "u1f0cf"} --  star:"u2b50"
+g_item_ids = {"u2764", "u23f2", "u1f0cf", "u2b50"} --  star:"u2b50"
 g_item_table_ids = {} -- initialize in init function
 g_emoji_heart_id = 1
 g_emoji_time_id = 2
 g_emoji_joker_id = 3
---g_emoji_star_id = 4
+g_emoji_star_id = 4
 g_smileys_success_ids = {"u1f60f", "u1f4aa", "u1f44c", "u1f44d", "u1f44f", "u1f60e", "u1f917", "u1f929", "u1f970", "u1f973"}
 g_smileys_gameover_ids = {"u1f4a9", "u1f61e", "u1f61f", "u1f62b", "u1f62d", "u1f62e", "u1f92f", "u1f610", "u1f613", "u1f629", "u1f635", "u1f648", "u2639"}
 g_stars = 0
@@ -26,6 +28,9 @@ g_continue_stars = 300
 g_restarted = false
 g_restarted_level = 1
 g_background_count = 5
+g_reset_counter = 1
+g_reset_max = 3
+g_show_ad_gameover = false
 
 -- level settings
 g_stage_smileys = {}
@@ -83,6 +88,9 @@ function init(self)
 	-- set background color
 	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
 
+	--g_screen_scale = tonumber(sys.get_config("display.height")) / g_constants.SCREEN_HEIGHT
+	--print(g_screen_scale)
+	
 	-- load savegame
 	_load_savegame()
 	
@@ -138,6 +146,7 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("restart") then
 		_restart(self)
 	elseif message_id == hash("reset") then
+		_increase_reset_counter()
 		_reset(self)
 	elseif message_id == hash("next_level") then
 		_start_next_level(self)
@@ -313,8 +322,8 @@ function _touch_item(self, smiley_id, sender)
 		self.level_timer = self.level_timer + g_time_item_value
 		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 1})
 		
-	--elseif item_index == g_emoji_star_id then
-	--	print("Star item touched")
+	elseif item_index == g_emoji_star_id then
+		_add_stars_amount(1)
 	
 	elseif item_index == nil then
 		touched = false
@@ -329,7 +338,7 @@ function _process_game_over(self)
 	g_stopped = true
 	g_game_over = true
 
-	_add_stars()
+	_add_stars_game_finished()
 
 	if g_level > 1 then 
 		g_games_played = g_games_played + 1
@@ -416,6 +425,8 @@ function _on_level_complete(self)
 	print_values(self) --debug
 end
 
+-- adds hearts to current game, and updates gui
+-- if hearts <= 0 then game over
 function _increase_lifes(self, amount)
 	g_lifes = g_lifes + amount
 	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
@@ -434,12 +445,19 @@ function add_score(amount)
 	msg.post("main#gui", "set_score", {amount = g_score})
 end
 
-function _add_stars()
+-- Adds stars after gameover. 
+-- For each level the amount according to the level number.
+function _add_stars_game_finished()
 	local amount = 0
 	-- add stars for each level (1 star for level 1; 2 stars for level 2, ...)
 	for var = g_restarted_level, g_level - 1, 1 do
 		amount = amount + var
 	end
+	_add_stars_amount(amount)
+end
+
+-- adds a certain amount of stars to actual game
+function _add_stars_amount(amount)
 	print("Got Stars: " .. amount)
 	g_stars_of_game = g_stars_of_game + amount
 	g_stars = g_stars + g_stars_of_game
@@ -472,6 +490,16 @@ function _load_savegame()
 	print("Stars: " .. g_stars)
 	print("Games played: " .. g_games_played)
 	print("--")
+end
+
+-- counts the amount of clicks on the "back to menu" button
+-- triggers showing an interstitial ad when amount = g_reset_max
+function _increase_reset_counter()
+	g_reset_counter = g_reset_counter + 1
+	if g_reset_counter >= g_reset_max then 
+		g_reset_counter = 0
+		g_show_ad_gameover = true
+	end
 end
 
 -- helper

@@ -1400,8 +1400,8 @@ nodes {
   blend_mode: BLEND_MODE_ALPHA
   texture: "backgrounds/background_ingame_2"
   id: "gui_ingame"
-  xanchor: XANCHOR_LEFT
-  yanchor: YANCHOR_BOTTOM
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
   pivot: PIVOT_SW
   adjust_mode: ADJUST_MODE_FIT
   layer: ""
@@ -1421,8 +1421,8 @@ nodes {
 }
 nodes {
   position {
-    x: 198.0
-    y: 1087.0
+    x: 187.0
+    y: 1091.0
     z: 0.0
     w: 1.0
   }
@@ -1455,8 +1455,8 @@ nodes {
   text: "60"
   font: "score_big"
   id: "txt_time"
-  xanchor: XANCHOR_NONE
-  yanchor: YANCHOR_NONE
+  xanchor: XANCHOR_LEFT
+  yanchor: YANCHOR_TOP
   pivot: PIVOT_E
   outline {
     x: 1.0
@@ -1470,7 +1470,7 @@ nodes {
     z: 1.0
     w: 1.0
   }
-  adjust_mode: ADJUST_MODE_FIT
+  adjust_mode: ADJUST_MODE_ZOOM
   line_break: false
   parent: "gui_ingame"
   layer: ""
@@ -1485,7 +1485,7 @@ nodes {
 nodes {
   position {
     x: 59.0
-    y: 1083.0
+    y: 1088.0
     z: 0.0
     w: 1.0
   }
@@ -1540,7 +1540,7 @@ nodes {
 nodes {
   position {
     x: 319.0
-    y: 993.0
+    y: 991.0
     z: 0.0
     w: 1.0
   }
@@ -1823,7 +1823,7 @@ nodes {
 nodes {
   position {
     x: 599.0
-    y: 1088.0
+    y: 1087.0
     z: 0.0
     w: 1.0
   }
@@ -1878,7 +1878,7 @@ nodes {
 nodes {
   position {
     x: 544.0
-    y: 1088.0
+    y: 1087.0
     z: 0.0
     w: 1.0
   }
@@ -1933,7 +1933,7 @@ nodes {
 nodes {
   position {
     x: 489.0
-    y: 1088.0
+    y: 1087.0
     z: 0.0
     w: 1.0
   }
@@ -2078,7 +2078,7 @@ nodes {
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
-  adjust_mode: ADJUST_MODE_FIT
+  adjust_mode: ADJUST_MODE_ZOOM
   layer: ""
   inherit_alpha: true
   slice9 {
@@ -2092,7 +2092,7 @@ nodes {
   clipping_inverted: false
   alpha: 0.0
   template_node_child: false
-  size_mode: SIZE_MODE_AUTO
+  size_mode: SIZE_MODE_MANUAL
 }
 nodes {
   position {
@@ -2108,8 +2108,8 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 1.084
-    y: 1.021
+    x: 1.0
+    y: 1.0
     z: 1.0
     w: 1.0
   }
@@ -2132,7 +2132,7 @@ nodes {
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
-  adjust_mode: ADJUST_MODE_FIT
+  adjust_mode: ADJUST_MODE_STRETCH
   parent: "dialog_main_menu"
   layer: ""
   inherit_alpha: false
@@ -2187,7 +2187,7 @@ nodes {
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
-  adjust_mode: ADJUST_MODE_FIT
+  adjust_mode: ADJUST_MODE_STRETCH
   parent: "dialog_main_menu"
   layer: ""
   inherit_alpha: false
@@ -2425,6 +2425,68 @@ nodes {
   parent: "box_stars_total"
   layer: ""
   inherit_alpha: false
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: false
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
+    x: 5.0
+    y: 3.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 0.258
+    y: 0.258
+    z: 0.258
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: ""
+  font: "score_big"
+  id: "text_log"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_SW
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  layer: ""
+  inherit_alpha: true
   alpha: 1.0
   outline_alpha: 1.0
   shadow_alpha: 1.0
