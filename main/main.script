@@ -146,7 +146,6 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("restart") then
 		_restart(self)
 	elseif message_id == hash("reset") then
-		_increase_reset_counter()
 		_reset(self)
 	elseif message_id == hash("next_level") then
 		_start_next_level(self)
@@ -471,7 +470,7 @@ function _set_background()
 end
 
 function _save_game()
-	local save_table = {stars = g_stars, games_played = g_games_played}
+	local save_table = {stars=g_stars, games_played=g_games_played, reset_counter=g_reset_counter}
 	local file_path = sys.get_save_file("Tapmoji", "save")
 	if not sys.save(file_path, save_table) then
 		-- Alert user that the data could not be saved
@@ -485,21 +484,24 @@ function _load_savegame()
 	local file_path = sys.get_save_file("Tapmoji", "save")
 	g_stars = sys.load(file_path).stars or 0
 	g_games_played = sys.load(file_path).games_played or 0
-
+	g_reset_counter = sys.load(file_path).reset_counter or 0
+	
 	print("-- Loaded savegame: ")
 	print("Stars: " .. g_stars)
 	print("Games played: " .. g_games_played)
+	print("Reset Counter: " .. g_reset_counter)
 	print("--")
 end
 
 -- counts the amount of clicks on the "back to menu" button
 -- triggers showing an interstitial ad when amount = g_reset_max
-function _increase_reset_counter()
+function increase_reset_counter()
 	g_reset_counter = g_reset_counter + 1
 	if g_reset_counter >= g_reset_max then 
 		g_reset_counter = 0
 		g_show_ad_gameover = true
 	end
+	_save_game()
 end
 
 -- helper

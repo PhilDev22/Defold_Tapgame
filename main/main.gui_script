@@ -107,14 +107,15 @@ function on_input(self, action_id, action)
 				--on_show_rewarded_clicked()
 				
 			elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
-				--show main menu
-				msg.post(".", "show_dialog_main_menu", {show = true})
-				msg.post("main", "reset", {})
+				increase_reset_counter() --main.script
 				--show ad 
 				if g_show_ad_gameover then 
 					on_show_interstitial_clicked()
 					g_show_ad_gameover = false
 				end
+				--show main menu
+				msg.post(".", "show_dialog_main_menu", {show = true})
+				msg.post("main", "reset", {})
 			end
 
 		-- if level complete and screen was touched, start new level
