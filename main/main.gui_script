@@ -65,17 +65,11 @@ function init(self)
 	gui.set_enabled(self.node_wrong_smiley, false)
 	showing_wrong_smiley_feedback = false
 
-	-- temporarily
-	gui.set_enabled(self.node_gameover_score, false)
-
 	-- set time on gui
 	gui.set_text(self.time_node, tostring(math.ceil(g_constants.LEVEL_TIME)))
 
 	-- set stars in menu
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
-	
-	-- show the main menu first
-	-- _show_main_menu(self)
 
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
@@ -97,117 +91,76 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
-
+		-- pause
 		if g_pause or gui.pick_node(self.node_btn_pause, action.x, action.y) then
 			toggle_pause(self)
-		end
-		
-		if g_main_menu == true then 
-			if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
-				play_sound_button()
-				msg.post("main", "restart", {})
-			elseif gui.pick_node(gui.get_node("btn_sound"), action.x, action.y) then
-				_toggle_sound(self)
-			end
-			
+		end		
+		-- main menu screen
+		if g_main_menu == true then
+			_handle_menu_input(self, action)
+		-- game over screen	
 		elseif g_game_over == true then 
-			if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
-				play_sound_button()
-				msg.post("main", "continue_level", {})
-				--on_show_rewarded_clicked()
-				
-			elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
-				play_sound_button()
-				increase_reset_counter() --main.script
-				--show ad 
-				if g_show_ad_gameover then 
-					on_show_interstitial_clicked()
-					g_show_ad_gameover = false
-				end
-				--show main menu
-				msg.post(".", "show_dialog_main_menu", {show = true})
-				msg.post("main", "reset", {})
-			end
+			_handle_gameover_input(self, action)
 
 		-- if level complete and screen was touched, start new level
 		elseif g_completed == true then
-			play_sound_button()
-			msg.post("main", "next_level", {})
+			_handle_level_complete_input(self, action)
 		end
 	end
+end
+
+function _handle_menu_input(self, action)
+	if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
+		play_sound_button()
+		msg.post("main", "restart", {})
+	elseif gui.pick_node(gui.get_node("btn_sound"), action.x, action.y) then
+		_toggle_sound(self)
+	end
+end
+
+function _handle_gameover_input(self, action)
+	if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
+		play_sound_button()
+		msg.post("main", "continue_level", {})
+		--on_show_rewarded_clicked()
+
+	elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
+		play_sound_button()
+		increase_reset_counter() --main.script
+		--show ad 
+		if g_show_ad_gameover then 
+			on_show_interstitial_clicked()
+			g_show_ad_gameover = false
+		end
+		--show main menu
+		msg.post(".", "show_dialog_main_menu", {show = true})
+		msg.post("main", "reset", {})
+	end
+end
+
+function _handle_level_complete_input(self, action)
+	play_sound_button()
+	msg.post("main", "next_level", {})
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("toggle_pause") then
 		toggle_pause(self)
-		
-	elseif message_id == hash("set_score") then
-		local s = 1.2
-		--gui.set_text(self.score_node, tostring(message.amount))
-		--gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 	
 	elseif message_id == hash("set_time") then
-		gui.set_text(self.time_node, tostring(math.ceil(message.time)))
-		if message.scale == 1 then
-			local s = 1.6
-			gui.animate(self.time_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
-		end
+		_set_time(self, message)
 		
 	elseif message_id == hash("set_level") then
-		gui.set_text(self.level_node, "Level " .. tostring(g_level))
-		gui.set_text(self.node_complete_level, "Level " .. tostring(g_level))
-		gui.set_text(self.node_gameover_level, "Level " .. tostring(g_level))
+		_set_level(self)
 
 	elseif message_id == hash("update_lifes") then
-		gui.set_enabled(self.heart_node_0, false)
-		gui.set_enabled(self.heart_node_1, false)
-		gui.set_enabled(self.heart_node_2, false)
-		if message.lifes >= 1 then gui.set_enabled(self.heart_node_0, true) end
-		if message.lifes >= 2 then gui.set_enabled(self.heart_node_1, true) end
-		if message.lifes >= 3 then gui.set_enabled(self.heart_node_2, true) end
+		_update_lifes(self, message)
 		
 	elseif message_id == hash("set_smileys") then
-		gui.set_texture(self.smiley_node_0, "smileys")
-		gui.play_flipbook(self.smiley_node_0,"emoji_u1f" ..  message.smiley0)
-		gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
-
-		gui.set_texture(self.smiley_node_1, "smileys")
-		gui.play_flipbook(self.smiley_node_1, "emoji_u1f" .. message.smiley1)
-
-		gui.set_texture(self.smiley_node_2, "smileys")
-		gui.play_flipbook(self.smiley_node_2, "emoji_u1f" .. message.smiley2)
+		_set_smileys(self, message)
 		
 	elseif message_id == hash("activate_smiley") then
-		-- cancel all animations
-		gui.cancel_animation(self.smiley_node_0, "scale")
-		gui.cancel_animation(self.smiley_node_1, "scale")
-		gui.cancel_animation(self.smiley_node_2, "scale")
-		-- reset all smiley sizes
-		gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
-		gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
-		gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
-		-- set to background layer
-		gui.set_layer(self.smiley_node_0, "ingame_gui_bottom_layer")
-		gui.set_layer(self.smiley_node_1, "ingame_gui_bottom_layer")
-		gui.set_layer(self.smiley_node_2, "ingame_gui_bottom_layer")
-		
-		if message.nr > 0 then
-			-- smiley scale of according smiley
-			local smiley = self.smiley_node_0
-			if message.nr == 1 then
-				smiley = self.smiley_node_0
-			elseif message.nr == 2 then
-				smiley = self.smiley_node_1
-			elseif message.nr == 3 then
-				smiley = self.smiley_node_2
-			end
-			-- scale up
-			--gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
-			local s = 1.2
-			gui.animate(smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.15, scale_down_active_gui_smiley)
-			-- set to foreground layer
-			gui.set_layer(smiley, "ingame_gui_top_layer")
-		end
+		_activate_next_smiley(self, message)
 
 	elseif message_id == hash("show_dialog_main_menu") then
 		_show_main_menu(self)
@@ -222,11 +175,83 @@ function on_message(self, message_id, message, sender)
 		_show_dialog_gameover(self)
 		
 	elseif message_id == hash("feedback_wrong_smiley") then
-		gui.set_enabled(self.node_wrong_smiley, true)
-		local s = 1.4
-		gui.animate(self.node_wrong_smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
-		showing_wrong_smiley_feedback = true
+		_show_feedback_wrong_smiley(self)
 	end
+end
+
+function _set_time(self, message)
+	gui.set_text(self.time_node, tostring(math.ceil(message.time)))
+	if message.scale == 1 then
+		local s = 1.6
+		gui.animate(self.time_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+	end
+end
+
+function _set_level(self)
+	gui.set_text(self.level_node, "Level " .. tostring(g_level))
+	gui.set_text(self.node_complete_level, "Level " .. tostring(g_level))
+	gui.set_text(self.node_gameover_level, "Level " .. tostring(g_level))
+end
+
+function _update_lifes(self, message)
+	gui.set_enabled(self.heart_node_0, false)
+	gui.set_enabled(self.heart_node_1, false)
+	gui.set_enabled(self.heart_node_2, false)
+	if message.lifes >= 1 then gui.set_enabled(self.heart_node_0, true) end
+	if message.lifes >= 2 then gui.set_enabled(self.heart_node_1, true) end
+	if message.lifes >= 3 then gui.set_enabled(self.heart_node_2, true) end
+end
+
+function _set_smileys(self, message)
+	gui.set_texture(self.smiley_node_0, "smileys")
+	gui.play_flipbook(self.smiley_node_0,"emoji_u1f" ..  message.smiley0)
+	gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+
+	gui.set_texture(self.smiley_node_1, "smileys")
+	gui.play_flipbook(self.smiley_node_1, "emoji_u1f" .. message.smiley1)
+
+	gui.set_texture(self.smiley_node_2, "smileys")
+	gui.play_flipbook(self.smiley_node_2, "emoji_u1f" .. message.smiley2)
+end
+
+function _activate_next_smiley(self, message)
+	-- cancel all animations
+	gui.cancel_animation(self.smiley_node_0, "scale")
+	gui.cancel_animation(self.smiley_node_1, "scale")
+	gui.cancel_animation(self.smiley_node_2, "scale")
+	-- reset all smiley sizes
+	gui.set_scale(self.smiley_node_0, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
+	gui.set_scale(self.smiley_node_1, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
+	gui.set_scale(self.smiley_node_2, vmath.vector4(smiley_scale_small, smiley_scale_small, 0, 0))
+	-- set to background layer
+	gui.set_layer(self.smiley_node_0, "ingame_gui_bottom_layer")
+	gui.set_layer(self.smiley_node_1, "ingame_gui_bottom_layer")
+	gui.set_layer(self.smiley_node_2, "ingame_gui_bottom_layer")
+
+	if message.nr > 0 then
+		-- smiley scale of according smiley
+		local smiley = self.smiley_node_0
+		if message.nr == 1 then
+			smiley = self.smiley_node_0
+		elseif message.nr == 2 then
+			smiley = self.smiley_node_1
+		elseif message.nr == 3 then
+			smiley = self.smiley_node_2
+		end
+		-- scale up
+		--gui.set_scale(smiley, vmath.vector4(smiley_scale_big, smiley_scale_big, 0, 0))
+		local s = 1.2
+		gui.animate(smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.15, scale_down_active_gui_smiley)
+		-- set to foreground layer
+		gui.set_layer(smiley, "ingame_gui_top_layer")
+	end
+end
+
+function _show_feedback_wrong_smiley(self)
+	gui.set_enabled(self.node_wrong_smiley, true)
+	local s = 1.4
+	gui.animate(self.node_wrong_smiley, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+	showing_wrong_smiley_feedback = true
 end
 
 function _hide_all_dialogs(self)
