@@ -40,7 +40,7 @@ g_next_smiley_id = 1
 -- gamestates
 g_game_over = false
 g_main_menu = true
--- statistics
+-- statistics (loading from save-file)
 g_games_played = 0
 
 -- for initializing level --

@@ -1,7 +1,3 @@
-is_banner_ad_shown = false
-has_local_notification_permission = false
-product_name = "Enhance_SKU_One"
-
 local smiley_scale_small = 0.5
 local smiley_scale_big = 1.0
 local smileys_success = {}
@@ -403,57 +399,6 @@ function _update_gui_sound_image(self)
 	gui.set_enabled(self.node_sound_disabled, not g_sound_active)
 end
 
--- Ads --
-
--- Interstitial Ad
-
-function on_show_interstitial_clicked()
-	if g_show_ads then
-		on_gdpr_show_dialogs_clicked()
-		-- Check whether an interstitial ad is available
-		if not enhance.isInterstitialReady() then
-			write_log("Interstitial ad is not ready")
-		else
-			-- The ad is ready
-			enhance.showInterstitialAd()
-			write_log("Showing interstitial ad")
-		end
-	end
-end
-
--- gdpr dialog
-function on_gdpr_opt_in_clicked()
-	-- Explicit opt-in
-
-	enhance.serviceTermsOptIn()
-	write_log("Called explicit opt-in")
-end
-
-function on_gdpr_opt_out_clicked()
-	-- Explicit opt-out
-
-	enhance.serviceTermsOptOut();
-	write_log("Called explicit opt-out")
-end
-
-function on_gdpr_show_dialogs_clicked()
-	-- Show data consent dialogs of all SDKs that provide them
-	write_log("Checking: requiresDataConsentOptIn ?")
-	enhance.requiresDataConsentOptIn(on_service_opt_in_requirement)	
-end
-
-function on_service_opt_in_requirement(self, isUserOptInRequired)
-	if isUserOptInRequired == 1 then
-		write_log("showServiceOptInDialogs")
-		enhance.showServiceOptInDialogs(on_dialogs_complete)
-	end
-end
-
-function on_dialogs_complete()
-	write_log("Finished displaying opt-in dialogs")
-end
-
--- Non-enhance logic
 -- Write logs to the screen
 function write_log(text)
 	local text_node = gui.get_node("text_log")
