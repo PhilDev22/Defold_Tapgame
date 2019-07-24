@@ -2,6 +2,8 @@
 g_constants = require "main.constants"
 g_helper = require "main.helper"
 
+-- GLOBAL PROPERTIES --
+
 g_show_ads = g_constants.SHOW_ADS
 g_sound_active = true
 -- stopped when in main menu, gameover or level-complete screen
@@ -41,42 +43,44 @@ g_main_menu = true
 -- statistics
 g_games_played = 0
 
--- for initializing level
+-- for initializing level --
 g_level_smiley_count_max = 3
 g_stage_smileys = {}
 g_level_smileys_all = {}
 g_level_smileys = {}
 g_level_smileys_max = g_constants.LEVEL_SMILEYS_BASE
-
-local smileys_increase_step = 1
-
-local g_level_spawn_time_base = 0.0
-local level_spawn_time_min = 0.2
-local g_level_spawn_time = 0.0
-local g_level_spawn_time_vertical = 0.5
-local g_level_spawn_time_horizontal = 0.5
-local g_level_spawn_time_popup = 0.7
-local g_level_spawn_time_decrease_step = 0.06
-
 g_speed_horizontal = 0
-local g_speed_horizontal_initial = 250
-local g_speed_horizontal_max = 700
-local g_horizontal_speed_up_factor = 17
-
 g_speed_vertical = 0
-local g_speed_vertical_initial = 220
-local g_speed_vertical_max = 670
-local g_vertical_speed_up_factor = 15
-
 g_popup_time = 0
 g_popup_time_base = 2.4
-local g_popup_time_decrease_factor = 0.03
-local g_popup_time_min = 1.0
-local g_popup_spawn_increase_factor = 0.002
-
+-- increasing amount of smileys 
+local smileys_increase_step = 1
+-- spawn times
+local level_spawn_time_base = 0.0
+local level_spawn_time_min = 0.2
+local level_spawn_time = 0.0
+local level_spawn_time_vertical = 0.5
+local level_spawn_time_horizontal = 0.5
+local level_spawn_time_popup = 0.7
+local level_spawn_time_decrease_step = 0.06
+-- mode: horitontal
+local speed_horizontal_initial = 250
+local speed_horizontal_max = 700
+local horizontal_speed_up_factor = 17
+-- mode: vertical
+local speed_vertical_initial = 220
+local speed_vertical_max = 670
+local vertical_speed_up_factor = 15
+-- mode: popup
+local popup_time_decrease_factor = 0.03
+local popup_time_min = 1.0
+local popup_spawn_increase_factor = 0.002
+-- mode: rotating
 local lvl_begin_rotation = 5
-local g_rotating_speed_decrease = 100
-local g_rotating_spawntime_increase = 0.1
+local rotating_speed_decrease = 100
+local rotating_spawntime_increase = 0.1
+
+-- METHODS --
 
 -- pause game when window loses focus
 local function window_listener(self, event, data)
@@ -160,46 +164,46 @@ local function _init_moving_mode(self)
 	-- set spawning time and moving speed according to active game mode and level
 	-- If smileys are rotating, then slow down speed a bit
 	if g_mode_active == g_modes.horizontal then
-		g_level_spawn_time_base = g_level_spawn_time_horizontal
-		g_speed_horizontal = g_speed_horizontal_initial + (g_level * g_horizontal_speed_up_factor)
-		if g_speed_horizontal > g_speed_horizontal_max then g_speed_horizontal = g_speed_horizontal_max end
-		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - g_rotating_speed_decrease end
+		level_spawn_time_base = level_spawn_time_horizontal
+		g_speed_horizontal = speed_horizontal_initial + (g_level * horizontal_speed_up_factor)
+		if g_speed_horizontal > speed_horizontal_max then g_speed_horizontal = speed_horizontal_max end
+		if rotate == 1 then g_speed_horizontal = g_speed_horizontal - rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.vertical then
-		g_level_spawn_time_base = g_level_spawn_time_vertical
-		g_speed_vertical = g_speed_vertical_initial + (g_level * g_vertical_speed_up_factor)
-		if g_speed_vertical > g_speed_vertical_max then g_speed_vertical = g_speed_vertical_max end
-		if rotate == 1 then g_speed_vertical = g_speed_vertical - g_rotating_speed_decrease end
+		level_spawn_time_base = level_spawn_time_vertical
+		g_speed_vertical = speed_vertical_initial + (g_level * vertical_speed_up_factor)
+		if g_speed_vertical > speed_vertical_max then g_speed_vertical = speed_vertical_max end
+		if rotate == 1 then g_speed_vertical = g_speed_vertical - rotating_speed_decrease end
 		
 	elseif g_mode_active == g_modes.popup then
-		g_level_spawn_time_base = g_level_spawn_time_popup - (g_level * g_popup_spawn_increase_factor) 
-		g_popup_time = g_popup_time_base - (g_level * g_popup_time_decrease_factor)
-		if g_popup_time <= g_popup_time_min then g_popup_time = g_popup_time_min end
+		level_spawn_time_base = level_spawn_time_popup - (g_level * popup_spawn_increase_factor) 
+		g_popup_time = g_popup_time_base - (g_level * popup_time_decrease_factor)
+		if g_popup_time <= popup_time_min then g_popup_time = popup_time_min end
 	end
 
 	-- If smileys are rotating, then slow down spawning a bit
 	if rotate == 1 then
-		g_level_spawn_time_base = g_level_spawn_time_base + g_rotating_spawntime_increase
+		level_spawn_time_base = level_spawn_time_base + rotating_spawntime_increase
 	end
 
 	-- faster spawning every 5 level
-	g_level_spawn_time = g_level_spawn_time_base - (math.floor(g_level / 5) * g_level_spawn_time_decrease_step)
+	level_spawn_time = level_spawn_time_base - (math.floor(g_level / 5) * level_spawn_time_decrease_step)
 	
 
-	if g_level_spawn_time < level_spawn_time_min then g_level_spawn_time = level_spawn_time_min end
+	if level_spawn_time < level_spawn_time_min then level_spawn_time = level_spawn_time_min end
 
 	-- increase amount of different smileys every 5 level
 	g_level_smileys_max = g_constants.LEVEL_SMILEYS_BASE + (math.floor(g_level / 5) * smileys_increase_step)
 	print("g_level_smileys_max: " ..g_level_smileys_max) 
 
 	--debug
-	print("g_level_spawn_time: " .. g_level_spawn_time)
+	print("level_spawn_time: " .. level_spawn_time)
 	print("g_speed_horizontal: " .. g_speed_horizontal)
 	print("g_speed_vertical: " .. g_speed_vertical)
 	print("g_popup_time: " .. g_popup_time)
 		
 	-- send defined spawn_time and rotate-flag to smiley factory
-	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = g_level_spawn_time, rotating = rotate})
+	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = level_spawn_time, rotating = rotate})
 end
 
 local function _init_level(self, smiley_count)

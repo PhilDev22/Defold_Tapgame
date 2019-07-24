@@ -20,7 +20,7 @@ M.EMOJI_TIME_ID = 2
 M.EMOJI_JOKER_ID = 3
 M.EMOJI_STAR_ID = 4
 -- amount of stars needed to restart level
-M.CONTINUE_STARS = 100
+M.CONTINUE_STARS = 500
 -- amount of resets for showing interstitial ad
 M.MAX_RESETS = 3
 -- number of different backgrounds
