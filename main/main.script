@@ -1,7 +1,21 @@
 -- reference to the constants module
 g_constants = require "main.constants"
-g_screen_scale = 1.0
-g_show_ads = true
+g_helper = require "main.helper"
+
+-- constants
+g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
+g_smileys_success_ids = {"u1f60f", "u1f4aa", "u1f44c", "u1f44d", "u1f44f", "u1f60e", "u1f917", "u1f929", "u1f970", "u1f973"}
+g_smileys_gameover_ids = {"u1f4a9", "u1f61e", "u1f61f", "u1f62b", "u1f62d", "u1f62e", "u1f92f", "u1f610", "u1f613", "u1f629", "u1f635", "u1f648", "u2639"}
+g_item_ids = {"u2764", "u23f2", "u1f0cf", "u2b50"} --  star:"u2b50"
+g_emoji_heart_id = 1
+g_emoji_time_id = 2
+g_emoji_joker_id = 3
+g_emoji_star_id = 4
+g_continue_stars = 100
+g_reset_max = 3
+g_background_count = 5
+
+g_show_ads = g_constants.SHOW_ADS
 g_sound_active = true
 g_stopped = false
 g_completed = false
@@ -15,24 +29,16 @@ g_modes = {horizontal = 1, vertical = 2, popup = 3}
 g_mode_active = 1
 g_item_prob = 5
 g_time_item_value = 5 -- seconds
-g_smiley_ids = { "60a", "60b", "60c", "60d", "60e", "60f", "61a", "61b","61c", "61d", "61e","61f", "62a", "62b", "62c", "62d", "62e", "62f", "64a", "92a", "92b", "92d", "435", "600", "601", "602", "603", "604", "605", "606", "607", "609", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "620", "622", "625", "626", "628", "629", "630", "632", "635", "636", "641", "642", "644", "648", "649"}
--- item emoticons
-g_item_ids = {"u2764", "u23f2", "u1f0cf", "u2b50"} --  star:"u2b50"
+
 g_item_table_ids = {} -- initialize in init function
-g_emoji_heart_id = 1
-g_emoji_time_id = 2
-g_emoji_joker_id = 3
-g_emoji_star_id = 4
-g_smileys_success_ids = {"u1f60f", "u1f4aa", "u1f44c", "u1f44d", "u1f44f", "u1f60e", "u1f917", "u1f929", "u1f970", "u1f973"}
-g_smileys_gameover_ids = {"u1f4a9", "u1f61e", "u1f61f", "u1f62b", "u1f62d", "u1f62e", "u1f92f", "u1f610", "u1f613", "u1f629", "u1f635", "u1f648", "u2639"}
 g_stars = 0
 g_stars_of_game = 0
-g_continue_stars = 500
+
 g_restarted = false
 g_restarted_level = 1
-g_background_count = 5
+
 g_reset_counter = 1
-g_reset_max = 3
+
 g_show_ad_gameover = false
 
 -- level settings
@@ -87,42 +93,9 @@ local lvl_begin_rotation = 5
 local g_rotating_speed_decrease = 100
 local g_rotating_spawntime_increase = 0.1
 
-function init(self)
-	-- set background color
-	-- msg.post("@render:", "clear_color", { color = vmath.vector4(0, 0, 0, 0) } )
-
-	--g_screen_scale = tonumber(sys.get_config("display.height")) / g_constants.SCREEN_HEIGHT
-	--print(g_screen_scale)
-
-	window.set_listener(window_listener)
-	
-	-- load savegame
-	_load_savegame()
-	
-	-- don't start until main menu was touched
-	g_stopped = true
-	
-	math.randomseed(os.time())
-	math.random(); math.random(); math.random(); math.random(); math.random();
-	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
-
-	-- set timer to initial value
-	self.level_timer = g_level_time
-	self.level_smiley_count_max = 3
-	self.second = 0.0
-	--_init_level(self, self.level_smiley_count_max)
-
-	g_item_table_ids = get_table_ids( g_item_ids )
-	
-	--  activate input
-	msg.post(".", "acquire_input_focus")
-
-	-- show main menu
-	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
-end
-
-function window_listener(self, constant, data)
-	if constant == window.WINDOW_EVENT_FOCUS_LOST then
+-- pause game when window loses focus
+local function window_listener(self, event, data)
+	if event == window.WINDOW_EVENT_FOCUS_LOST then
 		if not g_stopped and not g_pause then
 			print("Window lost focus. Pausing game.")
 			msg.post("main#gui", "toggle_pause")
@@ -130,49 +103,59 @@ function window_listener(self, constant, data)
 	end
 end
 
-function update(self, dt)
-	if not g_stopped and not g_pause then
-		self.level_timer = self.level_timer - dt
-		self.level_timer = math.max(self.level_timer, 0)
-		self.second = self.second + dt 
-		if self.second >= 1.0 then
-			self.second = 0.0
-			-- show current time at gui
-			local scale_up = 0
-			if self.level_timer <= 10 then scale_up = 1 end
-			msg.post("/main#gui", "set_time", {time = self.level_timer, scale = scale_up})
-		end
-		-- if time runs out trigger game over
-		if self.level_timer <= 0 then
-			self.level_timer = 0
-			_process_game_over(self)
-		end
+-- load savegame and write properties to global variables
+local function _load_savegame() 
+	-- load file
+	local file_path = sys.get_save_file("Tapmoji", "save")
+	-- get settings
+	g_stars = sys.load(file_path).stars or 0
+	g_games_played = sys.load(file_path).games_played or 0
+	g_reset_counter = sys.load(file_path).reset_counter or 0
+	g_highscore_level = sys.load(file_path).highscore_level or 0
+	sound_active = sys.load(file_path).sound_active or 0
+	-- convert sound_active property to boolean value
+	g_sound_active = false
+	if sound_active == 1 then g_sound_active = true end
+	-- debug
+	print("-- Loaded savegame: ")
+	print("Stars: " .. g_stars)
+	print("Games played: " .. g_games_played)
+	print("Reset Counter: " .. g_reset_counter)
+	print("Highscore level: " ..g_highscore_level)
+	print("Sound active: " .. tostring(g_sound_active))
+	print("--")
+end
+
+-- write properties into table and save to file 
+function save_game()
+	-- convert g_sound_active from boolean to number
+	local sound = 0
+	if g_sound_active then sound = 1 end
+	-- fill table with settings
+	local save_table = {
+		stars = g_stars, 
+		games_played = g_games_played, 
+		reset_counter = g_reset_counter, 
+		sound_active = sound,
+		highscore_level = g_highscore_level
+	}
+	-- save file
+	local file_path = sys.get_save_file("Tapmoji", "save")
+	if not sys.save(file_path, save_table) then
+		print("Couldn't save progress!")
+	else
+		print("Saved game")
 	end
 end
 
-function on_input(self, action_id, action)
-	--input in main.gui_script!
+-- sets a random background
+local function _set_background()
+	local background_prefix = "background_ingame_"
+	local background_nr = math.random(g_background_count)
+	msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
 end
 
-function on_message(self, message_id, message, sender)
-	if message_id == hash("smiley_touched") then
-		_process_smiley_touch(self, message.smiley_id, sender)
-	elseif message_id == hash("restart") then
-		_restart(self)
-	elseif message_id == hash("reset") then
-		_reset(self)
-	elseif message_id == hash("next_level") then
-		_start_next_level(self)
-	elseif message_id == hash("continue_level") then
-		if not g_restarted and g_stars >= g_continue_stars then
-			_restart_from_current_level(self)
-		end
-	elseif message_id == hash("pause") then
-		_handle_pause()
-	end
-end
-
-function _init_moving_mode(self)
+local function _init_moving_mode(self)
 	-- Methods for increasing difficulty:
 	-- 	shwoing more smileys simultaneously: decrease g_level_spawn_time 
 	-- 	decrease time  of showing each smiley: decrease g_speed_horizontal, g_speed_vertical, g_popup_time
@@ -234,7 +217,7 @@ function _init_moving_mode(self)
 	msg.post("/smiley_factory", "init_spawn_values", {spawn_time = g_level_spawn_time, rotating = rotate})
 end
 
-function _init_level(self, smiley_count)
+local function _init_level(self, smiley_count)
 	print("Level: " .. g_level)
 
 	_set_background()
@@ -290,151 +273,10 @@ function _init_level(self, smiley_count)
 	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
 end
 
-function _handle_next_smiley(self, max_smileys)
-	--activate next smiley
-	if g_next_smiley_id < max_smileys  then
-		g_next_smiley_id = g_next_smiley_id + 1
-		msg.post("/main#gui", "activate_smiley", {nr = g_next_smiley_id})
-	else
-		_on_level_complete(self)
-	end
-	-- reset smiley factory timer
-	msg.post("/smiley_factory", "reset_timer", {reset = true})
-end
-
-function _process_smiley_touch(self, smiley_id, sender)
-	print("touched id: "..smiley_id)
-	
-	-- check if smiley is in table of level smileys
-	if smiley_id == hash(g_level_smileys[ g_next_smiley_id ]) then
-		print("Touched right one")
-		_play_sound_touched_smiley()
-		-- emit particles
-		msg.post(sender, "smiley_touch_success", {success = true})
-		-- set next smiley to touch
-		_handle_next_smiley(self, self.level_smiley_count_max)	
-	-- else check if item was touched
-	elseif not _touch_item(self, smiley_id, sender) then
-		-- wrong smiley touched
-		msg.post("/main#gui", "feedback_wrong_smiley", {})
-		_increase_lifes(self, -1)
-		_play_sound_touched_smiley()
-		_play_sound_fail()
-	end
-end
-
-function _touch_item(self, smiley_id, sender)
-	local touched = true
-	local item_index = g_item_table_ids[ smiley_id ]
-	
-	if item_index == g_emoji_heart_id then
-		_increase_lifes(self, 1)
-		
-	elseif item_index == g_emoji_joker_id then
-		-- set next smiley to touch
-		_handle_next_smiley(self, self.level_smiley_count_max)
-		
-	elseif item_index == g_emoji_time_id then
-		-- add seconds to timer
-		self.level_timer = self.level_timer + g_time_item_value
-		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 1})
-		
-	elseif item_index == g_emoji_star_id then
-		_add_stars_amount(1)
-	
-	elseif item_index == nil then
-		touched = false
-	end
-
-	if touched then 
-		-- emit particles
-		msg.post(sender, "smiley_touch_success", {success = true})
-		-- play sound
-		_play_sound_touched_item()
-	end
-	
-	return touched
-end
-
-function _process_game_over(self)
-	
-	msg.post("/main#gui", "show_ingame_gui", {show = false})
-	msg.post("/main#gui", "show_dialog_gameover", {show = true})
-	g_stopped = true
-	g_game_over = true
-
-	_add_stars_game_finished()
-
-	if g_level > 1 then 
-		g_games_played = g_games_played + 1
-	end
-
-	if g_level > g_highscore_level then
-		g_highscore_level = g_level
-	end
-	
-	save_game()
-	
-	print_values(self) --debug
-end
-
-function _reset(self)
-	g_score = 0
-	g_lifes = g_constants.MAX_LIFES
-	g_level = g_start_level
-	g_restarted_level = 1
-	g_stars_of_game = 0
-	self.level_timer = g_level_time	
-	g_restarted = false
-	g_game_over = false
-	g_completed = false
-end
-
-function _restart(self)
-	_reset(self)
-	
-	msg.post("main#gui", "show_ingame_gui", {show = true})
-	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
-	
-	_init_level(self, self.level_smiley_count_max)
-
-	g_stopped = false
-end
-
-function _restart_from_current_level(self)
-	g_stars = g_stars - g_continue_stars
-	save_game()
-	local lvl = g_level
-	_reset(self)
-	self.level_timer = g_level_time_restart	
-	g_level = lvl
-	g_restarted_level = lvl
-	g_restarted = true
-	_start_next_level(self)
-end
-
-function _start_next_level(self)
-	-- could happen that lifes < 1 when wrong and right 
-	-- smiley were touched simultaneously
-	if g_lifes < 1 then
-		_increase_lifes(self, 1)
-	end
-
-	msg.post("main#gui", "show_ingame_gui", {show = true})
-	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
-	
-	_init_level(self, self.level_smiley_count_max)
-	
-	g_completed = false
-	g_stopped = false
-end
-
-function _on_level_complete(self)
+-- showing dialog "level complete", hiding ingame gui, increasing level, increasing time
+local function _on_level_complete(self)
 	if g_lifes > 0 then
 		print("Level finished!")
-		-- add score
-		local level_score = 100 * g_level
-		add_score(level_score)
 		-- increase level
 		g_level = g_level + 1
 		-- add seconds to timer
@@ -448,21 +290,58 @@ function _on_level_complete(self)
 		-- set game state flags
 		g_stopped = true
 		g_completed = true
-
-		_play_sound_complete()
+		-- play sound
+		play_sound_complete()
 	end
 	--else level complete, but lifes = 0 (right and wrong smiley were touched simultaneously) -> game over
-		
+
 	print_values(self) --debug
 end
 
-function _handle_pause()
-	
+-- adds a certain amount of stars to actual game
+local function _add_stars_amount(amount)
+	print("Got Stars: " .. amount)
+	g_stars_of_game = g_stars_of_game + amount
+	g_stars = g_stars + g_stars_of_game
+end
+
+-- Adds stars after gameover. 
+-- For each level the amount according to the level number.
+local function _add_stars_game_finished()
+	local amount = 0
+	-- add stars for each level (1 star for level 1; 2 stars for level 2, ...)
+	for var = g_restarted_level, g_level - 1, 1 do
+		amount = amount + var
+	end
+	_add_stars_amount(amount)
+end
+
+function _process_game_over(self)
+	-- hide gui and show/update game over screen
+	msg.post("/main#gui", "show_ingame_gui", {show = false})
+	msg.post("/main#gui", "show_dialog_gameover", {show = true})
+	-- set gamestate
+	g_stopped = true
+	g_game_over = true
+	-- add rewarding stars
+	_add_stars_game_finished()
+	-- increase games counter
+	if g_level > 1 then 
+		g_games_played = g_games_played + 1
+	end
+	-- set new highscore
+	if g_level > g_highscore_level then
+		g_highscore_level = g_level
+	end
+
+	save_game()
+
+	print_values(self) --debug
 end
 
 -- adds hearts to current game, and updates gui
 -- if hearts <= 0 then game over
-function _increase_lifes(self, amount)
+local function _increase_lifes(self, amount)
 	g_lifes = g_lifes + amount
 	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
 	if g_lifes < 1 then 
@@ -473,76 +352,211 @@ function _increase_lifes(self, amount)
 	print("lifes: " ..  g_lifes)
 end
 
--- adds score and updates gui
-function add_score(amount)
-	g_score = g_score + amount
-	-- update gui
-	msg.post("main#gui", "set_score", {amount = g_score})
-end
-
--- Adds stars after gameover. 
--- For each level the amount according to the level number.
-function _add_stars_game_finished()
-	local amount = 0
-	-- add stars for each level (1 star for level 1; 2 stars for level 2, ...)
-	for var = g_restarted_level, g_level - 1, 1 do
-		amount = amount + var
-	end
-	_add_stars_amount(amount)
-end
-
--- adds a certain amount of stars to actual game
-function _add_stars_amount(amount)
-	print("Got Stars: " .. amount)
-	g_stars_of_game = g_stars_of_game + amount
-	g_stars = g_stars + g_stars_of_game
-end
-
--- sets a random background
-function _set_background()
-	local background_prefix = "background_ingame_"
-	local background_nr = math.random(g_background_count)
-	msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
-end
-
-function save_game()
-	local sound = 0
-	if g_sound_active then sound = 1 end
-	
-	local save_table = {stars=g_stars, 
-	games_played=g_games_played, 
-	reset_counter=g_reset_counter, 
-	sound_active=sound,
-	highscore_level = g_highscore_level}
-	
-	local file_path = sys.get_save_file("Tapmoji", "save")
-	if not sys.save(file_path, save_table) then
-		-- Alert user that the data could not be saved
-		print("Couldn't save progress!")
+-- set focus on next smiley (scale up), when the right smiley was touched
+-- if the last one was touched, then level is finished
+local function _set_next_smiley(self, max_smileys)
+	--activate next smiley
+	if g_next_smiley_id < max_smileys  then
+		g_next_smiley_id = g_next_smiley_id + 1
+		msg.post("/main#gui", "activate_smiley", {nr = g_next_smiley_id})
 	else
-		print("Saved game")
+		_on_level_complete(self)
+	end
+	-- reset smiley factory timer
+	msg.post("/smiley_factory", "reset_timer", {reset = true})
+end
+
+-- check which item was touched and trigger an action
+local function _touch_item(self, smiley_id, sender)
+	local touched = true
+	local item_index = g_item_table_ids[ smiley_id ]
+	
+	-- heart item
+	if item_index == g_emoji_heart_id then
+		_increase_lifes(self, 1)
+		
+	-- joker item
+	elseif item_index == g_emoji_joker_id then
+		-- set next smiley to touch
+		_set_next_smiley(self, self.level_smiley_count_max)
+		
+	-- clock item
+	elseif item_index == g_emoji_time_id then
+		-- add seconds to timer
+		self.level_timer = self.level_timer + g_time_item_value
+		msg.post("/main#gui", "set_time", {time = self.level_timer, scale = 1})
+		
+	-- star item
+	elseif item_index == g_emoji_star_id then
+		_add_stars_amount(1)
+
+	elseif item_index == nil then
+		-- smiley_id doesn't exisit in g_item_table_ids
+		touched = false
+	end
+
+	if touched then 
+		-- emit particles
+		msg.post(sender, "smiley_touch_success", {success = true})
+		-- play sound
+		play_sound_touched_item()
+	end
+
+	return touched
+end
+
+-- check if the right/wrong smiley or an item was touched 
+local function _process_smiley_touch(self, smiley_id, sender)
+	print("touched id: "..smiley_id)
+	
+	-- check if smiley is in table of level smileys
+	if smiley_id == hash(g_level_smileys[ g_next_smiley_id ]) then
+		play_sound_touched_smiley()
+		-- emit particles
+		msg.post(sender, "smiley_touch_success", {success = true})
+		-- set next smiley to touch
+		_set_next_smiley(self, self.level_smiley_count_max)	
+	-- else check if item was touched
+	elseif not _touch_item(self, smiley_id, sender) then
+		-- wrong smiley touched, show feedback at gui
+		msg.post("/main#gui", "feedback_wrong_smiley", {})
+		-- punish player
+		_increase_lifes(self, -1)
+		play_sound_touched_smiley()
+		play_sound_fail()
 	end
 end
 
-function _load_savegame() 
-	local file_path = sys.get_save_file("Tapmoji", "save")
-	g_stars = sys.load(file_path).stars or 0
-	g_games_played = sys.load(file_path).games_played or 0
-	g_reset_counter = sys.load(file_path).reset_counter or 0
-	g_highscore_level = sys.load(file_path).highscore_level or 0
-	sound_active = sys.load(file_path).sound_active or 0
-	
-	g_sound_active = false
-	if sound_active == 1 then g_sound_active = true end
-		
-	print("-- Loaded savegame: ")
-	print("Stars: " .. g_stars)
-	print("Games played: " .. g_games_played)
-	print("Reset Counter: " .. g_reset_counter)
-	print("Highscore level: " ..g_highscore_level)
-	print("Sound active: " .. tostring(g_sound_active))
-	print("--")
+-- initializing and starting the next level, updating ingame gui
+local function _start_next_level(self)
+	-- could happen that lifes < 1 when wrong and right 
+	-- smiley were touched simultaneously
+	if g_lifes < 1 then
+		_increase_lifes(self, 1)
+	end
+	-- show gui and update time
+	msg.post("main#gui", "show_ingame_gui", {show = true})
+	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
+
+	_init_level(self, self.level_smiley_count_max)
+
+	-- set gamestate flags
+	g_completed = false
+	g_stopped = false
 end
+
+-- reset all gameplay properties to initial values
+local function _reset(self)
+	g_score = 0
+	g_lifes = g_constants.MAX_LIFES
+	g_level = g_start_level
+	g_restarted_level = 1
+	g_stars_of_game = 0
+	self.level_timer = g_level_time	
+	g_restarted = false
+	g_game_over = false
+	g_completed = false
+end
+
+-- restarting game from the last level before game over
+local function _restart_from_current_level(self)
+	-- paying with stars to restart
+	g_stars = g_stars - g_continue_stars
+	-- saving new amount of stars
+	save_game()
+	-- saving last level before resetting game
+	local lvl = g_level
+	_reset(self)
+	-- set timer
+	self.level_timer = g_level_time_restart	
+	-- restore level
+	g_level = lvl
+	g_restarted_level = lvl
+	-- saving restarted flag, so that game cannot be restarted more than once
+	g_restarted = true
+	_start_next_level(self)
+end
+
+-- starting new round from level 1
+-- resetting values, showing gameplay gui
+local function _restart(self)
+	_reset(self)
+	-- showing and updating ingame gui
+	msg.post("main#gui", "show_ingame_gui", {show = true})
+	msg.post("main#gui", "set_time", {time = self.level_timer, scale = 1})
+	-- start from first level
+	_init_level(self, self.level_smiley_count_max)
+	g_stopped = false
+end
+
+------ INIT ------------------------
+
+function init(self)
+	window.set_listener(window_listener)
+
+	-- load savegame
+	_load_savegame()
+
+	-- don't start until start button was touched
+	g_stopped = true
+
+	-- init random numbers
+	math.randomseed(os.time())
+	math.random(); math.random(); math.random(); math.random(); math.random();
+	-- init random numbers (https://forum.defold.com/t/lua-math-random-problem/19372)
+
+	-- set timer to initial value
+	self.level_timer = g_level_time
+	self.level_smiley_count_max = 3
+	self.second = 0.0
+
+	g_item_table_ids = get_table_ids( g_item_ids )
+
+	-- show main menu
+	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
+end
+
+------ ON_MESSAGE ------------------------
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("smiley_touched") then
+		_process_smiley_touch(self, message.smiley_id, sender)
+	elseif message_id == hash("restart") then
+		_restart(self)
+	elseif message_id == hash("reset") then
+		_reset(self)
+	elseif message_id == hash("next_level") then
+		_start_next_level(self)
+	elseif message_id == hash("continue_level") then
+		if not g_restarted and g_stars >= g_continue_stars then
+			_restart_from_current_level(self)
+		end
+	end
+end
+
+------ UPDATE ------------------------
+
+function update(self, dt)
+	if not g_stopped and not g_pause then
+		self.level_timer = self.level_timer - dt
+		self.level_timer = math.max(self.level_timer, 0)
+		self.second = self.second + dt 
+		if self.second >= 1.0 then
+			self.second = 0.0
+			-- show current time at gui
+			local scale_up = 0
+			if self.level_timer <= 10 then scale_up = 1 end
+			msg.post("/main#gui", "set_time", {time = self.level_timer, scale = scale_up})
+		end
+		-- if time runs out trigger game over
+		if self.level_timer <= 0 then
+			self.level_timer = 0
+			_process_game_over(self)
+		end
+	end
+end
+
+------ HELPER ------------------------
 
 -- counts the amount of clicks on the "back to menu" button
 -- triggers showing an interstitial ad when amount = g_reset_max
@@ -553,75 +567,6 @@ function increase_reset_counter()
 		g_show_ad_gameover = true
 	end
 	save_game()
-end
-
--- sounds
-
-function play_music(play)
-	local sound_path = "#music"
-	sound.stop(sound_path)
-	if play and g_sound_active then
-		sound.play(sound_path)
-	end
-end
-
-function _play_sound_touched_smiley()
-	if g_sound_active then
-		local sound_nr = math.random(4)
-		sound.play("#sound_pop" .. tostring(sound_nr))
-	end
-end
-
-function _play_sound_touched_item()
-	if g_sound_active then
-		sound.play("#sound_pop1")
-		sound.play("#sound_item2", {delay = 0.15})
-	end
-end
-
-function _play_sound_complete()
-	if g_sound_active then
-		sound.play("#sound_complete", {delay = 0.2})
-	end
-end
-
-function _play_sound_gameover()
-	if g_sound_active then
-		sound.play("#sound_complete")
-	end
-end
-
-function _play_sound_fail()
-	if g_sound_active then
-		sound.play("#sound_fail")
-	end
-end
-
-function play_sound_count_stars(play)
-	local sound_path = "#sound_stars"
-	if play then
-		if g_sound_active then
-			sound.play(sound_path)
-		end
-	else
-		sound.stop(sound_path)
-	end
-end
-
-function _play_sound_button()
-	if g_sound_active then
-		sound.play("#sound_click1")
-	end
-end
-
-
--- helper
-function get_table_ids(table)
-	local index={}
-	for k,v in pairs(table) do
-		index[ hash(v) ]=k
-	end
-	return index
 end
 
 function print_values(self)

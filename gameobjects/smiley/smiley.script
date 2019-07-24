@@ -51,7 +51,7 @@ end
 
 local function _handle_pause_state(self)
 	if self.visible then
-		--msg.post("#sprite", "disable")
+		-- make sprite unvisible
 		go.set("#sprite", "tint", vmath.vector4(1,1,1,0))
 		self.visible = false
 	end
@@ -61,8 +61,7 @@ function update(self, dt)
 	if not g_stopped then
 		if not g_pause then
 			if not self.visible then
-				--msg.post("#sprite", "enable")
-				print("not visible")
+				-- make sprite visible again
 				go.set("#sprite", "tint", vmath.vector4(1,1,1,1))
 				self.visible = true
 			end

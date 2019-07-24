@@ -28,6 +28,21 @@ components {
     w: 1.0
   }
 }
+components {
+  id: "sounds"
+  component: "/main/sounds.script"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+}
 embedded_components {
   id: "sprite_background"
   type: "sprite"
@@ -234,7 +249,7 @@ embedded_components {
   data: "sound: \"/assets/sounds/fail.ogg\"\n"
   "looping: 0\n"
   "group: \"master\"\n"
-  "gain: 0.5\n"
+  "gain: 0.8\n"
   ""
   position {
     x: 0.0

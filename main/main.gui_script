@@ -108,7 +108,7 @@ function on_input(self, action_id, action)
 		
 		if g_main_menu == true then 
 			if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
-				_play_sound_button()
+				play_sound_button()
 				msg.post("main", "restart", {})
 			elseif gui.pick_node(gui.get_node("btn_sound"), action.x, action.y) then
 				_toggle_sound(self)
@@ -116,12 +116,12 @@ function on_input(self, action_id, action)
 			
 		elseif g_game_over == true then 
 			if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
-				_play_sound_button()
+				play_sound_button()
 				msg.post("main", "continue_level", {})
 				--on_show_rewarded_clicked()
 				
 			elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
-				_play_sound_button()
+				play_sound_button()
 				increase_reset_counter() --main.script
 				--show ad 
 				if g_show_ad_gameover then 
@@ -135,7 +135,7 @@ function on_input(self, action_id, action)
 
 		-- if level complete and screen was touched, start new level
 		elseif g_completed == true then
-			_play_sound_button()
+			play_sound_button()
 			msg.post("main", "next_level", {})
 		end
 	end

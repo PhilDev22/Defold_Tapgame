@@ -3,9 +3,11 @@
 -- require "my_directory.my_file"
 -- in any script using the functions.
 local M = {}
-M.SCREEN_WIDTH = 640
-M.SCREEN_HEIGHT = 1136
-M.MAX_SMILEYS = 20
-M.MAX_LIFES = 3
-M.SHOW_ADS = true
+function get_table_ids(table)
+	local index={}
+	for k,v in pairs(table) do
+		index[ hash(v) ]=k
+	end
+	return index
+end
 return M

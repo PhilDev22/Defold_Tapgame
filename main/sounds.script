@@ -1,0 +1,69 @@
+function init(self)
+	-- Add initialization code here
+	-- Remove this function if not needed
+end
+
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+end
+
+-- sounds
+
+function play_music(play)
+	local sound_path = "#music"
+	sound.stop(sound_path)
+	if play and g_sound_active then
+		sound.play(sound_path)
+	end
+end
+
+function play_sound_touched_smiley()
+	if g_sound_active then
+		local sound_nr = math.random(4)
+		sound.play("#sound_pop" .. tostring(sound_nr))
+	end
+end
+
+function play_sound_touched_item()
+	if g_sound_active then
+		sound.play("#sound_pop1")
+		sound.play("#sound_item2", {delay = 0.15})
+	end
+end
+
+function play_sound_complete()
+	if g_sound_active then
+		sound.play("#sound_complete", {delay = 0.2})
+	end
+end
+
+function play_sound_gameover()
+	if g_sound_active then
+		sound.play("#sound_complete")
+	end
+end
+
+function play_sound_fail()
+	if g_sound_active then
+		sound.play("#sound_fail")
+	end
+end
+
+function play_sound_count_stars(play)
+	local sound_path = "#sound_stars"
+	if play then
+		if g_sound_active then
+			sound.play(sound_path)
+		end
+	else
+		sound.stop(sound_path)
+	end
+end
+
+function play_sound_button()
+	if g_sound_active then
+		sound.play("#sound_click1")
+	end
+end
