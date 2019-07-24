@@ -24,8 +24,8 @@ function init(self)
 			smiley_id = g_level_smileys_all[ index ]
 		else
 			-- spawn random item
-			local index = math.random(tablelength(g_item_ids))
-			smiley_id = g_item_ids[ index ]
+			local index = math.random(tablelength(g_constants.ITEM_IDS))
+			smiley_id = g_constants.ITEM_IDS[ index ]
 			prefix = "item_"
 			-- animate item (pulsate)
 			local s = 1.1

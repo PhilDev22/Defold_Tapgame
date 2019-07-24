@@ -73,7 +73,7 @@ function init(self)
 	gui.set_enabled(self.node_gameover_score, false)
 
 	-- set time on gui
-	gui.set_text(self.time_node, tostring(math.ceil(g_level_time)))
+	gui.set_text(self.time_node, tostring(math.ceil(g_constants.LEVEL_TIME)))
 
 	-- set stars in menu
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
@@ -271,8 +271,8 @@ function _show_dialog_success(self)
 	gui.set_enabled(self.node_dialog_success, true)
 
 	-- set random success smiley
-	local index = math.random(tablelength(g_smileys_success_ids))
-	local success_smiley =  g_smileys_success_ids[ index ] --"u1f973"
+	local index = math.random(tablelength(g_constants.SMILEY_SUCCESS_IDS))
+	local success_smiley =  g_constants.SMILEY_SUCCESS_IDS[ index ] --"u1f973"
 	gui.set_texture(self.node_box_success, "smileys")
 	gui.play_flipbook(self.node_box_success,"emoji_" .. success_smiley)
 	
@@ -295,8 +295,8 @@ function _show_dialog_gameover(self)
 	play_music(false)
 
 	-- set random "fail" smiley
-	local index = math.random(tablelength(g_smileys_gameover_ids))
-	local gameover_smiley =  g_smileys_gameover_ids[ index ] --"u1f4a9"
+	local index = math.random(tablelength(g_constants.SMILEY_GAMEOVER_IDS))
+	local gameover_smiley =  g_constants.SMILEY_GAMEOVER_IDS[ index ] --"u1f4a9"
 	gui.set_texture(self.node_box_gameover_emoji, "smileys")
 	gui.play_flipbook(self.node_box_gameover_emoji,"emoji_" .. gameover_smiley)
 	
@@ -320,11 +320,11 @@ function _show_dialog_gameover(self)
 	gui.set_scale(self.node_gameover_continue_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
 	gui.set_scale(self.node_gameover_menu_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
 	gui.set_enabled(self.node_gameover_continue_cost, true)
-	gui.set_text(self.node_gameover_continue_cost, tostring(g_continue_stars))
+	gui.set_text(self.node_gameover_continue_cost, tostring(g_constants.CONTINUE_STARS))
 	
 	gui.set_enabled(self.node_gameover_continue_stars, true)
 	local s = 0.75
-	if not g_restarted and g_stars >= g_continue_stars then  				
+	if not g_restarted and g_stars >= g_constants.CONTINUE_STARS then  				
 		gui.animate(self.node_gameover_continue_btn, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 		gui.set_color(self.node_gameover_continue_btn, vmath.vector3(1, 1, 1))
 		gui.set_color(self.node_gameover_continue_stars, vmath.vector3(1, 1, 1))

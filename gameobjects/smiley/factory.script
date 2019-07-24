@@ -9,7 +9,7 @@ local rotating = 0
 function init(self)
 	spawn_timer_initialized = false
 	-- init timer for spawning current smiley that has to be touched
-	self.spawn_time_current_smiley = g_spawn_time_max_current_smiley
+	self.spawn_time_current_smiley = g_constants.SPAWN_TIME_MAX_CURRENT_SMILEY
 	spawn_timer_current_smiley = self.spawn_time_current_smiley
 	-- set random seed
 	math.randomseed(os.time())
@@ -43,9 +43,9 @@ function update(self, dt)
 			
 			-- spawn new smiley
 
-			-- spawn item with probability defined in g_item_prob
+			-- spawn item with probability defined in g_constants.ITEM_PROB
 			local item = math.random(100)
-			if item > 100 - g_item_prob then item = 1 else item = 0 end
+			if item > 100 - g_constants.ITEM_PROB then item = 1 else item = 0 end
 			-- set spawn properties for factory
 			local factory_props = {trigger_current = 0, trigger_item = item, rotating = rotating}
 			-- if time elapsed without the current active smiley being spawned,
