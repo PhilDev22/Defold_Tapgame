@@ -46,7 +46,7 @@ launch_image_2224x1668 = /assets/launch_images/ios_launch_2224x1668.png
 bundle_identifier = com.example.todo
 
 [osx]
-bundle_identifier = com.agam.tapmojitest
+bundle_identifier = com.agam.tapmoji
 
 [android]
 app_icon_36x36 = /assets/app_icons/icon_36.png
