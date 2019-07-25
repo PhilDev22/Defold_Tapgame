@@ -46,7 +46,7 @@ launch_image_2224x1668 = /assets/launch_images/ios_launch_2224x1668.png
 bundle_identifier = com.example.todo
 
 [osx]
-bundle_identifier = com.agam.tapmoji
+bundle_identifier = com.agam.tapmojitest
 
 [android]
 app_icon_36x36 = /assets/app_icons/icon_36.png
@@ -59,7 +59,6 @@ input_method = KeyEvent
 immersive_mode = 1
 minimum_sdk_version = 9
 package = com.agam.tapmoji
-manifest = /AndroidManifest.xml
 target_sdk_version = 28
 
 [script]

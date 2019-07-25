@@ -73,6 +73,7 @@ function init(self)
 
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
+	on_gdpr_opt_out_clicked()
 end
 
 -- animation helper (have to be at the beginning)
