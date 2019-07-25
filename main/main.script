@@ -105,6 +105,9 @@ local function _load_savegame()
 	-- convert sound_active property to boolean value
 	g_sound_active = false
 	if sound_active == 1 then g_sound_active = true end
+
+	if g_games_played == 0 then g_sound_active = true end
+	
 	-- debug
 	print("-- Loaded savegame: ")
 	print("Stars: " .. g_stars)

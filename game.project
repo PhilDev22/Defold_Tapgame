@@ -1,6 +1,6 @@
 [project]
 title = Tapmoji
-version = 0.9
+version = 1.0
 dependencies = 
 
 [bootstrap]
@@ -60,6 +60,7 @@ immersive_mode = 1
 minimum_sdk_version = 9
 package = com.agam.tapmoji
 manifest = /AndroidManifest.xml
+target_sdk_version = 28
 
 [script]
 shared_state = 1
