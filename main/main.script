@@ -3,7 +3,7 @@ g_constants = require "main.constants"
 g_helper = require "main.helper"
 
 -- GLOBAL PROPERTIES --
-
+g_display_scale = 1.0
 g_show_ads = g_constants.SHOW_ADS
 g_sound_active = true
 -- stopped when in main menu, gameover or level-complete screen
@@ -145,6 +145,9 @@ local function _set_background()
 	local background_prefix = "background_ingame_"
 	local background_nr = math.random(g_constants.BACKGROUND_COUNT)
 	msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
+	go.set("#sprite_background", "scale", vmath.vector3(g_display_scale))
+	go.set("#sprite_background", "position.x", 0)
+	go.set("#sprite_background", "position.y", 0)
 end
 
 local function _init_moving_mode(self)
@@ -486,6 +489,10 @@ end
 function init(self)
 	window.set_listener(window_listener)
 
+	-- set scaling factor, if rendering resolution in game.project is other than in constants.lua
+	g_display_scale = tonumber(sys.get_config("display.height")) / g_constants.SCREEN_HEIGHT
+	print("scale: " .. g_display_scale)
+	
 	-- load savegame
 	_load_savegame()
 

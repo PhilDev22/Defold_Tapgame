@@ -137,6 +137,10 @@ function _init_position(self)
 		pos.x = spawn_offset_left + (math.random() * (spawn_range_x))
 		go.set_position(pos)
 	end
+
+	local pos = go.get_position() * g_display_scale
+	go.set_position(pos)
+	
 end
 
 function _init_movement(self)	
@@ -166,6 +170,7 @@ function _init_movement(self)
 		-- animate
 		local s = 1.1
 		go.animate(".", "position.y", go.PLAYBACK_LOOP_PINGPONG, pos.y + 10, go.EASING_INOUTSINE, 0.7)
+		
 
 	elseif g_mode_active == g_modes.vertical then
 		self.speed = g_speed_vertical
@@ -178,9 +183,15 @@ function _init_movement(self)
 	elseif g_mode_active == g_modes.popup then
 		self.popup_timer = 0.0
 		go.set_scale(0.01)
-		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.0), go.EASING_OUTBACK, 0.3)
+		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.0 * g_display_scale), go.EASING_OUTBACK, 0.3)
 	end
 
+	-- scale speed and size of smiles according to display scale
+	self.v_speed = self.v_speed * g_display_scale
+	
+	local scale = go.get_scale()
+	go.set_scale(scale * g_display_scale)
+	
 end
 
 function _move(self, dt)
@@ -201,8 +212,8 @@ function _move(self, dt)
 
 	end
 	
-	local pos = go.get_position()
-	pos = pos + self.v_speed * dt
+	local pos = go.get_position() 
+	pos = (pos + self.v_speed * dt) 
 	go.set_position(pos)
 
 	if self.rotating == 1 then

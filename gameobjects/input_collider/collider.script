@@ -1,5 +1,9 @@
 local ACTIVE_TIME = 0.05
 
+function init(self)
+	go.set_scale(g_display_scale)
+end
+
 function update(self, dt)
 	-- count down active_timer
 	ACTIVE_TIME = ACTIVE_TIME - dt
