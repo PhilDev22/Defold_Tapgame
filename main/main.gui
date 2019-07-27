@@ -3129,6 +3129,234 @@ layouts {
   }
   nodes {
     position {
+      x: 319.0
+      y: 993.858
+      z: 0.0
+      w: 1.0
+    }
+    rotation {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    }
+    scale {
+      x: 1.02
+      y: 1.02
+      z: 1.02
+      w: 1.0
+    }
+    size {
+      x: 239.0
+      y: 80.0
+      z: 0.0
+      w: 1.0
+    }
+    color {
+      x: 1.0
+      y: 1.0
+      z: 1.0
+      w: 1.0
+    }
+    type: TYPE_BOX
+    blend_mode: BLEND_MODE_ALPHA
+    texture: "gui_images/smiley_background"
+    id: "box_smileys"
+    xanchor: XANCHOR_NONE
+    yanchor: YANCHOR_NONE
+    pivot: PIVOT_CENTER
+    adjust_mode: ADJUST_MODE_FIT
+    parent: "gui_ingame"
+    layer: ""
+    inherit_alpha: false
+    slice9 {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    }
+    clipping_mode: CLIPPING_MODE_NONE
+    clipping_visible: true
+    clipping_inverted: false
+    alpha: 1.0
+    overridden_fields: 1
+    overridden_fields: 3
+    template_node_child: false
+    size_mode: SIZE_MODE_AUTO
+  }
+  nodes {
+    position {
+      x: 599.0
+      y: 1085.573
+      z: 0.0
+      w: 1.0
+    }
+    rotation {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    }
+    scale {
+      x: 0.432
+      y: 0.432
+      z: 1.081
+      w: 1.0
+    }
+    size {
+      x: 128.0
+      y: 128.0
+      z: 0.0
+      w: 1.0
+    }
+    color {
+      x: 1.0
+      y: 1.0
+      z: 1.0
+      w: 1.0
+    }
+    type: TYPE_BOX
+    blend_mode: BLEND_MODE_ALPHA
+    texture: "gui_images/emoji_u2764"
+    id: "box_life0"
+    xanchor: XANCHOR_NONE
+    yanchor: YANCHOR_NONE
+    pivot: PIVOT_CENTER
+    adjust_mode: ADJUST_MODE_FIT
+    parent: "gui_ingame"
+    layer: ""
+    inherit_alpha: false
+    slice9 {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    }
+    clipping_mode: CLIPPING_MODE_NONE
+    clipping_visible: true
+    clipping_inverted: false
+    alpha: 1.0
+    overridden_fields: 1
+    overridden_fields: 3
+    template_node_child: false
+    size_mode: SIZE_MODE_AUTO
+  }
+  nodes {
+    position {
+      x: 544.0
+      y: 1085.573
+      z: 0.0
+      w: 1.0
+    }
+    rotation {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    }
+    scale {
+      x: 0.432
+      y: 0.432
+      z: 1.081
+      w: 1.0
+    }
+    size {
+      x: 128.0
+      y: 128.0
+      z: 0.0
+      w: 1.0
+    }
+    color {
+      x: 1.0
+      y: 1.0
+      z: 1.0
+      w: 1.0
+    }
+    type: TYPE_BOX
+    blend_mode: BLEND_MODE_ALPHA
+    texture: "gui_images/emoji_u2764"
+    id: "box_life1"
+    xanchor: XANCHOR_NONE
+    yanchor: YANCHOR_NONE
+    pivot: PIVOT_CENTER
+    adjust_mode: ADJUST_MODE_FIT
+    parent: "gui_ingame"
+    layer: ""
+    inherit_alpha: false
+    slice9 {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    }
+    clipping_mode: CLIPPING_MODE_NONE
+    clipping_visible: true
+    clipping_inverted: false
+    alpha: 1.0
+    overridden_fields: 1
+    overridden_fields: 3
+    template_node_child: false
+    size_mode: SIZE_MODE_AUTO
+  }
+  nodes {
+    position {
+      x: 489.0
+      y: 1085.573
+      z: 0.0
+      w: 1.0
+    }
+    rotation {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    }
+    scale {
+      x: 0.432
+      y: 0.432
+      z: 1.081
+      w: 1.0
+    }
+    size {
+      x: 128.0
+      y: 128.0
+      z: 0.0
+      w: 1.0
+    }
+    color {
+      x: 1.0
+      y: 1.0
+      z: 1.0
+      w: 1.0
+    }
+    type: TYPE_BOX
+    blend_mode: BLEND_MODE_ALPHA
+    texture: "gui_images/emoji_u2764"
+    id: "box_life2"
+    xanchor: XANCHOR_NONE
+    yanchor: YANCHOR_NONE
+    pivot: PIVOT_CENTER
+    adjust_mode: ADJUST_MODE_FIT
+    parent: "gui_ingame"
+    layer: ""
+    inherit_alpha: false
+    slice9 {
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    }
+    clipping_mode: CLIPPING_MODE_NONE
+    clipping_visible: true
+    clipping_inverted: false
+    alpha: 1.0
+    overridden_fields: 1
+    overridden_fields: 3
+    template_node_child: false
+    size_mode: SIZE_MODE_AUTO
+  }
+  nodes {
+    position {
       x: 16.0
       y: 0.0
       z: 0.0
@@ -3197,9 +3425,9 @@ layouts {
       w: 1.0
     }
     scale {
-      x: 1.063
-      y: 1.022
-      z: 1.0
+      x: 1.084
+      y: 1.042
+      z: 1.02
       w: 1.0
     }
     size {
@@ -3221,7 +3449,7 @@ layouts {
     xanchor: XANCHOR_NONE
     yanchor: YANCHOR_NONE
     pivot: PIVOT_CENTER
-    adjust_mode: ADJUST_MODE_STRETCH
+    adjust_mode: ADJUST_MODE_ZOOM
     parent: "dialog_main_menu"
     layer: ""
     inherit_alpha: false
@@ -3236,6 +3464,7 @@ layouts {
     clipping_inverted: false
     alpha: 1.0
     overridden_fields: 3
+    overridden_fields: 17
     template_node_child: false
     size_mode: SIZE_MODE_AUTO
   }

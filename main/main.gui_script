@@ -73,7 +73,7 @@ function init(self)
 
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
-	on_gdpr_opt_out_clicked()
+	-- on_gdpr_opt_out_clicked() -- comment out at html5 build
 end
 
 -- animation helper (have to be at the beginning)
@@ -130,7 +130,7 @@ function _handle_gameover_input(self, action)
 		increase_reset_counter() --main.script
 		--show ad 
 		if g_show_ad_gameover then 
-			on_show_interstitial_clicked()
+			-- on_show_interstitial_clicked() -- comment out at html5 build
 			g_show_ad_gameover = false
 		end
 		--show main menu
