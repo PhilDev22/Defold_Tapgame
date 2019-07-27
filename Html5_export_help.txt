@@ -1,4 +1,5 @@
 To build Html5 Application
+- game.project: change resolutuion to 480x800
 - in main.gui switch layout to "Html5"
 - backup and delete folder "enhance_extension"
 - main.gui_script: comment out function calls of enhance_extension (in init() and _handle_gameover_input())

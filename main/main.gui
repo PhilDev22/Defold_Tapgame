@@ -13,7 +13,7 @@ textures {
 }
 textures {
   name: "backgrounds"
-  texture: "/main/backgrounds.atlas"
+  texture: "/gameobjects/background/backgrounds.atlas"
 }
 background_color {
   x: 0.0

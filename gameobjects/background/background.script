@@ -1,0 +1,14 @@
+function init(self)
+	-- set random background
+	local background_prefix = "background_ingame_"
+	local background_nr = math.random(g_constants.BACKGROUND_COUNT)
+	msg.post("#sprite", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
+	-- scale according to display scale (if display size in game.project is different to the screen sizes in constants.lua)
+	local scale = 1.0
+	if g_display_scale < 1.0 then scale = g_display_scale + 0.1 end
+	go.set("#sprite", "scale", vmath.vector3(scale))
+	-- adjust position after scaling
+	local pos_x = -(g_constants.SCREEN_WIDTH - tonumber(sys.get_config("display.width"))) / 2
+	local pos_y = -(g_constants.SCREEN_HEIGHT - tonumber(sys.get_config("display.height"))) / 2
+	go.set_position(vmath.vector3(pos_x, pos_y, -1.0))
+end
