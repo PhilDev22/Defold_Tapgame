@@ -11,8 +11,8 @@ game_binding = /input/game.input_bindingc
 use_accelerometer = 0
 
 [display]
-width = 480
-height = 800
+width = 640
+height = 1136
 vsync = 1
 fullscreen = 0
 display_profiles = /main/my.display_profilesc

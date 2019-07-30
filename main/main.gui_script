@@ -48,6 +48,8 @@ function init(self)
 	self.node_gameover_continue_stars = gui.get_node("img_continue_stars")
 	self.node_gameover_menu_btn = gui.get_node("box_menu")
 	self.node_box_gameover_emoji = gui.get_node("box_gameover_emoji")
+	self.node_box_gameover_time = gui.get_node("box_time_gameover")
+	self.node_box_gameover_time_txt = gui.get_node("txt_time_gameover")
 	-- dialog level complete
 	self.node_complete_seconds = gui.get_node("txt_level_complete_seconds")
 	self.node_complete_level = gui.get_node("txt_level_complete_level")
@@ -173,7 +175,7 @@ function on_message(self, message_id, message, sender)
 		_show_dialog_success(self)
 		
 	elseif message_id == hash("show_dialog_gameover") then
-		_show_dialog_gameover(self)
+		_show_dialog_gameover(self, message)
 		
 	elseif message_id == hash("feedback_wrong_smiley") then
 		_show_feedback_wrong_smiley(self)
@@ -310,12 +312,11 @@ function _show_dialog_success(self)
 	gui.animate(self.node_complete_seconds, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.7, scale_down)
 end
 
-function _show_dialog_gameover(self)
+function _show_dialog_gameover(self, message)
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, true)
-
+	-- stop music
 	play_music(false)
-
 	-- set random "fail" smiley
 	local index = math.random(tablelength(g_constants.SMILEY_GAMEOVER_IDS))
 	local gameover_smiley =  g_constants.SMILEY_GAMEOVER_IDS[ index ] --"u1f4a9"
@@ -324,6 +325,8 @@ function _show_dialog_gameover(self)
 	
 	--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
 	-- debug: g_stars_of_game = 100
+
+	-- start counting animation of collected stars
 	if g_stars_of_game > 0 then
 		self.target_stars = g_stars_of_game
 		self.current_stars = 0
@@ -333,18 +336,22 @@ function _show_dialog_gameover(self)
 	else 
 		gui.set_text(self.node_gameover_stars, tostring(g_stars_of_game))
 	end
+	-- update text labels
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
 	gui.set_text(self.node_gameover, "Game Over!")
 	gui.set_text(self.node_gameover_stars_total, tostring(g_stars))
-	
+	-- reset button pulsating animation
 	gui.cancel_animation(self.node_gameover_continue_btn, "scale")
 	gui.cancel_animation(self.node_gameover_menu_btn, "scale")
-	gui.set_scale(self.node_gameover_continue_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
+	-- set initial scale of buttons
 	gui.set_scale(self.node_gameover_menu_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
+	gui.set_scale(self.node_gameover_continue_btn, vmath.vector4(menu_btns_initial_scale, menu_btns_initial_scale, menu_btns_initial_scale, 0))
+	-- activate the cost-label of restart button
 	gui.set_enabled(self.node_gameover_continue_cost, true)
-	gui.set_text(self.node_gameover_continue_cost, tostring(g_constants.CONTINUE_STARS))
-	
+	gui.set_text(self.node_gameover_continue_cost, tostring(g_constants.CONTINUE_STARS))	
 	gui.set_enabled(self.node_gameover_continue_stars, true)
+	-- if user has enough stars, show and animate restart button, and cost label
+	-- else set "deactivated" by setting alpha value
 	local s = 0.75
 	if not g_restarted and g_stars >= g_constants.CONTINUE_STARS then  				
 		gui.animate(self.node_gameover_continue_btn, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
@@ -357,10 +364,17 @@ function _show_dialog_gameover(self)
 		gui.set_color(self.node_gameover_continue_cost, vmath.vector3(0.4, 0.4, 0.4))
 		gui.set_color(self.node_gameover_continue_stars, vmath.vector3(0.4, 0.4, 0.4))
 		if g_restarted then
+			-- if already restarted, then hide label
 			gui.set_enabled(self.node_gameover_continue_cost, false)
 			gui.set_enabled(self.node_gameover_continue_stars, false)
 		end	
 	end
+	-- if game is over because  time ran out, show the clock at gamover
+	gui.set_enabled(self.node_box_gameover_time, false)
+	if message.time_ran_out then 
+		gui.set_enabled(self.node_box_gameover_time, true)
+		gui.animate(self.node_box_gameover_time_txt, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+	end	
 end
 
 function _update_gameover_stars(self, dt)

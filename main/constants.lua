@@ -26,7 +26,7 @@ M.MAX_RESETS = 3
 -- number of different backgrounds
 M.BACKGROUND_COUNT =5
 -- initial level time
-M.LEVEL_TIME = 60
+M.LEVEL_TIME = 10
 -- initial level start after restart at gameover
 M.LEVEL_TIME_RESTART = 30
 -- additional time gaining after comleting a level

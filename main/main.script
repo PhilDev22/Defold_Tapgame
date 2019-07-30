@@ -312,9 +312,10 @@ local function _add_stars_game_finished()
 end
 
 function _process_game_over(self)
+	local time_ran_out = self.level_timer <= 0
 	-- hide gui and show/update game over screen
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
-	msg.post("/main#gui", "show_dialog_gameover", {show = true})
+	msg.post("/main#gui", "show_dialog_gameover", {show = true, time_ran_out = time_ran_out})
 	-- set gamestate
 	g_stopped = true
 	g_game_over = true
