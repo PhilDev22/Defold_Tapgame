@@ -505,24 +505,17 @@ function check_reward_active()
 	end
 end
 
-local function _set_reward_ad_status()
-	local time = utc_now() --seconds
-	print("time " .. time)
-	
-	g_reward_ad_timestamp = time
-
-	save_game()
-	
-	check_reward_active()
-end
-
 function on_get_reward(value)
 	value = 100
+	-- add stars
+	g_stars = g_stars + value
 	print("GOT REWARD! " .. tostring(value))
+	-- show feedback on gui
 	msg.post("main#gui", "get_reward", {value = value})
-
-	_set_reward_ad_status()
-	--TODO
+	-- update timestamp
+	g_reward_ad_timestamp = utc_now() --seconds
+	save_game()
+	check_reward_active()
 end
 
 ------ INIT ------------------------
