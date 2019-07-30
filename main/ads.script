@@ -19,6 +19,48 @@ function on_show_interstitial_clicked()
 	end
 end
 
+-- Rewarded Ad
+
+function on_show_rewarded_clicked()
+	-- Check whether a rewarded ad is available
+
+	if not enhance.isRewardedAdReady() then
+		write_log("Rewarded ad is not ready")
+	else
+		-- The ad is ready, display it
+
+		enhance.showRewardedAd(on_reward_granted, on_reward_declined, on_reward_unavailable)
+		write_log("Showing rewarded ad")
+	end
+end
+
+function on_reward_granted(self, reward_value, reward_type)
+	-- Reward is granted (user watched video for example)
+	-- You can check reward type:
+
+	if reward_type == "REWARDTYPE_ITEM" then
+		write_log("Reward granted (item)")
+	elseif reward_type == "REWARDTYPE_COINS" then
+		write_log("Reward granted (coins), value: " .. reward_value)
+	else
+		write_log("Unknown reward granted")
+	end
+
+	on_get_reward()
+end
+
+function on_reward_declined()
+	-- Reward is declined (user closed the ad for example)
+
+	write_log("Reward declined")
+end
+
+function on_reward_unavailable()
+	-- Reward is unavailable (network error for example)
+
+	write_log("Reward unavailable")
+end
+
 -- gdpr dialog
 function on_gdpr_opt_in_clicked()
 	-- Explicit opt-in

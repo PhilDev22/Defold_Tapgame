@@ -42,6 +42,7 @@ g_game_over = false
 g_main_menu = true
 -- statistics (loading from save-file)
 g_games_played = 0
+g_reward_ad_timestamp = 0 --(loading from save-file)
 
 -- for initializing level --
 g_level_smiley_count_max = 3
@@ -101,6 +102,7 @@ local function _load_savegame()
 	g_games_played = sys.load(file_path).games_played or 0
 	g_reset_counter = sys.load(file_path).reset_counter or 0
 	g_highscore_level = sys.load(file_path).highscore_level or 0
+	g_reward_ad_timestamp = sys.load(file_path).reward_ad_timestamp or 0
 	sound_active = sys.load(file_path).sound_active or 0
 	-- convert sound_active property to boolean value
 	g_sound_active = false
@@ -129,7 +131,8 @@ function save_game()
 		games_played = g_games_played, 
 		reset_counter = g_reset_counter, 
 		sound_active = sound,
-		highscore_level = g_highscore_level
+		highscore_level = g_highscore_level,
+		reward_ad_timestamp = g_reward_ad_timestamp
 	}
 	-- save file
 	local file_path = sys.get_save_file("Tapmoji", "save")
@@ -485,6 +488,43 @@ local function _restart(self)
 	g_stopped = false
 end
 
+
+function check_reward_active()
+	-- if first game, then activate ad button, by setting first timestamp
+	if  g_games_played == 0 then 
+		g_reward_ad_timestamp = utc_now() - g_constants.REWARDED_AD_INTERVAL - 10
+	end
+	-- calculate difference between current time and last timestamp
+	local diff  = utc_now() - g_reward_ad_timestamp
+	if diff >= g_constants.REWARDED_AD_INTERVAL then
+		print("reward allowed!")
+		msg.post("main#gui", "activate_rewarded_ad", {active = true})
+	else
+		print("reward in: " ..  tostring(g_constants.REWARDED_AD_INTERVAL - diff))
+		msg.post("main#gui", "activate_rewarded_ad", {active = false})
+	end
+end
+
+local function _set_reward_ad_status()
+	local time = utc_now() --seconds
+	print("time " .. time)
+	
+	g_reward_ad_timestamp = time
+
+	save_game()
+	
+	check_reward_active()
+end
+
+function on_get_reward(value)
+	value = 100
+	print("GOT REWARD! " .. tostring(value))
+	msg.post("main#gui", "get_reward", {value = value})
+
+	_set_reward_ad_status()
+	--TODO
+end
+
 ------ INIT ------------------------
 
 function init(self)
@@ -497,6 +537,8 @@ function init(self)
 	-- load savegame
 	_load_savegame()
 
+	check_reward_active()
+	
 	-- don't start until start button was touched
 	g_stopped = true
 
@@ -512,6 +554,8 @@ function init(self)
 
 	g_item_table_ids = get_table_ids( g_constants.ITEM_IDS )
 
+	g_reward_ad_timestamp = utc_now()
+	
 	-- show main menu
 	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
 end
@@ -567,6 +611,10 @@ function increase_reset_counter()
 		g_show_ad_gameover = true
 	end
 	save_game()
+end
+
+function utc_now()
+	return os.time(os.date("!*t"));
 end
 
 function print_values(self)

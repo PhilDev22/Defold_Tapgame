@@ -58,10 +58,14 @@ function init(self)
 	self.node_complete_img_time = gui.get_node("img_time")
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
+	self.node_menu_stars_img = gui.get_node("img_star_total")
 	self.node_menu_stars = gui.get_node("txt_stars_total")
 	self.node_sound_enabled = gui.get_node("img_sound_active")
 	self.node_sound_disabled = gui.get_node("img_sound_muted")
 	self.node_txt_highscore = gui.get_node("txt_highscore")
+	self.node_reward_ad = gui.get_node("box_reward_ad")
+	self.node_reward_stars = gui.get_node("txt_added_stars")
+	self.node_btn_ad = gui.get_node("btn_ad")
 	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
@@ -73,9 +77,13 @@ function init(self)
 	-- set stars in menu
 	gui.set_text(self.node_menu_stars, tostring(g_stars))
 
+	-- disable reward ad button
+	--gui.set_enabled(self.node_reward_ad, false)
+	gui.set_enabled(self.node_reward_stars, false)
+
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
-	--on_gdpr_opt_out_clicked() -- comment out at html5 build
+	on_gdpr_opt_out_clicked() -- comment out at html5 build
 end
 
 -- animation helper (have to be at the beginning)
@@ -87,6 +95,11 @@ end
 
 local function scale_down_active_gui_smiley(self, node)
 	local s = smiley_scale_big
+	gui.animate(node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.05)
+end
+
+local function scale_down_menu_star(self, node)
+	local s = 0.5
 	gui.animate(node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.05)
 end
 
@@ -118,6 +131,10 @@ function _handle_menu_input(self, action)
 		msg.post("main", "restart", {})
 	elseif gui.pick_node(gui.get_node("btn_sound"), action.x, action.y) then
 		_toggle_sound(self)
+	elseif gui.pick_node(self.node_btn_ad, action.x, action.y) then
+		if gui.is_enabled(self.node_reward_ad) then
+			on_show_rewarded_clicked()
+		end
 	end
 end
 
@@ -125,14 +142,13 @@ function _handle_gameover_input(self, action)
 	if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
 		play_sound_button()
 		msg.post("main", "continue_level", {})
-		--on_show_rewarded_clicked()
 
 	elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
 		play_sound_button()
 		increase_reset_counter() --main.script
 		--show ad 
 		if g_show_ad_gameover then 
-			--on_show_interstitial_clicked() -- comment out at html5 build
+			on_show_interstitial_clicked() -- comment out at html5 build
 			g_show_ad_gameover = false
 		end
 		--show main menu
@@ -179,6 +195,12 @@ function on_message(self, message_id, message, sender)
 		
 	elseif message_id == hash("feedback_wrong_smiley") then
 		_show_feedback_wrong_smiley(self)
+
+	elseif message_id == hash("get_reward") then
+		_get_reward(self, message)
+		
+	elseif message_id == hash("activate_rewarded_ad") then
+		_activate_rewarded_ad(self, message)
 	end
 end
 
@@ -372,10 +394,33 @@ function _show_dialog_gameover(self, message)
 	-- if game is over because  time ran out, show the clock at gamover
 	gui.set_enabled(self.node_box_gameover_time, false)
 	if message.time_ran_out then 
+		gui.set_color(self.node_gameover_continue_btn, vmath.vector3(1, 1, 1))
 		gui.set_enabled(self.node_box_gameover_time, true)
 		gui.animate(self.node_box_gameover_time_txt, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 	end	
 end
+
+function _get_reward(self, message)
+	print("GUI reward: " .. message.value)
+	-- showing text with reward value
+	gui.set_enabled(self.node_reward_stars, true)
+	gui.set_color(self.node_reward_stars, vmath.vector3(1, 1, 1, 1))
+	gui.animate(self.node_reward_stars, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 0), gui.EASING_LINEAR, 3.0, 0.0, nil, gui.PLAYBACK_ONCE_FORWARD)
+	
+	-- scaling animation of star image
+	local s_init = 0.5
+	local s = 1.0
+	gui.set_scale(self.node_menu_stars_img, vmath.vector4(s_init, s_init, 1.0, 0))
+	gui.animate(self.node_menu_stars_img, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.5, scale_down_menu_star)
+end
+
+function _activate_rewarded_ad(self, message)
+	gui.set_enabled(self.node_reward_ad, false)
+	if message.active then
+		gui.set_enabled(self.node_reward_ad, true)
+	end
+end
+
 
 function _update_gameover_stars(self, dt)
 	if self.do_update_gameover_stars == true then
