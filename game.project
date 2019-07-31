@@ -61,6 +61,7 @@ immersive_mode = 1
 minimum_sdk_version = 9
 package = com.agam.tapmoji
 target_sdk_version = 28
+manifest = /AndroidManifest.xml
 
 [script]
 shared_state = 1
