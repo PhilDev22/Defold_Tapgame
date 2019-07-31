@@ -3127,7 +3127,7 @@ nodes {
 nodes {
   position {
     x: 322.0
-    y: 138.0
+    y: 88.0
     z: 0.0
     w: 1.0
   }
@@ -3138,9 +3138,9 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 1.0
-    y: 1.0
-    z: 1.0
+    x: 0.8
+    y: 0.8
+    z: 0.8
     w: 1.0
   }
   size {
@@ -3182,7 +3182,7 @@ nodes {
 nodes {
   position {
     x: 0.0
-    y: 15.0
+    y: 4.0
     z: 0.0
     w: 1.0
   }
@@ -3193,9 +3193,9 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 0.431
-    y: 0.431
-    z: 0.431
+    x: 0.771
+    y: 0.771
+    z: 0.771
     w: 1.0
   }
   size {
@@ -3236,8 +3236,8 @@ nodes {
 }
 nodes {
   position {
-    x: -12.0
-    y: -24.0
+    x: 0.0
+    y: -14.0
     z: 0.0
     w: 1.0
   }
@@ -3248,8 +3248,8 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 0.34
-    y: 0.34
+    x: 0.373
+    y: 0.469
     z: 0.34
     w: 1.0
   }
@@ -3262,7 +3262,62 @@ nodes {
   color {
     x: 1.0
     y: 1.0
-    z: 0.5019608
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_BOX
+  blend_mode: BLEND_MODE_ALPHA
+  texture: ""
+  id: "box_background"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_CENTER
+  adjust_mode: ADJUST_MODE_FIT
+  parent: "box_reward_ad"
+  layer: ""
+  inherit_alpha: false
+  slice9 {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+  }
+  clipping_mode: CLIPPING_MODE_NONE
+  clipping_visible: true
+  clipping_inverted: false
+  alpha: 0.56
+  template_node_child: false
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -25.75
+    y: -59.75
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 0.557
+    y: 0.557
+    z: 0.557
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 0.4
     w: 1.0
   }
   type: TYPE_TEXT
@@ -3299,8 +3354,8 @@ nodes {
 }
 nodes {
   position {
-    x: 35.0
-    y: -24.0
+    x: 50.25
+    y: -59.75
     z: 0.0
     w: 1.0
   }
@@ -3311,9 +3366,9 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 0.22
-    y: 0.22
-    z: 0.22
+    x: 0.342
+    y: 0.342
+    z: 0.342
     w: 1.0
   }
   size {
@@ -3351,6 +3406,69 @@ nodes {
   alpha: 1.0
   template_node_child: false
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -0.25
+    y: -11.5
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 0.27
+    y: 0.27
+    z: 0.27
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 0.0
+    y: 0.2
+    z: 0.2
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "Watch Ad!"
+  font: "score_big"
+  id: "txt_show_ad"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_CENTER
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "box_reward_ad"
+  layer: ""
+  inherit_alpha: false
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: false
+  text_leading: 1.0
+  text_tracking: 0.0
 }
 nodes {
   position {

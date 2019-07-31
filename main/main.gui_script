@@ -404,7 +404,7 @@ function _get_reward(self, message)
 	print("GUI reward: " .. message.value)
 	-- showing text with reward value
 	gui.set_enabled(self.node_reward_stars, true)
-	gui.set_color(self.node_reward_stars, vmath.vector3(1, 1, 1, 1))
+	gui.set_color(self.node_reward_stars, vmath.vector4(1, 1, 1, 1))
 	gui.animate(self.node_reward_stars, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 0), gui.EASING_LINEAR, 3.0, 0.0, nil, gui.PLAYBACK_ONCE_FORWARD)
 	
 	-- scaling animation of star image

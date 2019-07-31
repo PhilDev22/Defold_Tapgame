@@ -455,6 +455,7 @@ local function _reset(self)
 	g_restarted = false
 	g_game_over = false
 	g_completed = false
+	check_reward_active()
 end
 
 -- restarting game from the last level before game over
@@ -491,7 +492,7 @@ end
 
 function check_reward_active()
 	-- if first game, then activate ad button, by setting first timestamp
-	if  g_games_played == 0 then 
+	if  g_games_played == 0 and g_reward_ad_timestamp == 0 then 
 		g_reward_ad_timestamp = utc_now() - g_constants.REWARDED_AD_INTERVAL - 10
 	end
 	-- calculate difference between current time and last timestamp

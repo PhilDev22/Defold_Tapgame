@@ -7,7 +7,7 @@ product_name = "Enhance_SKU_One"
 
 function on_show_interstitial_clicked()
 	if g_show_ads then
-		on_gdpr_show_dialogs_clicked()
+		--on_gdpr_show_dialogs_clicked()
 		-- Check whether an interstitial ad is available
 		if not enhance.isInterstitialReady() then
 			write_log("Interstitial ad is not ready")
@@ -24,13 +24,15 @@ end
 function on_show_rewarded_clicked()
 	-- Check whether a rewarded ad is available
 
-	if not enhance.isRewardedAdReady() then
-		write_log("Rewarded ad is not ready")
-	else
-		-- The ad is ready, display it
+	if g_show_ads then
+		if not enhance.isRewardedAdReady() then
+			write_log("Rewarded ad is not ready")
+		else
+			-- The ad is ready, display it
 
-		enhance.showRewardedAd(on_reward_granted, on_reward_declined, on_reward_unavailable)
-		write_log("Showing rewarded ad")
+			enhance.showRewardedAd(on_reward_granted, on_reward_declined, on_reward_unavailable)
+			write_log("Showing rewarded ad")
+		end
 	end
 end
 
