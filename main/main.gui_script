@@ -412,6 +412,8 @@ function _get_reward(self, message)
 	local s = 1.0
 	gui.set_scale(self.node_menu_stars_img, vmath.vector4(s_init, s_init, 1.0, 0))
 	gui.animate(self.node_menu_stars_img, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.5, scale_down_menu_star)
+	-- update amount of stars
+	gui.set_text(self.node_menu_stars, tostring(g_stars))
 end
 
 function _activate_rewarded_ad(self, message)
