@@ -335,6 +335,7 @@ function _show_dialog_success(self)
 end
 
 function _show_dialog_gameover(self, message)
+	-- show dialog
 	_hide_all_dialogs(self)
 	gui.set_enabled(self.node_dialog_gameover, true)
 	-- stop music
@@ -394,7 +395,8 @@ function _show_dialog_gameover(self, message)
 	-- if game is over because  time ran out, show the clock at gamover
 	gui.set_enabled(self.node_box_gameover_time, false)
 	if message.time_ran_out then 
-		gui.set_color(self.node_gameover_continue_btn, vmath.vector3(1, 1, 1))
+		gui.cancel_animation(self.node_box_gameover_time_txt, "color")
+		gui.set_color(self.node_box_gameover_time_txt, vmath.vector4(0.7, 0.2, 0.2, 1)) -- red
 		gui.set_enabled(self.node_box_gameover_time, true)
 		gui.animate(self.node_box_gameover_time_txt, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 0), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 	end	
