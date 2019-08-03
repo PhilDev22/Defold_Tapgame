@@ -138,7 +138,7 @@ function _init_position(self)
 		go.set_position(pos)
 	end
 
-	local pos = go.get_position() * g_display_scale
+	local pos = go.get_position() * g_display_scale_x
 	go.set_position(pos)
 	
 end
@@ -183,14 +183,14 @@ function _init_movement(self)
 	elseif g_mode_active == g_modes.popup then
 		self.popup_timer = 0.0
 		go.set_scale(0.01)
-		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.0 * g_display_scale), go.EASING_OUTBACK, 0.3)
+		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.0 * g_display_scale_x), go.EASING_OUTBACK, 0.3)
 	end
 
 	-- scale speed and size of smiles according to display scale
-	self.v_speed = self.v_speed * g_display_scale
+	self.v_speed = self.v_speed * g_display_scale_x
 	
 	local scale = go.get_scale()
-	go.set_scale(scale * g_display_scale)
+	go.set_scale(scale * g_display_scale_x)
 	
 end
 

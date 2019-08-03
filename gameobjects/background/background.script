@@ -3,15 +3,31 @@ function init(self)
 	local background_prefix = "background_ingame_"
 	local background_nr = math.random(g_constants.BACKGROUND_COUNT)
 	msg.post("#sprite", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
-	-- scale according to display scale (if display size in game.project is different to the screen sizes in constants.lua)
-	local scale = 1.0
-	-- for html5 build 480x800
-	if g_display_scale < 1.0 then scale = g_display_scale + 0.1 end
-	-- for bigger screens (google pixel 3)
-	if g_display_scale > 1.0 then scale = g_display_scale + 0.1 end
-	go.set("#sprite", "scale", vmath.vector3(scale))
+end
+
+local function update_size(self)
+	print("setting background size")
+
+	local aspect_background = g_constants.SCREEN_HEIGHT / g_constants.SCREEN_WIDTH
+	local aspect_display = g_screen_height / g_screen_width
+	local new_width_scale = 1.2
+	local new_height_scale =  1.2
+	if aspect_display > aspect_background then
+		go.set("#sprite", "scale", vmath.vector3(1.0, new_height_scale, 1.0))
+	elseif aspect_display < aspect_background then
+		go.set("#sprite", "scale", vmath.vector3(new_width_scale, 1.0, 1.0))
+	end
+
 	-- adjust position after scaling
-	local pos_x = -(g_constants.SCREEN_WIDTH - tonumber(sys.get_config("display.width"))) / 2
-	local pos_y = -(g_constants.SCREEN_HEIGHT - tonumber(sys.get_config("display.height"))) / 2
-	go.set_position(vmath.vector3(pos_x, pos_y, -1.0))
+	local pos_x = -(g_constants.SCREEN_WIDTH - g_screen_width) / 2
+	local pos_y = -(g_constants.SCREEN_HEIGHT - g_screen_height) / 2
+	local pos = go.get_position()
+	go.set_position(vmath.vector3(pos.x, pos.y, -1.0))
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("update_size") then
+		print("updating background size")
+		update_size(self)
+	end
 end

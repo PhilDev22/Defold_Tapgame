@@ -13,13 +13,6 @@ profiles {
   }
 }
 profiles {
-  name: "Html5"
-  qualifiers {
-    width: 480
-    height: 800
-  }
-}
-profiles {
   name: "GooglePixel3"
   qualifiers {
     width: 1080

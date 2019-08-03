@@ -24,7 +24,7 @@ M.CONTINUE_STARS = 500
 -- amount of resets for showing interstitial ad
 M.MAX_RESETS = 3
 -- number of different backgrounds
-M.BACKGROUND_COUNT =5
+M.BACKGROUND_COUNT =4
 -- initial level time
 M.LEVEL_TIME = 60
 -- initial level start after restart at gameover

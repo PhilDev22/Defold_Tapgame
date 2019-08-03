@@ -1,9 +1,13 @@
 -- reference to modules
 g_constants = require "main.constants"
 g_helper = require "main.helper"
+g_render_helper = require "main.render_helper"
 
 -- GLOBAL PROPERTIES --
-g_display_scale = 1.0
+g_display_scale_y = 1.0
+g_display_scale_x = 1.0
+g_screen_width = 0
+g_screen_height = 0
 g_show_ads = g_constants.SHOW_ADS
 g_sound_active = true
 -- stopped when in main menu, gameover or level-complete screen
@@ -91,7 +95,13 @@ local function window_listener(self, event, data)
 			msg.post("main#gui", "toggle_pause")
 		end
 	elseif event == window.WINDOW_EVENT_FOCUS_GAINED then
+		if not init_display_scale then
+			init_display_scale = true
+		end
 		check_reward_active()
+	elseif event == window.WINDOW_EVENT_RESIZED then 
+		update_display_scale()
+		msg.post("background", "update_size", {})
 	end
 end
 
@@ -210,6 +220,9 @@ end
 local function _init_level(self, smiley_count)
 	print("Level: " .. g_level)
 
+	update_display_scale()
+	msg.post("background", "update_size", {})
+		
 	_init_moving_mode(self)
 	
 	-- set stage smileys
@@ -514,16 +527,21 @@ function on_get_reward(value)
 	check_reward_active()
 end
 
+function update_display_scale()
+	g_screen_width = g_render_helper.get_screen_width()
+	g_screen_height = g_render_helper.get_screen_height()
+	print(tostring(g_screen_width) .. "x" .. tostring(g_screen_height))
+
+	g_display_scale_x = g_screen_width / g_constants.SCREEN_WIDTH
+	g_display_scale_y = g_screen_height / g_constants.SCREEN_HEIGHT
+end
+
 ------ INIT ------------------------
 
 function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
 	
 	window.set_listener(window_listener)
-
-	-- set scaling factor, if rendering resolution in game.project is other than in constants.lua
-	g_display_scale = tonumber(sys.get_config("display.height")) / g_constants.SCREEN_HEIGHT
-	print("scale: " .. g_display_scale)
 	
 	-- load savegame
 	_load_savegame()
@@ -570,6 +588,7 @@ end
 ------ UPDATE ------------------------
 
 function update(self, dt)
+
 	if not g_stopped and not g_pause then
 		self.level_timer = self.level_timer - dt
 		self.level_timer = math.max(self.level_timer, 0)

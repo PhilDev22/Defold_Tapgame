@@ -1,7 +1,7 @@
 local ACTIVE_TIME = 0.05
 
 function init(self)
-	go.set_scale(g_display_scale)
+	go.set_scale(g_display_scale_x)
 end
 
 function update(self, dt)
