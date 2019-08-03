@@ -1,6 +1,6 @@
 [project]
 title = Tapmoji
-version = 1.1
+version = 1.1.1
 dependencies = 
 
 [bootstrap]
@@ -11,8 +11,8 @@ game_binding = /input/game.input_bindingc
 use_accelerometer = 0
 
 [display]
-width = 640
-height = 1136
+width = 720
+height = 1280
 vsync = 1
 fullscreen = 0
 display_profiles = /main/my.display_profilesc
@@ -59,7 +59,7 @@ app_icon_192x192 = /assets/app_icons/icon_192.png
 input_method = KeyEvent
 immersive_mode = 1
 minimum_sdk_version = 9
-package = com.agam.tapmoji
+package = com.agam.tapmojitest
 target_sdk_version = 28
 manifest = /AndroidManifest.xml
 

@@ -3,8 +3,8 @@
 -- require "my_directory.my_file"
 -- in any script using the functions.
 local M = {}
-M.SCREEN_WIDTH = 640
-M.SCREEN_HEIGHT = 1136
+M.SCREEN_WIDTH = 720
+M.SCREEN_HEIGHT = 1280
 M.MAX_SMILEYS = 20
 M.MAX_LIFES = 3
 M.SHOW_ADS = true

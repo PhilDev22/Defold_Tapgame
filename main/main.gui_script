@@ -83,7 +83,9 @@ function init(self)
 
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
-	on_gdpr_opt_out_clicked() -- comment out at html5 build
+	if g_constants.SHOW_ADS then
+		on_gdpr_opt_out_clicked() -- comment out at html5 build
+	end
 end
 
 -- animation helper (have to be at the beginning)
@@ -326,7 +328,7 @@ function _show_dialog_success(self)
 	local s = 1.2
 	gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 
-	local s_init = 0.62
+	local s_init = 0.76
 	local s = 1.4
 	gui.set_scale(self.node_complete_img_time, vmath.vector4(0.01, 0.01, 0.01, 0))
 	gui.set_scale(self.node_complete_seconds, vmath.vector4(0.01, 0.01, 0.01, 0))

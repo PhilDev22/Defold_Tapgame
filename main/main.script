@@ -90,8 +90,8 @@ local function window_listener(self, event, data)
 			print("Window lost focus. Pausing game.")
 			msg.post("main#gui", "toggle_pause")
 		end
-	elseif event == window.WINDOW_EVENT_RESIZED then
-		print("resized")
+	elseif event == window.WINDOW_EVENT_FOCUS_GAINED then
+		check_reward_active()
 	end
 end
 
@@ -485,11 +485,16 @@ function check_reward_active()
 	if  g_games_played == 0 and g_reward_ad_timestamp == 0 then 
 		g_reward_ad_timestamp = utc_now() - g_constants.REWARDED_AD_INTERVAL - 10
 	end
-	-- calculate difference between current time and last timestamp
+	-- calculate difference between current time and last timestamp	
 	local diff  = utc_now() - g_reward_ad_timestamp
 	if diff >= g_constants.REWARDED_AD_INTERVAL then
-		print("reward allowed!")
-		msg.post("main#gui", "activate_rewarded_ad", {active = true})
+		if g_games_played > 0 then
+			print("reward allowed!")
+			msg.post("main#gui", "activate_rewarded_ad", {active = true})
+		else
+			print("First game not played")
+			msg.post("main#gui", "activate_rewarded_ad", {active = false})
+		end
 	else
 		print("reward in: " ..  tostring(g_constants.REWARDED_AD_INTERVAL - diff))
 		msg.post("main#gui", "activate_rewarded_ad", {active = false})
@@ -539,8 +544,6 @@ function init(self)
 	self.second = 0.0
 
 	g_item_table_ids = get_table_ids( g_constants.ITEM_IDS )
-
-	g_reward_ad_timestamp = utc_now()
 	
 	-- show main menu
 	msg.post("/main#gui", "show_dialog_main_menu", {show = true})

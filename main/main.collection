@@ -74,9 +74,9 @@ instances {
     w: 1.0
   }
   scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
+    x: 1.13
+    y: 1.13
+    z: 1.13
   }
 }
 scale_along_z: 0

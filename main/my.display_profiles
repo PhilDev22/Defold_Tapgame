@@ -1,15 +1,15 @@
 profiles {
-  name: "UltraWide"
+  name: "UltraWideHuawei"
   qualifiers {
-    width: 640
-    height: 1280
+    width: 1080
+    height: 2244
   }
 }
 profiles {
   name: "Normal"
   qualifiers {
-    width: 640
-    height: 1136
+    width: 720
+    height: 1280
   }
 }
 profiles {
@@ -17,5 +17,12 @@ profiles {
   qualifiers {
     width: 480
     height: 800
+  }
+}
+profiles {
+  name: "GooglePixel3"
+  qualifiers {
+    width: 1080
+    height: 2160
   }
 }
