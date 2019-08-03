@@ -1,22 +1,8 @@
 profiles {
-  name: "Landscape"
-  qualifiers {
-    width: 1136
-    height: 640
-  }
-}
-profiles {
-  name: "Portrait"
+  name: "UltraWide"
   qualifiers {
     width: 640
-    height: 1136
-  }
-}
-profiles {
-  name: "Html5"
-  qualifiers {
-    width: 480
-    height: 800
+    height: 1280
   }
 }
 profiles {
@@ -27,9 +13,9 @@ profiles {
   }
 }
 profiles {
-  name: "UltraWide"
+  name: "Html5"
   qualifiers {
-    width: 640
-    height: 1280
+    width: 480
+    height: 800
   }
 }

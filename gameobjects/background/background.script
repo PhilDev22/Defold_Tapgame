@@ -5,7 +5,10 @@ function init(self)
 	msg.post("#sprite", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
 	-- scale according to display scale (if display size in game.project is different to the screen sizes in constants.lua)
 	local scale = 1.0
+	-- for html5 build 480x800
 	if g_display_scale < 1.0 then scale = g_display_scale + 0.1 end
+	-- for bigger screens (google pixel 3)
+	if g_display_scale > 1.0 then scale = g_display_scale + 0.1 end
 	go.set("#sprite", "scale", vmath.vector3(scale))
 	-- adjust position after scaling
 	local pos_x = -(g_constants.SCREEN_WIDTH - tonumber(sys.get_config("display.width"))) / 2

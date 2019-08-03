@@ -90,6 +90,8 @@ local function window_listener(self, event, data)
 			print("Window lost focus. Pausing game.")
 			msg.post("main#gui", "toggle_pause")
 		end
+	elseif event == window.WINDOW_EVENT_RESIZED then
+		print("resized")
 	end
 end
 
@@ -141,16 +143,6 @@ function save_game()
 	else
 		print("Saved game")
 	end
-end
-
--- sets a random background
-local function _set_background()
-	--local background_prefix = "background_ingame_"
-	--local background_nr = math.random(g_constants.BACKGROUND_COUNT)
-	--msg.post("main#sprite_background", "play_animation", {id = hash(background_prefix .. tostring(background_nr))})
-	--go.set("#sprite_background", "scale", vmath.vector3(g_display_scale))
-	--go.set("#sprite_background", "position.x", 0)
-	--go.set("#sprite_background", "position.y", 0)
 end
 
 local function _init_moving_mode(self)
@@ -218,8 +210,6 @@ end
 local function _init_level(self, smiley_count)
 	print("Level: " .. g_level)
 
-	_set_background()
-	
 	_init_moving_mode(self)
 	
 	-- set stage smileys
@@ -522,6 +512,8 @@ end
 ------ INIT ------------------------
 
 function init(self)
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+	
 	window.set_listener(window_listener)
 
 	-- set scaling factor, if rendering resolution in game.project is other than in constants.lua
