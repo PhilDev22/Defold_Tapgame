@@ -4,6 +4,7 @@ g_helper = require "main.helper"
 g_render_helper = require "main.render_helper"
 
 -- GLOBAL PROPERTIES --
+g_help_active = false
 g_display_scale_y = 1.0
 g_display_scale_x = 1.0
 g_screen_width = 0
@@ -277,6 +278,11 @@ local function _init_level(self, smiley_count)
 	msg.post("/main#gui", "set_level", {level = g_level})
 	-- set lifes
 	msg.post("/main#gui", "update_lifes", {lifes = g_lifes})
+
+	if g_games_played == 0 then 
+		g_help_active = true 
+		msg.post("/main#gui", "show_help", {})
+	end
 end
 
 -- showing dialog "level complete", hiding ingame gui, increasing level, increasing time

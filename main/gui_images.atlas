@@ -103,6 +103,12 @@ images {
 images {
   image: "/assets/gui/emoji_u1f3c6.png"
 }
+images {
+  image: "/assets/gui/emoji_u1f468_1f3fb_200d_1f3eb.png"
+}
+images {
+  image: "/assets/gui/emoji_u1f446_1f3fb.png"
+}
 margin: 0
 extrude_borders: 0
 inner_padding: 0
