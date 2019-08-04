@@ -222,7 +222,8 @@ local function _init_level(self, smiley_count)
 
 	update_display_scale()
 	msg.post("background", "update_size", {})
-		
+	msg.post("background", "set_random_background", {})
+	
 	_init_moving_mode(self)
 	
 	-- set stage smileys

@@ -19,3 +19,10 @@ profiles {
     height: 2160
   }
 }
+profiles {
+  name: "GalaxyTabS2"
+  qualifiers {
+    width: 1536
+    height: 2048
+  }
+}

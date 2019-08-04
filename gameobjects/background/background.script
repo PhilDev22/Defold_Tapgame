@@ -1,4 +1,4 @@
-function init(self)
+local function _set_random_background(self)
 	-- set random background
 	local background_prefix = "background_ingame_"
 	local background_nr = math.random(g_constants.BACKGROUND_COUNT)
@@ -8,13 +8,14 @@ end
 local function update_size(self)
 	print("setting background size")
 
-	local aspect_background = g_constants.SCREEN_HEIGHT / g_constants.SCREEN_WIDTH
-	local aspect_display = g_screen_height / g_screen_width
-	local new_width_scale = 1.2
+	local aspect_background = g_constants.SCREEN_WIDTH / g_constants.SCREEN_HEIGHT
+	local aspect_display = g_screen_width / g_screen_height
+	print("aspect_display: " .. tostring(aspect_display))
+	local new_width_scale = 1.5
 	local new_height_scale =  1.2
-	if aspect_display > aspect_background then
+	if aspect_display <= 0.5 then --ultra wide smartphones (P20, Pixel 3)
 		go.set("#sprite", "scale", vmath.vector3(1.0, new_height_scale, 1.0))
-	elseif aspect_display < aspect_background then
+	elseif aspect_display >= 0.7 then --tablets
 		go.set("#sprite", "scale", vmath.vector3(new_width_scale, 1.0, 1.0))
 	end
 
@@ -25,9 +26,15 @@ local function update_size(self)
 	go.set_position(vmath.vector3(pos.x, pos.y, -1.0))
 end
 
+function init(self)
+	_set_random_background(self)
+end
+
 function on_message(self, message_id, message)
 	if message_id == hash("update_size") then
 		print("updating background size")
 		update_size(self)
+	elseif message_id == hash("set_random_background") then
+		_set_random_background(self)
 	end
 end
