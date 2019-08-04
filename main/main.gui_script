@@ -121,7 +121,7 @@ function on_input(self, action_id, action)
 		else
 			
 			-- pause
-			if g_pause or gui.pick_node(self.node_btn_pause, action.x, action.y) then
+			if gui.pick_node(self.node_btn_pause, action.x, action.y) then
 				toggle_pause(self)
 			end		
 			-- main menu screen
@@ -522,6 +522,12 @@ function toggle_pause(self)
 	g_pause = not g_pause
 	print("pause: " .. tostring(g_pause))
 	gui.set_enabled(self.node_txt_pause, g_pause)
+	local color = gui.get_color(self.node_btn_pause)
+	if g_pause then
+		gui.set_color(self.node_btn_pause, vmath.vector4(color.x, color.y, color.z, 1.0))
+	else
+		gui.set_color(self.node_btn_pause, vmath.vector4(color.x, color.y, color.z, 0.4))
+	end
 	msg.post("main", "pause", {})
 end
 
