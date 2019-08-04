@@ -32,6 +32,7 @@ g_mode_active = 1
 g_stars = 0
 -- amount of stars collected in current game
 g_stars_of_game = 0
+g_stars_of_level = 0
 -- swap key and value of item table, to get index as value
 g_item_table_ids = {} -- initialize in init function
 -- setting when game is restarted after gamover for paying with Stars (it is allowed to restart only once)
@@ -226,6 +227,8 @@ local function _init_level(self, smiley_count)
 	msg.post("background", "set_random_background", {})
 	
 	_init_moving_mode(self)
+
+	g_stars_of_level = 0
 	
 	-- set stage smileys
 	print ("Loading stage...")
@@ -280,6 +283,7 @@ end
 local function _on_level_complete(self)
 	if g_lifes > 0 then
 		print("Level finished!")
+		g_stars_of_level = g_stars_of_level + g_level
 		-- increase level
 		g_level = g_level + 1
 		-- add seconds to timer
@@ -393,6 +397,7 @@ local function _touch_item(self, smiley_id, sender)
 	-- star item
 	elseif item_index == g_constants.EMOJI_STAR_ID then
 		_add_stars_amount(1)
+		g_stars_of_level = g_stars_of_level + 1
 
 	elseif item_index == nil then
 		-- smiley_id doesn't exisit in g_item_table_ids

@@ -56,6 +56,8 @@ function init(self)
 	self.node_complete = gui.get_node("txt_level_complete")
 	self.node_box_success = gui.get_node("box_success_emoji")
 	self.node_complete_img_time = gui.get_node("img_time")
+	self.node_complete_img_stars = gui.get_node("img_level_stars")
+	self.node_complete_txt_stars = gui.get_node("txt_level_stars")
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
 	self.node_menu_stars_img = gui.get_node("img_star_total")
@@ -328,12 +330,21 @@ function _show_dialog_success(self)
 	local s = 1.2
 	gui.animate(self.node_complete, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
 
+	-- set amount of collected level stars
+	gui.set_text(self.node_complete_txt_stars, "+" .. tostring(g_stars_of_level))
+
+	-- show additional time gained
 	local s_init = 0.8
 	local s = 1.4
 	gui.set_scale(self.node_complete_img_time, vmath.vector4(0.01, 0.01, 0.01, 0))
 	gui.set_scale(self.node_complete_seconds, vmath.vector4(0.01, 0.01, 0.01, 0))
-	gui.animate(self.node_complete_img_time, gui.PROP_SCALE, vmath.vector4(s_init, s_init, s_init, 0), gui.EASING_OUT, 0.1, 0.7, nil)
-	gui.animate(self.node_complete_seconds, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.7, scale_down)
+	gui.animate(self.node_complete_img_time, gui.PROP_SCALE, vmath.vector4(s_init, s_init, s_init, 0), gui.EASING_OUT, 0.1, 0.3, nil)
+	gui.animate(self.node_complete_seconds, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.3, scale_down)
+	-- show stars gained
+	gui.set_scale(self.node_complete_img_stars, vmath.vector4(0.01, 0.01, 0.01, 0))
+	gui.set_scale(self.node_complete_txt_stars, vmath.vector4(0.01, 0.01, 0.01, 0))
+	gui.animate(self.node_complete_img_stars, gui.PROP_SCALE, vmath.vector4(s_init, s_init, s_init, 0), gui.EASING_OUT, 0.1, 0.5, nil)
+	gui.animate(self.node_complete_txt_stars, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.5, scale_down)
 end
 
 function _show_dialog_gameover(self, message)
