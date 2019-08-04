@@ -39,7 +39,7 @@ M.ITEM_PROB = 5
 -- seconds gaining when collecting time-item
 M.TIME_ITEM_VALUE = 5
 -- time which has to pass for the rewarded ad to be active again
-M.REWARDED_AD_INTERVAL = 300 --seconds
+M.REWARDED_AD_INTERVAL = 10 --seconds
 
 -- initial amount of different smileys at one level
 M.LEVEL_SMILEYS_BASE = 6

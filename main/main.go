@@ -144,7 +144,7 @@ embedded_components {
   data: "sound: \"/assets/sounds/complete2.ogg\"\n"
   "looping: 0\n"
   "group: \"master\"\n"
-  "gain: 0.1\n"
+  "gain: 0.2\n"
   ""
   position {
     x: 0.0
@@ -264,7 +264,7 @@ embedded_components {
   data: "sound: \"/assets/sounds/music1.ogg\"\n"
   "looping: 1\n"
   "group: \"master\"\n"
-  "gain: 0.4\n"
+  "gain: 0.35\n"
   ""
   position {
     x: 0.0

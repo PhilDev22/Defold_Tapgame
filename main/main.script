@@ -47,6 +47,7 @@ g_main_menu = true
 -- statistics (loading from save-file)
 g_games_played = 0
 g_reward_ad_timestamp = 0 --(loading from save-file)
+g_reward_button_active = false
 
 -- for initializing level --
 g_level_smiley_count_max = 3
@@ -503,15 +504,18 @@ function check_reward_active()
 	local diff  = utc_now() - g_reward_ad_timestamp
 	if diff >= g_constants.REWARDED_AD_INTERVAL then
 		if g_games_played > 0 then
-			print("reward allowed!")
+			print("Watching reward ad allowed!")
 			msg.post("main#gui", "activate_rewarded_ad", {active = true})
+			g_reward_button_active = true
 		else
-			print("First game not played")
+			print("Hiding Ad Button. First game not played")
 			msg.post("main#gui", "activate_rewarded_ad", {active = false})
+			g_reward_button_active = false
 		end
 	else
-		print("reward in: " ..  tostring(g_constants.REWARDED_AD_INTERVAL - diff))
+		print("Reward Ad in: " ..  tostring(g_constants.REWARDED_AD_INTERVAL - diff))
 		msg.post("main#gui", "activate_rewarded_ad", {active = false})
+		g_reward_button_active = false
 	end
 end
 
@@ -528,10 +532,21 @@ function on_get_reward(value)
 	check_reward_active()
 end
 
+function _check_show_ad_button(self)
+	if g_reward_button_active == false and g_games_played > 0 then
+		local diff  = utc_now() - g_reward_ad_timestamp
+		if diff >= g_constants.REWARDED_AD_INTERVAL then
+			msg.post("main#gui", "activate_rewarded_ad", {active = true})
+			g_reward_button_active = true
+			print("Showing reward ad button")
+		end
+	end
+end
+
 function update_display_scale()
 	g_screen_width = g_render_helper.get_screen_width()
 	g_screen_height = g_render_helper.get_screen_height()
-	print(tostring(g_screen_width) .. "x" .. tostring(g_screen_height))
+	--print(tostring(g_screen_width) .. "x" .. tostring(g_screen_height))
 
 	g_display_scale_x = g_screen_width / g_constants.SCREEN_WIDTH
 	g_display_scale_y = g_screen_height / g_constants.SCREEN_HEIGHT
@@ -606,6 +621,8 @@ function update(self, dt)
 			self.level_timer = 0
 			_process_game_over(self)
 		end
+	else
+		_check_show_ad_button(self)
 	end
 end
 
