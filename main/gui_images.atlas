@@ -109,6 +109,9 @@ images {
 images {
   image: "/assets/gui/emoji_u1f446_1f3fb.png"
 }
+images {
+  image: "/assets/gui/emoji_u1f9d9_1f3fb_200d_2642.png"
+}
 margin: 0
 extrude_borders: 0
 inner_padding: 0

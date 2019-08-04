@@ -155,6 +155,14 @@ function _handle_help_input(self)
 
 	if help_screen_id <= 6 then
 		gui.set_enabled(gui.get_node("help" ..  tostring(help_screen_id)), true)
+		
+		if help_screen_id == 2 or help_screen_id == 3 or help_screen_id == 4 then
+			local node = gui.get_node("box_finger" ..  tostring(help_screen_id))
+			gui.cancel_animation(node, "scale")
+			gui.set_scale(node, vmath.vector3(1.0))
+			gui.animate(node, gui.PROP_SCALE, vmath.vector3(0.7, 0.7, 1), gui.EASING_INOUTSINE, 0.5, 0.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+		end
+		
 	else
 		gui.set_enabled(self.node_help, false)
 		g_help_active = false

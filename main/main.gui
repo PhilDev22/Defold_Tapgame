@@ -2610,7 +2610,7 @@ nodes {
   clipping_mode: CLIPPING_MODE_NONE
   clipping_visible: true
   clipping_inverted: false
-  alpha: 0.59
+  alpha: 0.46
   template_node_child: false
   size_mode: SIZE_MODE_AUTO
 }
@@ -2647,7 +2647,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "gui_images/emoji_u1f468_1f3fb_200d_1f3eb"
+  texture: "gui_images/emoji_u1f9d9_1f3fb_200d_2642"
   id: "img_teacher"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -2916,7 +2916,7 @@ nodes {
 nodes {
   position {
     x: -81.0
-    y: 443.0
+    y: 455.0
     z: 0.0
     w: 1.0
   }
@@ -2947,7 +2947,7 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: "gui_images/emoji_u1f446_1f3fb"
-  id: "box_finger_2"
+  id: "box_finger2"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -3091,7 +3091,7 @@ nodes {
 nodes {
   position {
     x: -245.0
-    y: 524.0
+    y: 552.0
     z: 0.0
     w: 1.0
   }
@@ -3266,7 +3266,7 @@ nodes {
 nodes {
   position {
     x: 267.0
-    y: 530.0
+    y: 569.0
     z: 0.0
     w: 1.0
   }
@@ -3781,9 +3781,9 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 0.8
-    y: 0.8
-    z: 0.8
+    x: 0.704
+    y: 0.704
+    z: 0.704
     w: 1.0
   }
   size {
@@ -3800,9 +3800,10 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "Now,\n"
-  "master as many\n"
-  "levels as possible!\n"
+  text: "Easy, isn\'t it?\n"
+  "Now, master as \n"
+  "many levels as \n"
+  "possible!\n"
   "\n"
   "Good Luck!"
   font: "score_big"
