@@ -50,6 +50,11 @@ g_main_menu = true
 g_games_played = 0
 g_reward_ad_timestamp = 0 --(loading from save-file)
 g_reward_button_active = false
+-- daily challenges
+g_last_daily_challenge_date = 0
+g_current_date = 0
+g_daily_challenge = {}
+g_daily_challenge_completed = false
 
 -- for initializing level --
 g_level_smiley_count_max = 3
@@ -61,6 +66,7 @@ g_speed_horizontal = 0
 g_speed_vertical = 0
 g_popup_time = 0
 g_popup_time_base = 2.4
+
 -- increasing amount of smileys 
 local smileys_increase_step = 1
 -- spawn times
@@ -119,6 +125,9 @@ local function _load_savegame()
 	g_highscore_level = sys.load(file_path).highscore_level or 0
 	g_reward_ad_timestamp = sys.load(file_path).reward_ad_timestamp or 0
 	sound_active = sys.load(file_path).sound_active or 0
+	g_last_daily_challenge_date = sys.load(file_path).last_daily_challenge_date or 0
+	g_daily_challenge = sys.load(file_path).daily_challenge or {}
+	
 	-- convert sound_active property to boolean value
 	g_sound_active = false
 	if sound_active == 1 then g_sound_active = true end
@@ -147,7 +156,9 @@ function save_game()
 		reset_counter = g_reset_counter, 
 		sound_active = sound,
 		highscore_level = g_highscore_level,
-		reward_ad_timestamp = g_reward_ad_timestamp
+		reward_ad_timestamp = g_reward_ad_timestamp,
+		last_daily_challenge_date = g_last_daily_challenge_date,
+		daily_challenge = g_daily_challenge
 	}
 	-- save file
 	local file_path = sys.get_save_file("Tapmoji", "save")
@@ -554,6 +565,63 @@ function _check_show_ad_button(self)
 	end
 end
 
+function _init_challenge()
+	local challenge = {}
+	challenge.type = 0
+	challenge.amount = 0
+	challenge.gained = 0
+	
+	--TODO
+	--challenge_smileys_amount
+	--challenge_smiley_type
+	--challenge_items_amount
+	--challenge_item_type
+	--challenge_level_amount
+	--challenge_level_no_wrong_tap_amount
+
+	--test 
+	challenge.type = 1
+	challenge.amount = 10
+	
+	return challenge
+end
+
+function _check_daily_challenge(self)
+	local date_table = os.date("*t")
+	--print("date: " .. date_table.hour)
+	local month = tostring(date_table.month)
+	local day = tostring(date_table.day)
+
+	if string.len(month) == 1 then month = 0 .. month end
+	if string.len(day) == 1 then day = 0 .. day end
+	
+	local date_str =  tostring(date_table.year) .. month .. day
+	local g_current_date = tonumber(date_str)
+	
+	-- check if new day began
+	if  g_last_daily_challenge_date < g_current_date then
+		--initilize daily challenge
+		g_daily_challenge = _init_challenge()
+		print("challenge type: " .. tostring(g_daily_challenge.type))
+		print("challenge amount: " .. tostring(g_daily_challenge.amount))
+		
+		g_last_daily_challenge_date = g_current_date
+
+		save_game()
+	else
+		print("Daily challenge active")
+		print(g_last_daily_challenge_date)
+		print(g_daily_challenge.type)
+		print(g_daily_challenge.amount)
+		print(g_daily_challenge.gained)
+
+		--check if challenge completed
+		if g_daily_challenge.gained >= g_daily_challenge.amount then
+			g_daily_challenge_completed = true
+		end
+	end
+end
+
 function update_display_scale()
 	g_screen_width = g_render_helper.get_screen_width()
 	g_screen_height = g_render_helper.get_screen_height()
@@ -589,6 +657,8 @@ function init(self)
 	self.second = 0.0
 
 	g_item_table_ids = get_table_ids( g_constants.ITEM_IDS )
+
+	_check_daily_challenge(self)
 	
 	-- show main menu
 	msg.post("/main#gui", "show_dialog_main_menu", {show = true})
