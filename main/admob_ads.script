@@ -31,7 +31,6 @@ local function load_interstitial()
 		type = 'interstitial',
 		id = admob_ids.interstitial,
 		immersive = true,
-		keywords = {'game'},
 		is_designed_for_families = true,
 		non_personalized = true,
 		max_ad_content_rating ='G'
@@ -44,7 +43,6 @@ local function load_rewarded_video()
 		type = 'rewarded',
 		id = admob_ids.rewarded,
 		immersive = true,
-		keywords = {'game'},
 		is_designed_for_families = true,
 		non_personalized = true,
 		max_ad_content_rating ='G'

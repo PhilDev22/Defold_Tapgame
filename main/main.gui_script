@@ -202,6 +202,7 @@ end
 function _handle_gameover_input(self, action)
 	if gui.pick_node(self.node_gameover_continue_btn, action.x, action.y) then
 		play_sound_button()
+		play_music(true)
 		msg.post("main", "continue_level", {})
 
 	elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
