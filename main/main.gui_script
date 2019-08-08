@@ -90,8 +90,14 @@ function init(self)
 
 	-- show GDPR dialog (for ads)
 	--on_gdpr_show_dialogs_clicked()
-	if g_constants.SHOW_ADS then
-		on_gdpr_opt_out_clicked() -- comment out at html5 build
+	--if g_constants.SHOW_ADS then
+	--	on_gdpr_opt_out_clicked() -- comment out at html5 build
+	--end
+
+	if g_admob_initialized == false then
+		if g_constants.SHOW_ADS then
+			init_ads()-- comment out at html5 build
+		end
 	end
 end
 
@@ -177,7 +183,7 @@ function _handle_help_input(self)
 	end	
 end
 
-function _handle_menu_input(self, action)
+function _handle_menu_input(self, action)	
 	if gui.pick_node(gui.get_node("btn_start"), action.x, action.y) then
 		play_sound_button()
 		msg.post("main", "restart", {})
@@ -185,7 +191,10 @@ function _handle_menu_input(self, action)
 		_toggle_sound(self)
 	elseif gui.pick_node(self.node_btn_ad, action.x, action.y) then
 		if gui.is_enabled(self.node_reward_ad) then
-			on_show_rewarded_clicked()
+			--on_show_rewarded_clicked()
+			if is_rewarded_loaded() then
+				show_rewarded_video()
+			end
 		end
 	end
 end
@@ -200,7 +209,10 @@ function _handle_gameover_input(self, action)
 		increase_reset_counter() --main.script
 		--show ad 
 		if g_show_ad_gameover then 
-			on_show_interstitial_clicked() -- comment out at html5 build
+			--on_show_interstitial_clicked() -- comment out at html5 build
+			if is_interstitial_loaded() then
+				show_interstitial()
+			end
 			g_show_ad_gameover = false
 		end
 		--show main menu
@@ -560,7 +572,7 @@ end
 
 -- Write logs to the screen
 function write_log(text)
-	local text_node = gui.get_node("text_log")
+	--local text_node = gui.get_node("text_log")
 	--gui.set_text(text_node, text)
 	print(text)
 end

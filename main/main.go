@@ -44,8 +44,8 @@ components {
   }
 }
 components {
-  id: "ads"
-  component: "/main/ads.script"
+  id: "admob_ads"
+  component: "/main/admob_ads.script"
   position {
     x: 0.0
     y: 0.0

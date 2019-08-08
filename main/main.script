@@ -235,8 +235,8 @@ local function _init_level(self, smiley_count)
 	print("Level: " .. g_level)
 
 	update_display_scale()
-	msg.post("background", "update_size", {})
 	msg.post("background", "set_random_background", {})
+	msg.post("background", "update_size", {})
 	
 	_init_moving_mode(self)
 
@@ -570,19 +570,23 @@ function _init_challenge()
 	challenge.type = 0
 	challenge.amount = 0
 	challenge.gained = 0
+
+	local challenge_types = {
+		smileys_amount = 1,
+		smileys_type = 2,
+		items_amount = 3,
+		items_type = 4,
+		level_amount = 5,
+		no_fail_in_level = 6,
+		stars_amount = 7
+	}
 	
 	--TODO
-	--challenge_smileys_amount
-	--challenge_smiley_type
-	--challenge_items_amount
-	--challenge_item_type
-	--challenge_level_amount
-	--challenge_level_no_wrong_tap_amount
 
 	--test 
 	challenge.type = 1
 	challenge.amount = 10
-	
+
 	return challenge
 end
 
@@ -679,6 +683,8 @@ function on_message(self, message_id, message, sender)
 		if not g_restarted and g_stars >= g_constants.CONTINUE_STARS then
 			_restart_from_current_level(self)
 		end
+	elseif message_id == hash("allow_reward") then
+		on_get_reward(100)
 	end
 end
 

@@ -1,0 +1,113 @@
+local system_name = sys.get_sys_info().system_name
+
+--- ADMOB ------
+
+g_admob_initialized = false
+
+-- List ids for all platforms.
+local admob_ids = {
+	['iPhone OS'] = {
+		app = 'ca-app-pub-***',
+		banner = 'ca-app-pub-***',
+		interstitial = 'ca-app-pub-***',
+		rewarded = 'ca-app-pub-***'
+	},
+	Android = {
+		app = 'ca-app-pub-***',
+		banner ='ca-app-pub-***',
+		interstitial = 'ca-app-pub-***',
+		rewarded = 'ca-app-pub-***'
+	}
+}
+
+-- Leave only current system ids
+admob_ids = admob_ids.Android
+
+-- Load.
+
+local function load_interstitial()
+	--write_log('load_interstitial')
+	admob.load{
+		type = 'interstitial',
+		id = admob_ids.interstitial,
+		immersive = true,
+		keywords = {'game'},
+		is_designed_for_families = true,
+		non_personalized = true,
+		max_ad_content_rating ='G'
+	}
+end
+
+local function load_rewarded_video()
+	--write_log('load_rewarded_video')
+	admob.load{
+		type = 'rewarded',
+		id = admob_ids.rewarded,
+		immersive = true,
+		keywords = {'game'},
+		is_designed_for_families = true,
+		non_personalized = true,
+		max_ad_content_rating ='G'
+	}
+end
+
+
+-- init
+
+-- Admob events handler.
+function admob_listener(event)
+	--write_log('admob listener: ' .. tostring(event.type) .. "/".. tostring(event.phase))
+	if event.type == 'init' then
+		-- Admob has been initialized, now it's safe to load a banner.
+		load_interstitial()
+		load_rewarded_video()
+	elseif event.type == 'interstitial' then
+		if event.phase == 'closed' then
+			-- Interstitial closed. Load new one
+			load_interstitial()
+		end
+	elseif event.phase == 'rewarded' then
+		-- Allow reward
+		msg.post("main", "allow_reward", {})
+		load_rewarded_video()
+	end
+end
+
+function init_ads(self)
+	--write_log('initializing admob')
+
+	--admob.enable_debug()
+
+	-- Init Admob with your app id.
+	admob.init{
+		app_id = admob_ids.app,
+		test = true,
+		listener = admob_listener
+	}
+	g_admob_initialized = true
+end
+
+-- Show.
+
+function show_interstitial()
+	admob.show('interstitial')
+end
+
+
+function show_rewarded_video()
+	admob.show('rewarded')
+end
+
+-- Is loaded?
+
+function is_interstitial_loaded()
+	local is_loaded = admob.is_loaded('interstitial')
+	--write_log('Is interstitial loaded? ' .. (is_loaded and 'Yes' or 'No'))
+	return is_loaded
+end
+
+function is_rewarded_loaded()
+	local is_loaded = admob.is_loaded('rewarded')
+	--write_log('Is rewarded loaded? ' .. (is_loaded and 'Yes' or 'No'))
+	return is_loaded
+end
