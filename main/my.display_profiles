@@ -11,6 +11,10 @@ profiles {
     width: 720
     height: 1280
   }
+  qualifiers {
+    width: 1080
+    height: 1920
+  }
 }
 profiles {
   name: "GooglePixel3"

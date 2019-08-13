@@ -142,6 +142,19 @@ function on_input(self, action_id, action)
 		if g_main_menu == true then
 			print("Exit!")
 			msg.post("@system:", "exit", {code = 0})
+			
+		elseif g_game_over == true then 
+			--show main menu
+			msg.post(".", "show_dialog_main_menu", {show = true})
+			msg.post("main", "reset", {})
+			
+		elseif g_pause == true then 
+			toggle_pause(self)
+			
+		else
+			--if ingame, show main menu
+			msg.post(".", "show_dialog_main_menu", {show = true})
+			msg.post("main", "reset", {})
 		end
 	end
 end

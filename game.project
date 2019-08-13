@@ -63,7 +63,7 @@ minimum_sdk_version = 14
 package = com.agam.tapmojitest
 target_sdk_version = 28
 manifest = /AndroidManifest.xml
-version_code = 14
+version_code = 16
 
 [script]
 shared_state = 1
