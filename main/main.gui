@@ -4056,8 +4056,8 @@ nodes {
 }
 nodes {
   position {
-    x: 107.0
-    y: 66.0
+    x: 131.0
+    y: 100.0
     z: 0.0
     w: 1.0
   }
@@ -4292,8 +4292,8 @@ nodes {
 }
 nodes {
   position {
-    x: 671.0
-    y: 1227.0
+    x: 642.0
+    y: 1205.0
     z: 0.0
     w: 1.0
   }
@@ -4457,8 +4457,8 @@ nodes {
 }
 nodes {
   position {
-    x: 639.0
-    y: 68.0
+    x: 602.0
+    y: 97.0
     z: 0.0
     w: 1.0
   }
@@ -5028,7 +5028,7 @@ nodes {
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
   layer: ""
-  inherit_alpha: false
+  inherit_alpha: true
   alpha: 1.0
   outline_alpha: 1.0
   shadow_alpha: 1.0
@@ -7376,8 +7376,8 @@ layouts {
   }
   nodes {
     position {
-      x: 639.0
-      y: 68.0
+      x: 607.0
+      y: 97.0
       z: 0.0
       w: 1.0
     }
@@ -9009,7 +9009,7 @@ layouts {
   nodes {
     position {
       x: 630.391
-      y: 68.0
+      y: 101.113
       z: 0.0
       w: 1.0
     }
@@ -9460,8 +9460,8 @@ layouts {
   }
   nodes {
     position {
-      x: 107.0
-      y: 66.0
+      x: 131.0
+      y: 100.0
       z: 0.0
       w: 1.0
     }
@@ -9573,8 +9573,8 @@ layouts {
   }
   nodes {
     position {
-      x: 639.0
-      y: 68.0
+      x: 602.0
+      y: 97.0
       z: 0.0
       w: 1.0
     }

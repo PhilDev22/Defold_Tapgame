@@ -525,7 +525,7 @@ function check_reward_active()
 	-- calculate difference between current time and last timestamp	
 	local diff  = utc_now() - g_reward_ad_timestamp
 	if diff >= g_constants.REWARDED_AD_INTERVAL then
-		if g_games_played > 0 then
+		if g_games_played > 0 and g_admob_initialized then
 			print("Watching reward ad allowed!")
 			msg.post("main#gui", "activate_rewarded_ad", {active = true})
 			g_reward_button_active = true

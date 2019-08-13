@@ -1,4 +1,4 @@
-local system_name = sys.get_sys_info().system_name
+local is_test = true
 
 --- ADMOB ------
 
@@ -21,7 +21,8 @@ local admob_ids = {
 }
 
 -- Leave only current system ids
-admob_ids = admob_ids.Android
+local system_name = sys.get_sys_info().system_name
+admob_ids = admob_ids[system_name] or {}
 
 -- Load.
 
@@ -31,19 +32,23 @@ local function load_interstitial()
 		type = 'interstitial',
 		id = admob_ids.interstitial,
 		immersive = true,
+		keywords = {'game', 'action'},
 		is_designed_for_families = true,
+		tag_for_child_directed_treatment = true,
 		non_personalized = true,
 		max_ad_content_rating ='G'
 	}
 end
 
 local function load_rewarded_video()
-	--write_log('load_rewarded_video')
+	write_log('load_rewarded_video')
 	admob.load{
 		type = 'rewarded',
 		id = admob_ids.rewarded,
 		immersive = true,
+		keywords = {'game', 'action'},
 		is_designed_for_families = true,
+		tag_for_child_directed_treatment = true,
 		non_personalized = true,
 		max_ad_content_rating ='G'
 	}
@@ -54,7 +59,7 @@ end
 
 -- Admob events handler.
 function admob_listener(event)
-	--write_log('admob listener: ' .. tostring(event.type) .. "/".. tostring(event.phase))
+	write_log('admob listener: ' .. tostring(event.type) .. "/".. tostring(event.phase))
 	if event.type == 'init' then
 		-- Admob has been initialized, now it's safe to load a banner.
 		load_interstitial()
@@ -72,14 +77,14 @@ function admob_listener(event)
 end
 
 function init_ads(self)
-	--write_log('initializing admob')
+	write_log('initializing admob')
 
 	--admob.enable_debug()
 
 	-- Init Admob with your app id.
 	admob.init{
 		app_id = admob_ids.app,
-		test = true,
+		test = is_test,
 		listener = admob_listener
 	}
 	g_admob_initialized = true
@@ -106,6 +111,6 @@ end
 
 function is_rewarded_loaded()
 	local is_loaded = admob.is_loaded('rewarded')
-	--write_log('Is rewarded loaded? ' .. (is_loaded and 'Yes' or 'No'))
+	write_log('Is rewarded loaded? ' .. (is_loaded and 'Yes' or 'No'))
 	return is_loaded
 end

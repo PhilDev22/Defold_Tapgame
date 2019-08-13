@@ -93,12 +93,6 @@ function init(self)
 	--if g_constants.SHOW_ADS then
 	--	on_gdpr_opt_out_clicked() -- comment out at html5 build
 	--end
-
-	if g_admob_initialized == false then
-		if g_constants.SHOW_ADS then
-			init_ads()-- comment out at html5 build
-		end
-	end
 end
 
 -- animation helper (have to be at the beginning)
@@ -191,7 +185,13 @@ function _handle_menu_input(self, action)
 		_toggle_sound(self)
 	elseif gui.pick_node(self.node_btn_ad, action.x, action.y) then
 		if gui.is_enabled(self.node_reward_ad) then
-			--on_show_rewarded_clicked()
+
+			if g_admob_initialized == false then
+				if g_constants.SHOW_ADS then
+					init_ads()-- comment out at html5 build
+				end
+			end
+			
 			if is_rewarded_loaded() then
 				show_rewarded_video()
 			end
@@ -208,6 +208,12 @@ function _handle_gameover_input(self, action)
 	elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
 		play_sound_button()
 		increase_reset_counter() --main.script
+		--init admob
+		if g_admob_initialized == false then
+			if g_constants.SHOW_ADS then
+				init_ads()-- comment out at html5 build
+			end
+		end
 		--show ad 
 		if g_show_ad_gameover then 
 			--on_show_interstitial_clicked() -- comment out at html5 build

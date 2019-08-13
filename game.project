@@ -1,6 +1,6 @@
 [project]
 title = Tapmoji
-version = 1.2.2
+version = 1.2.3
 dependencies = 
 
 [bootstrap]
@@ -60,10 +60,10 @@ app_icon_192x192 = /assets/app_icons/icon_192.png
 input_method = KeyEvent
 immersive_mode = 1
 minimum_sdk_version = 14
-package = com.agam.tapmoji
+package = com.agam.tapmojitest
 target_sdk_version = 28
 manifest = /AndroidManifest.xml
-version_code = 13
+version_code = 14
 
 [script]
 shared_state = 1
