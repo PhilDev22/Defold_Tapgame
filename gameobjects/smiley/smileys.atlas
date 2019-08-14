@@ -346,6 +346,9 @@ images {
 images {
   image: "/assets/smileys/item_u2b50.png"
 }
+images {
+  image: "/assets/smileys/item_u1f4a9.png"
+}
 margin: 0
 extrude_borders: 2
 inner_padding: 0

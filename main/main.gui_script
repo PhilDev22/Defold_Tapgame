@@ -172,8 +172,9 @@ function _handle_help_input(self)
 	gui.set_enabled(gui.get_node("help4"), false)
 	gui.set_enabled(gui.get_node("help5"), false)
 	gui.set_enabled(gui.get_node("help6"), false)
+	gui.set_enabled(gui.get_node("help7"), false)
 
-	if help_screen_id <= 6 then
+	if help_screen_id <= 7 then
 		gui.set_enabled(gui.get_node("help" ..  tostring(help_screen_id)), true)
 		
 		if help_screen_id == 2 or help_screen_id == 3 or help_screen_id == 4 then
@@ -425,11 +426,15 @@ function _show_dialog_gameover(self, message)
 	-- stop music
 	play_music(false)
 	-- set random "fail" smiley
-	local index = math.random(tablelength(g_constants.SMILEY_GAMEOVER_IDS))
-	local gameover_smiley =  g_constants.SMILEY_GAMEOVER_IDS[ index ] --"u1f4a9"
 	gui.set_texture(self.node_box_gameover_emoji, "smileys")
-	gui.play_flipbook(self.node_box_gameover_emoji,"emoji_" .. gameover_smiley)
-	
+	if message.poop_pressed then
+		local gameover_smiley = g_constants.ITEM_IDS[ g_constants.EMOJI_POOP_ID ]		
+		gui.play_flipbook(self.node_box_gameover_emoji,"item_" .. gameover_smiley)
+	else
+		local index = math.random(tablelength(g_constants.SMILEY_GAMEOVER_IDS))
+		local gameover_smiley =  g_constants.SMILEY_GAMEOVER_IDS[ index ] --"u1f4a9"
+		gui.play_flipbook(self.node_box_gameover_emoji,"emoji_" .. gameover_smiley)
+	end
 	--gui.set_text(self.node_gameover_stars, "+" .. tostring(g_stars_of_game))
 	-- debug: g_stars_of_game = 100
 

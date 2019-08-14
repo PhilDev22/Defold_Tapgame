@@ -343,9 +343,10 @@ end
 
 function _process_game_over(self)
 	local time_ran_out = self.level_timer <= 0
+	local poop_pressed = not time_ran_out and not (g_lifes <= 0)
 	-- hide gui and show/update game over screen
 	msg.post("/main#gui", "show_ingame_gui", {show = false})
-	msg.post("/main#gui", "show_dialog_gameover", {show = true, time_ran_out = time_ran_out})
+	msg.post("/main#gui", "show_dialog_gameover", {show = true, time_ran_out = time_ran_out, poop_pressed = poop_pressed})
 	-- set gamestate
 	g_stopped = true
 	g_game_over = true
@@ -422,6 +423,10 @@ local function _touch_item(self, smiley_id, sender)
 		_add_stars_amount(1)
 		g_stars_of_level = g_stars_of_level + 1
 
+	-- poop item 
+	elseif item_index == g_constants.EMOJI_POOP_ID then
+		_process_game_over(self)
+		
 	elseif item_index == nil then
 		-- smiley_id doesn't exisit in g_item_table_ids
 		touched = false
