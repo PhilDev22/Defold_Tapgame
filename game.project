@@ -1,6 +1,6 @@
 [project]
 title = Tapmoji
-version = 1.2.3
+version = 1.2.5
 dependencies = 
 
 [bootstrap]
