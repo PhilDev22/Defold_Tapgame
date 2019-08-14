@@ -1,5 +1,3 @@
-local is_test = true
-
 --- ADMOB ------
 
 g_admob_initialized = false
@@ -84,7 +82,7 @@ function init_ads(self)
 	-- Init Admob with your app id.
 	admob.init{
 		app_id = admob_ids.app,
-		test = is_test,
+		test = g_constants.TEST_ADS,
 		listener = admob_listener
 	}
 	g_admob_initialized = true

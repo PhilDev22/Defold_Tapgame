@@ -11,6 +11,7 @@ g_screen_width = 0
 g_screen_height = 0
 g_show_ads = g_constants.SHOW_ADS
 g_sound_active = true
+g_first_session_game_played = false
 -- stopped when in main menu, gameover or level-complete screen
 g_stopped = false
 -- completed when level finished and in level-complete screen
@@ -359,6 +360,11 @@ function _process_game_over(self)
 		g_highscore_level = g_level
 	end
 
+	g_first_session_game_played = true
+	
+	-- increase counter for showing ad
+	increase_reset_counter()
+	
 	save_game()
 
 	print_values(self) --debug
@@ -485,6 +491,17 @@ local function _reset(self)
 	check_reward_active()
 end
 
+-- stop and reset game, triggered from ingame screen
+function _stop_game(self)
+	_reset(self)
+	-- set gamestate
+	g_stopped = true
+	-- increase games counter
+	if g_level > 1 then 
+		g_games_played = g_games_played + 1
+	end
+end
+
 -- restarting game from the last level before game over
 local function _restart_from_current_level(self)
 	-- paying with stars to restart
@@ -514,6 +531,13 @@ local function _restart(self)
 	-- start from first level
 	_init_level(self, g_level_smiley_count_max)
 	g_stopped = false
+
+	--init admob
+	if g_admob_initialized == false then
+		if g_constants.SHOW_ADS then
+			init_ads()
+		end
+	end
 end
 
 
@@ -525,12 +549,12 @@ function check_reward_active()
 	-- calculate difference between current time and last timestamp	
 	local diff  = utc_now() - g_reward_ad_timestamp
 	if diff >= g_constants.REWARDED_AD_INTERVAL then
-		if g_games_played > 0 and g_admob_initialized then
+		if g_games_played > 0 and g_first_session_game_played and g_admob_initialized then
 			print("Watching reward ad allowed!")
 			msg.post("main#gui", "activate_rewarded_ad", {active = true})
-			g_reward_button_active = true
+			g_reward_button_active = true	
 		else
-			print("Hiding Ad Button. First game not played")
+			print("Hiding Ad Button. First game not played, AdMob not initialized, or ad video not loaded")
 			msg.post("main#gui", "activate_rewarded_ad", {active = false})
 			g_reward_button_active = false
 		end
@@ -555,7 +579,7 @@ function on_get_reward(value)
 end
 
 function _check_show_ad_button(self)
-	if g_reward_button_active == false and g_games_played > 0 then
+	if g_reward_button_active == false and g_admob_initialized and g_games_played > 0 and g_first_session_game_played then
 		local diff  = utc_now() - g_reward_ad_timestamp
 		if diff >= g_constants.REWARDED_AD_INTERVAL then
 			msg.post("main#gui", "activate_rewarded_ad", {active = true})
@@ -675,6 +699,8 @@ function on_message(self, message_id, message, sender)
 		_process_smiley_touch(self, message.smiley_id, sender)
 	elseif message_id == hash("restart") then
 		_restart(self)
+	elseif message_id == hash("stop_game") then
+		_stop_game(self)
 	elseif message_id == hash("reset") then
 		_reset(self)
 	elseif message_id == hash("next_level") then

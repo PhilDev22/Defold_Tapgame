@@ -154,7 +154,7 @@ function on_input(self, action_id, action)
 		else
 			--if ingame, show main menu
 			msg.post(".", "show_dialog_main_menu", {show = true})
-			msg.post("main", "reset", {})
+			msg.post("main", "stop_game", {})
 		end
 	end
 end
@@ -198,12 +198,6 @@ function _handle_menu_input(self, action)
 		_toggle_sound(self)
 	elseif gui.pick_node(self.node_btn_ad, action.x, action.y) then
 		if gui.is_enabled(self.node_reward_ad) then
-
-			if g_admob_initialized == false then
-				if g_constants.SHOW_ADS then
-					init_ads()-- comment out at html5 build
-				end
-			end
 			
 			if is_rewarded_loaded() then
 				show_rewarded_video()
@@ -220,13 +214,6 @@ function _handle_gameover_input(self, action)
 
 	elseif gui.pick_node(self.node_gameover_menu_btn, action.x, action.y) then
 		play_sound_button()
-		increase_reset_counter() --main.script
-		--init admob
-		if g_admob_initialized == false then
-			if g_constants.SHOW_ADS then
-				init_ads()-- comment out at html5 build
-			end
-		end
 		--show ad 
 		if g_show_ad_gameover then 
 			--on_show_interstitial_clicked() -- comment out at html5 build
@@ -235,9 +222,10 @@ function _handle_gameover_input(self, action)
 			end
 			g_show_ad_gameover = false
 		end
+		--reset gamestate
+		msg.post("main", "reset", {})
 		--show main menu
 		msg.post(".", "show_dialog_main_menu", {show = true})
-		msg.post("main", "reset", {})
 	end
 end
 
@@ -516,7 +504,7 @@ end
 
 function _activate_rewarded_ad(self, message)
 	gui.set_enabled(self.node_reward_ad, false)
-	if message.active then
+	if message.active == true then
 		gui.set_enabled(self.node_reward_ad, true)
 	end
 end
