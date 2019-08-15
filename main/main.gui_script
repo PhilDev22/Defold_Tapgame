@@ -39,6 +39,7 @@ function init(self)
 	self.node_txt_pause = gui.get_node("txt_pause")
 	self.node_btn_pause = gui.get_node("btn_pause")
 	self.node_help = gui.get_node("box_help")
+	self.node_booster = gui.get_node("window_booster")
 	-- dialog gameover
 	self.node_gameover_score = gui.get_node("txt_gameover_score")
 	self.node_gameover_level = gui.get_node("txt_gameover_level")
@@ -73,6 +74,7 @@ function init(self)
 
 	-- hide help
 	gui.set_enabled(self.node_help, false)
+	gui.set_enabled(self.node_booster, false)
 	
 	-- hide image showing that wrong smiley was touched
 	gui.set_enabled(self.node_wrong_smiley, false)
