@@ -8,6 +8,7 @@ local show_wrong_smiley_feedback_timer = 0.0
 local stars_inc_speed = 60
 local menu_btns_initial_scale = 0.67
 local help_screen_id = 0
+local time = 0
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -61,6 +62,7 @@ function init(self)
 	self.node_complete_img_time = gui.get_node("img_time")
 	self.node_complete_img_stars = gui.get_node("img_level_stars")
 	self.node_complete_txt_stars = gui.get_node("txt_level_stars")
+	self.node_complete_txt_time_remaining = gui.get_node("txt_time_remaining")
 	-- dialog main menu
 	self.node_menu_btn_start = gui.get_node("btn_start")
 	self.node_menu_stars_img = gui.get_node("img_star_total")
@@ -74,6 +76,7 @@ function init(self)
 
 	-- hide help
 	gui.set_enabled(self.node_help, false)
+	
 	gui.set_enabled(self.node_booster, false)
 	
 	-- hide image showing that wrong smiley was touched
@@ -284,6 +287,7 @@ end
 
 function _set_time(self, message)
 	gui.set_text(self.time_node, tostring(math.ceil(message.time)))
+	time = math.ceil(message.time)
 	if message.scale == 1 then
 		local s = 1.6
 		gui.animate(self.time_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
@@ -406,7 +410,9 @@ function _show_dialog_success(self)
 
 	-- set amount of collected level stars
 	gui.set_text(self.node_complete_txt_stars, "+" .. tostring(g_stars_of_level))
-
+	-- show remaining time
+	gui.set_text(self.node_complete_txt_time_remaining, tostring(time - 5))
+	
 	-- show additional time gained
 	local s_init = 0.8
 	local s = 1.4

@@ -7,13 +7,11 @@ end
 
 local function update_size(self)
 	print("setting background size")
-
-	local aspect_background = g_constants.SCREEN_WIDTH / g_constants.SCREEN_HEIGHT
-	local aspect_display = g_screen_width / g_screen_height
+	local aspect_display = g_render_helper.get_screen_width() / g_render_helper.get_screen_height()
 	print("aspect_display: " .. tostring(aspect_display))
 	local new_width_scale = 1.5
 	local new_height_scale =  1.2
-	if aspect_display <= 0.5 then --ultra wide smartphones (P20, Pixel 3)
+	if aspect_display <= 0.52 then --ultra wide smartphones (P20, Pixel 3)
 		go.set("#sprite", "scale", vmath.vector3(1.0, new_height_scale, 1.0))
 	elseif aspect_display >= 0.7 then --tablets
 		go.set("#sprite", "scale", vmath.vector3(new_width_scale, 1.0, 1.0))

@@ -111,7 +111,7 @@ function _init_position(self)
 		local spawn_offset_left = 64
 		local spawn_offset_right = 64
 		local spawn_offset_top = 300
-		local spawn_offset_bottom = -64
+		local spawn_offset_bottom = -128
 		-- set spawn ranges
 		local spawn_range_x = g_constants.SCREEN_WIDTH  - spawn_offset_right - spawn_offset_left
 		local spawn_range_y = g_constants.SCREEN_HEIGHT - spawn_offset_top - spawn_offset_bottom
